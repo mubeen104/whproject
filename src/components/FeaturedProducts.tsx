@@ -2,55 +2,60 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, ShoppingBag, Star } from "lucide-react";
+import { useFeaturedProducts } from "@/hooks/useProducts";
+import { useCart } from "@/hooks/useCart";
+import { useAuth } from "@/contexts/AuthContext";
+import { AuthModal } from "@/components/auth/AuthModal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const FeaturedProducts = () => {
-  const products = [
-    {
-      id: 1,
-      name: "Organic Turmeric Capsules",
-      price: "$29.99",
-      originalPrice: "$39.99",
-      rating: 4.8,
-      reviews: 127,
-      badge: "Best Seller",
-      badgeColor: "bg-accent text-accent-foreground",
-      image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop&crop=center",
-      benefits: ["Anti-inflammatory", "Joint Health", "Immune Support"]
-    },
-    {
-      id: 2,
-      name: "Lavender Sleep Tea",
-      price: "$19.99",
-      rating: 4.9,
-      reviews: 89,
-      badge: "New",
-      badgeColor: "bg-primary text-primary-foreground",
-      image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=400&fit=crop&crop=center",
-      benefits: ["Better Sleep", "Stress Relief", "Calming"]
-    },
-    {
-      id: 3,
-      name: "Ashwagandha Root Extract",
-      price: "$34.99",
-      rating: 4.7,
-      reviews: 203,
-      badge: "Popular",
-      badgeColor: "bg-secondary text-secondary-foreground",
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&crop=center",
-      benefits: ["Stress Relief", "Energy Boost", "Mental Clarity"]
-    },
-    {
-      id: 4,
-      name: "Green Tea Extract",
-      price: "$24.99",
-      rating: 4.6,
-      reviews: 156,
-      badge: "Organic",
-      badgeColor: "bg-muted text-muted-foreground",
-      image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&h=400&fit=crop&crop=center",
-      benefits: ["Antioxidants", "Metabolism", "Heart Health"]
+  const { data: products = [], isLoading } = useFeaturedProducts();
+  const { addToCart, isAddingToCart } = useCart();
+  const { user } = useAuth();
+
+  const handleAddToCart = (productId: string) => {
+    if (!user) {
+      return;
     }
-  ];
+    addToCart({ productId, quantity: 1 });
+  };
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Featured Products
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Discover our most popular herbal supplements and wellness products, 
+              carefully selected for their quality and effectiveness.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Card key={index} className="border-border">
+                <CardContent className="p-0">
+                  <Skeleton className="w-full h-48 rounded-t-lg" />
+                  <div className="p-4 space-y-3">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <div className="flex gap-1">
+                      <Skeleton className="h-6 w-20" />
+                      <Skeleton className="h-6 w-16" />
+                    </div>
+                    <Skeleton className="h-4 w-1/3" />
+                    <Skeleton className="h-8 w-full" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 bg-background">
@@ -77,15 +82,17 @@ const FeaturedProducts = () => {
                 {/* Product Image */}
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img
-                    src={product.image}
+                    src={product.product_images?.[0]?.image_url || "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop&crop=center"}
                     alt={product.name}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   
                   {/* Badge */}
-                  <Badge className={`absolute top-3 left-3 ${product.badgeColor}`}>
-                    {product.badge}
-                  </Badge>
+                  {product.is_featured && (
+                    <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground">
+                      Featured
+                    </Badge>
+                  )}
                   
                   {/* Quick Actions */}
                   <div className="absolute top-3 right-3 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -95,9 +102,16 @@ const FeaturedProducts = () => {
                   </div>
 
                   {/* Sale Badge */}
-                  {product.originalPrice && (
+                  {product.compare_price && product.compare_price > product.price && (
                     <div className="absolute bottom-3 left-3 bg-destructive text-destructive-foreground px-2 py-1 rounded text-xs font-medium">
-                      Save {Math.round((1 - parseFloat(product.price.slice(1)) / parseFloat(product.originalPrice.slice(1))) * 100)}%
+                      Save {Math.round((1 - product.price / product.compare_price) * 100)}%
+                    </div>
+                  )}
+                  
+                  {/* Out of Stock Overlay */}
+                  {product.inventory_quantity === 0 && (
+                    <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                      <Badge variant="secondary" className="text-lg">Out of Stock</Badge>
                     </div>
                   )}
                 </div>
@@ -115,26 +129,24 @@ const FeaturedProducts = () => {
                         <Star
                           key={i}
                           className={`h-3 w-3 ${
-                            i < Math.floor(product.rating)
-                              ? "fill-accent text-accent"
-                              : "text-muted-foreground"
+                            i < 4 ? "fill-accent text-accent" : "text-muted-foreground"
                           }`}
                         />
                       ))}
                     </div>
                     <span className="text-xs text-muted-foreground">
-                      {product.rating} ({product.reviews})
+                      4.8 (124)
                     </span>
                   </div>
 
                   {/* Benefits */}
                   <div className="flex flex-wrap gap-1">
-                    {product.benefits.slice(0, 2).map((benefit) => (
+                    {product.tags?.slice(0, 2).map((tag) => (
                       <span
-                        key={benefit}
-                        className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded"
+                        key={tag}
+                        className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded capitalize"
                       >
-                        {benefit}
+                        {tag.replace('-', ' ')}
                       </span>
                     ))}
                   </div>
@@ -142,23 +154,38 @@ const FeaturedProducts = () => {
                   {/* Price */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <span className="font-bold text-primary">{product.price}</span>
-                      {product.originalPrice && (
+                      <span className="font-bold text-primary">${product.price}</span>
+                      {product.compare_price && product.compare_price > product.price && (
                         <span className="text-sm text-muted-foreground line-through">
-                          {product.originalPrice}
+                          ${product.compare_price}
                         </span>
                       )}
                     </div>
                   </div>
 
                   {/* Add to Cart Button */}
-                  <Button 
-                    className="w-full group-hover:bg-primary-hover transition-colors"
-                    size="sm"
-                  >
-                    <ShoppingBag className="h-4 w-4 mr-2" />
-                    Add to Cart
-                  </Button>
+                  {user ? (
+                    <Button 
+                      className="w-full group-hover:bg-primary-hover transition-colors"
+                      size="sm"
+                      onClick={() => handleAddToCart(product.id)}
+                      disabled={product.inventory_quantity === 0 || isAddingToCart}
+                    >
+                      <ShoppingBag className="h-4 w-4 mr-2" />
+                      Add to Cart
+                    </Button>
+                  ) : (
+                    <AuthModal>
+                      <Button 
+                        className="w-full group-hover:bg-primary-hover transition-colors"
+                        size="sm"
+                        disabled={product.inventory_quantity === 0}
+                      >
+                        <ShoppingBag className="h-4 w-4 mr-2" />
+                        Add to Cart
+                      </Button>
+                    </AuthModal>
+                  )}
                 </div>
               </CardContent>
             </Card>

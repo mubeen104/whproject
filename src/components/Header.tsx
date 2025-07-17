@@ -1,10 +1,16 @@
 import { useState } from "react";
-import { Search, ShoppingBag, User, Menu, X, Leaf } from "lucide-react";
+import { Search, ShoppingBag, User, Menu, X, Leaf, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/hooks/useCart";
+import { AuthModal } from "@/components/auth/AuthModal";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const { totalItems } = useCart();
 
   const navigation = [
     { name: "Shop All", href: "#" },
@@ -58,14 +64,35 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon" className="text-foreground hover:text-primary">
-              <User className="h-5 w-5" />
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="text-foreground hover:text-primary">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={signOut}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <AuthModal>
+                <Button variant="ghost" size="icon" className="text-foreground hover:text-primary">
+                  <User className="h-5 w-5" />
+                </Button>
+              </AuthModal>
+            )}
+            
             <Button variant="ghost" size="icon" className="text-foreground hover:text-primary relative">
               <ShoppingBag className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                2
-              </span>
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
             </Button>
             <Button
               variant="ghost"
