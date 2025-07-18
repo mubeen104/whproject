@@ -3,10 +3,16 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+export type UserRole = 'admin' | 'moderator' | 'user';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  userRole: UserRole | null;
+  isAdmin: boolean;
+  isModerator: boolean;
+  hasAdminAccess: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -26,14 +32,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Fetch user role
+          setTimeout(async () => {
+            const { data } = await supabase.rpc('get_current_user_role');
+            setUserRole(data || 'user');
+          }, 0);
+        } else {
+          setUserRole(null);
+        }
+        
         setLoading(false);
       }
     );
@@ -42,6 +60,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        // Fetch user role
+        supabase.rpc('get_current_user_role').then(({ data }) => {
+          setUserRole(data || 'user');
+        });
+      }
+      
       setLoading(false);
     });
 
@@ -126,10 +152,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const isAdmin = userRole === 'admin';
+  const isModerator = userRole === 'moderator';
+  const hasAdminAccess = isAdmin || isModerator;
+
   const value = {
     user,
     session,
     loading,
+    userRole,
+    isAdmin,
+    isModerator,
+    hasAdminAccess,
     signIn,
     signUp,
     signOut,

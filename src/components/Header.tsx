@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { Search, ShoppingBag, User, Menu, X, Leaf, LogOut } from "lucide-react";
+import { Search, ShoppingBag, User, Menu, X, Leaf, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
 import { AuthModal } from "@/components/auth/AuthModal";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   const { totalItems } = useCart();
 
   const navigation = [
@@ -80,6 +80,18 @@ const Header = () => {
                       My Orders
                     </a>
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <a href="/admin" className="flex items-center w-full">
+                          <Settings className="h-4 w-4 mr-2" />
+                          Admin Dashboard
+                        </a>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
