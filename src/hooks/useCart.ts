@@ -1,32 +1,32 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
 
 export interface CartItem {
   id: string;
   product_id: string;
   quantity: number;
   created_at: string;
-  products: {
+  updated_at: string;
+  user_id: string;
+  product?: {
     id: string;
     name: string;
     price: number;
-    image_url?: string;
-    inventory_quantity: number;
+    product_images: Array<{
+      id: string;
+      image_url: string;
+      alt_text: string;
+      sort_order: number;
+    }>;
   };
 }
 
 export const useCart = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: cartItems = [], isLoading } = useQuery({
-    queryKey: ['cart', user?.id],
+  const { data: cartItems, isLoading } = useQuery({
+    queryKey: ['cart'],
     queryFn: async (): Promise<CartItem[]> => {
-      if (!user) return [];
-
       const { data, error } = await supabase
         .from('cart_items')
         .select(`
@@ -35,62 +35,62 @@ export const useCart = () => {
             id,
             name,
             price,
-            inventory_quantity
+            product_images (
+              id,
+              image_url,
+              alt_text,
+              sort_order
+            )
           )
         `)
-        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (error) {
-        throw error;
-      }
-
+      if (error) throw error;
       return data || [];
     },
-    enabled: !!user,
   });
 
-  const addToCartMutation = useMutation({
+  const addToCart = useMutation({
     mutationFn: async ({ productId, quantity = 1 }: { productId: string; quantity?: number }) => {
-      if (!user) {
-        throw new Error('User must be logged in to add items to cart');
-      }
-
-      const { data, error } = await supabase
+      // Check if item already exists in cart
+      const { data: existingItem } = await supabase
         .from('cart_items')
-        .upsert({
-          user_id: user.id,
-          product_id: productId,
-          quantity,
-        }, {
-          onConflict: 'user_id,product_id'
-        })
-        .select()
-        .single();
+        .select('*')
+        .eq('product_id', productId)
+        .maybeSingle();
 
-      if (error) {
-        throw error;
+      if (existingItem) {
+        // Update existing item
+        const { data, error } = await supabase
+          .from('cart_items')
+          .update({ quantity: existingItem.quantity + quantity })
+          .eq('id', existingItem.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return data;
+      } else {
+        // Create new item
+        const { data: user } = await supabase.auth.getUser();
+        if (!user.user) throw new Error('User not authenticated');
+        
+        const { data, error } = await supabase
+          .from('cart_items')
+          .insert({ product_id: productId, quantity, user_id: user.user.id })
+          .select()
+          .single();
+
+        if (error) throw error;
+        return data;
       }
-
-      return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart', user?.id] });
-      toast({
-        title: "Added to cart",
-        description: "Item has been added to your cart.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
   });
 
-  const updateQuantityMutation = useMutation({
+  const updateQuantity = useMutation({
     mutationFn: async ({ itemId, quantity }: { itemId: string; quantity: number }) => {
       if (quantity <= 0) {
         const { error } = await supabase
@@ -113,18 +113,11 @@ export const useCart = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart', user?.id] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
   });
 
-  const removeFromCartMutation = useMutation({
+  const removeFromCart = useMutation({
     mutationFn: async (itemId: string) => {
       const { error } = await supabase
         .from('cart_items')
@@ -134,34 +127,38 @@ export const useCart = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart', user?.id] });
-      toast({
-        title: "Removed from cart",
-        description: "Item has been removed from your cart.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
   });
 
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cartItems.reduce((sum, item) => sum + (item.products.price * item.quantity), 0);
+  const clearCart = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('cart_items')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all items
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
+  });
+
+  const cartCount = cartItems?.reduce((total, item) => total + item.quantity, 0) || 0;
+  const cartTotal = cartItems?.reduce((total, item) => {
+    const price = item.product?.price || 0;
+    return total + (price * item.quantity);
+  }, 0) || 0;
 
   return {
     cartItems,
+    cartCount,
+    cartTotal,
     isLoading,
-    totalItems,
-    totalPrice,
-    addToCart: addToCartMutation.mutate,
-    updateQuantity: updateQuantityMutation.mutate,
-    removeFromCart: removeFromCartMutation.mutate,
-    isAddingToCart: addToCartMutation.isPending,
-    isUpdatingQuantity: updateQuantityMutation.isPending,
-    isRemovingFromCart: removeFromCartMutation.isPending,
+    addToCart,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
   };
 };

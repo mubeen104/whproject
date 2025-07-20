@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, signOut, isAdmin } = useAuth();
-  const { totalItems } = useCart();
+  const { cartCount } = useCart();
 
   const navigation = [
     { name: "Shop", href: "#" },
@@ -108,9 +108,9 @@ const Header = () => {
             
             <Button variant="ghost" size="icon" className="text-foreground hover:text-primary relative">
               <ShoppingBag className="h-5 w-5" />
-              {totalItems > 0 && (
+              {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {totalItems}
+                  {cartCount}
                 </span>
               )}
             </Button>

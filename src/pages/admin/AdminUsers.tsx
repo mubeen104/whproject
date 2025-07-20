@@ -168,7 +168,7 @@ export default function AdminUsers() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users?.map((user: UserProfile) => {
+                  {users?.map((user: any) => {
                     const highestRole = getHighestRole(user);
                     const roles = getUserRoles(user);
                     

@@ -10,14 +10,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const FeaturedProducts = () => {
   const { data: products = [], isLoading } = useFeaturedProducts();
-  const { addToCart, isAddingToCart } = useCart();
+  const { addToCart } = useCart();
   const { user } = useAuth();
 
   const handleAddToCart = (productId: string) => {
     if (!user) {
       return;
     }
-    addToCart({ productId, quantity: 1 });
+    addToCart.mutate({ productId, quantity: 1 });
   };
 
   if (isLoading) {
@@ -169,7 +169,7 @@ const FeaturedProducts = () => {
                       className="w-full group-hover:bg-primary-hover transition-colors"
                       size="sm"
                       onClick={() => handleAddToCart(product.id)}
-                      disabled={product.inventory_quantity === 0 || isAddingToCart}
+                      disabled={product.inventory_quantity === 0 || addToCart.isPending}
                     >
                       <ShoppingBag className="h-4 w-4 mr-2" />
                       Add to Cart

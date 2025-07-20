@@ -195,7 +195,7 @@ export default function AdminOrders() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders?.map((order: Order) => (
+                  {orders?.map((order: any) => (
                     <TableRow key={order.id}>
                       <TableCell>
                         <div>
