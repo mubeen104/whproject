@@ -13,7 +13,7 @@ const Header = () => {
   const { cartCount } = useCart();
 
   const navigation = [
-    { name: "Shop", href: "#" },
+    { name: "Shop", href: "/shop" },
     { name: "About", href: "#" },
   ];
 
