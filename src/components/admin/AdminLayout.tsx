@@ -84,7 +84,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
           
           {/* Content Area */}
           <div className="flex-1 p-6 overflow-auto bg-muted/30">
-            <div className="max-w-7xl mx-auto h-full">
+            <div className="max-w-7xl mx-auto">
               {children}
             </div>
           </div>

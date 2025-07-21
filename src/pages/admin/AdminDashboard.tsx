@@ -1,4 +1,3 @@
-import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, ShoppingCart, Users, DollarSign, TrendingUp, TrendingDown, Eye, Clock, ArrowUpRight, Activity, Plus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -62,27 +61,25 @@ export default function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <AdminLayout>
-        <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-10 bg-muted rounded-lg w-1/3 mb-3"></div>
-            <div className="h-5 bg-muted rounded w-1/2"></div>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i} className="border-border/50">
-                <CardContent className="p-6">
-                  <div className="animate-pulse space-y-3">
-                    <div className="h-4 bg-muted rounded w-2/3"></div>
-                    <div className="h-8 bg-muted rounded w-1/2"></div>
-                    <div className="h-3 bg-muted rounded w-full"></div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-10 bg-muted rounded-lg w-1/3 mb-3"></div>
+          <div className="h-5 bg-muted rounded w-1/2"></div>
         </div>
-      </AdminLayout>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i} className="border-border/50">
+              <CardContent className="p-6">
+                <div className="animate-pulse space-y-3">
+                  <div className="h-4 bg-muted rounded w-2/3"></div>
+                  <div className="h-8 bg-muted rounded w-1/2"></div>
+                  <div className="h-3 bg-muted rounded w-full"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
     );
   }
 
@@ -130,142 +127,140 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <AdminLayout>
-      <div className="space-y-8">
-        {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground mt-1">
-              Welcome back! Here's what's happening with your store today.
-            </p>
-          </div>
-          <div className="flex space-x-3">
-            <Button variant="outline" className="hover:bg-muted">
-              <Eye className="h-4 w-4 mr-2" />
-              View Store
-            </Button>
-            <Button onClick={() => navigate('/admin/products')} className="bg-primary hover:bg-primary-hover">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Product
-            </Button>
-          </div>
+    <div className="space-y-8">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground mt-1">
+            Welcome back! Here's what's happening with your store today.
+          </p>
         </div>
-
-        {/* Stats Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {statCards.map((stat, index) => (
-            <Card key={index} className="border-border/50 hover:shadow-medium transition-all duration-200 hover:scale-[1.02]">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.title}
-                </CardTitle>
-                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                  <stat.icon className={`h-5 w-5 ${stat.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="text-3xl font-bold text-foreground">{stat.value}</div>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <div className={`flex items-center ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>
-                      {stat.trendUp ? (
-                        <TrendingUp className="h-3 w-3 mr-1" />
-                      ) : (
-                        <TrendingDown className="h-3 w-3 mr-1" />
-                      )}
-                      <span className="font-medium">{stat.trend}</span>
-                    </div>
-                    <span className="text-muted-foreground">from last month</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Recent Orders - Takes 2 columns */}
-          <Card className="lg:col-span-2 border-border/50">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center text-lg">
-                  <Clock className="h-5 w-5 mr-2 text-primary" />
-                  Recent Orders
-                </CardTitle>
-                <Button variant="ghost" size="sm" onClick={() => navigate('/admin/orders')}>
-                  View All
-                  <ArrowUpRight className="h-4 w-4 ml-1" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {stats?.recentOrders?.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">No recent orders to display.</p>
-                  </div>
-                ) : (
-                  stats?.recentOrders?.map((order: any) => (
-                    <div key={order.id} className="flex items-center justify-between p-4 border border-border/50 rounded-lg hover:bg-muted/20 transition-colors">
-                      <div className="space-y-1">
-                        <p className="font-semibold text-foreground">{order.order_number}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {order.profiles?.first_name} {order.profiles?.last_name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(order.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="text-right space-y-2">
-                        <p className="font-bold text-lg text-foreground">
-                          ${Number(order.total_amount).toFixed(2)}
-                        </p>
-                        <Badge className={getStatusColor(order.status)}>
-                          {order.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card className="border-border/50">
-            <CardHeader>
-              <CardTitle className="flex items-center text-lg">
-                <Activity className="h-5 w-5 mr-2 text-primary" />
-                Quick Actions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[
-                  { label: 'Manage Products', icon: Package, path: '/admin/products' },
-                  { label: 'View Orders', icon: ShoppingCart, path: '/admin/orders' },
-                  { label: 'Manage Categories', icon: Package, path: '/admin/categories' },
-                  { label: 'Manage Users', icon: Users, path: '/admin/users' },
-                ].map((action, index) => (
-                  <Button 
-                    key={index}
-                    variant="outline" 
-                    className="w-full justify-start hover:bg-muted border-border/50" 
-                    onClick={() => navigate(action.path)}
-                  >
-                    <action.icon className="h-4 w-4 mr-3" />
-                    {action.label}
-                    <ArrowUpRight className="h-4 w-4 ml-auto" />
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+        <div className="flex space-x-3">
+          <Button variant="outline" className="hover:bg-muted">
+            <Eye className="h-4 w-4 mr-2" />
+            View Store
+          </Button>
+          <Button onClick={() => navigate('/admin/products')} className="bg-primary hover:bg-primary-hover">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Product
+          </Button>
         </div>
       </div>
-    </AdminLayout>
+
+      {/* Stats Cards */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {statCards.map((stat, index) => (
+          <Card key={index} className="border-border/50 hover:shadow-medium transition-all duration-200 hover:scale-[1.02]">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {stat.title}
+              </CardTitle>
+              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                <stat.icon className={`h-5 w-5 ${stat.color}`} />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="text-3xl font-bold text-foreground">{stat.value}</div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <div className={`flex items-center ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>
+                    {stat.trendUp ? (
+                      <TrendingUp className="h-3 w-3 mr-1" />
+                    ) : (
+                      <TrendingDown className="h-3 w-3 mr-1" />
+                    )}
+                    <span className="font-medium">{stat.trend}</span>
+                  </div>
+                  <span className="text-muted-foreground">from last month</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Recent Orders - Takes 2 columns */}
+        <Card className="lg:col-span-2 border-border/50">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center text-lg">
+                <Clock className="h-5 w-5 mr-2 text-primary" />
+                Recent Orders
+              </CardTitle>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/admin/orders')}>
+                View All
+                <ArrowUpRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {stats?.recentOrders?.length === 0 ? (
+                <div className="text-center py-8">
+                  <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-muted-foreground">No recent orders to display.</p>
+                </div>
+              ) : (
+                stats?.recentOrders?.map((order: any) => (
+                  <div key={order.id} className="flex items-center justify-between p-4 border border-border/50 rounded-lg hover:bg-muted/20 transition-colors">
+                    <div className="space-y-1">
+                      <p className="font-semibold text-foreground">{order.order_number}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {order.profiles?.first_name} {order.profiles?.last_name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(order.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="text-right space-y-2">
+                      <p className="font-bold text-lg text-foreground">
+                        ${Number(order.total_amount).toFixed(2)}
+                      </p>
+                      <Badge className={getStatusColor(order.status)}>
+                        {order.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center text-lg">
+              <Activity className="h-5 w-5 mr-2 text-primary" />
+              Quick Actions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {[
+                { label: 'Manage Products', icon: Package, path: '/admin/products' },
+                { label: 'View Orders', icon: ShoppingCart, path: '/admin/orders' },
+                { label: 'Manage Categories', icon: Package, path: '/admin/categories' },
+                { label: 'Manage Users', icon: Users, path: '/admin/users' },
+              ].map((action, index) => (
+                <Button 
+                  key={index}
+                  variant="outline" 
+                  className="w-full justify-start hover:bg-muted border-border/50" 
+                  onClick={() => navigate(action.path)}
+                >
+                  <action.icon className="h-4 w-4 mr-3" />
+                  {action.label}
+                  <ArrowUpRight className="h-4 w-4 ml-auto" />
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
