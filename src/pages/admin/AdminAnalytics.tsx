@@ -1,6 +1,5 @@
-import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Package } from 'lucide-react';
+import { BarChart3, TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Package, Activity } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -89,144 +88,227 @@ export default function AdminAnalytics() {
 
   if (isLoading) {
     return (
-      <AdminLayout>
-        <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-muted rounded w-1/4 mb-2"></div>
-            <div className="h-4 bg-muted rounded w-1/2"></div>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i}>
-                <CardContent className="p-6">
-                  <div className="animate-pulse space-y-4">
-                    <div className="h-4 bg-muted rounded w-1/2"></div>
-                    <div className="h-20 bg-muted rounded"></div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      <div className="space-y-8 animate-fade-in">
+        <div className="animate-pulse">
+          <div className="h-10 bg-muted rounded-lg w-1/3 mb-3"></div>
+          <div className="h-5 bg-muted rounded w-1/2"></div>
         </div>
-      </AdminLayout>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="border-border/50">
+              <CardContent className="p-6">
+                <div className="animate-pulse space-y-4">
+                  <div className="h-4 bg-muted rounded w-1/2"></div>
+                  <div className="h-20 bg-muted rounded"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-8 animate-fade-in">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold">Analytics</h1>
-          <p className="text-muted-foreground mt-2">
-            Insights and performance metrics
+          <h1 className="text-4xl font-bold text-foreground">Analytics</h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Insights and performance metrics for your business
           </p>
         </div>
+      </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Monthly Revenue */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <DollarSign className="h-5 w-5 mr-2" />
-                Monthly Revenue
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {Object.entries(analytics?.monthlyRevenue || {}).map(([month, revenue]: [string, any]) => (
-                  <div key={month} className="flex justify-between items-center">
-                    <span className="text-sm font-medium">{month}</span>
-                    <span className="font-bold">${Number(revenue).toFixed(2)}</span>
-                  </div>
-                ))}
-                {Object.keys(analytics?.monthlyRevenue || {}).length === 0 && (
-                  <p className="text-muted-foreground text-sm">No revenue data available</p>
-                )}
+      {/* Overview Cards */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="border-border/50 hover:shadow-medium transition-all duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
+                <p className="text-2xl font-bold">
+                  ${(Object.values(analytics?.monthlyRevenue || {}) as number[]).reduce((acc: number, val: number) => acc + val, 0).toFixed(2)}
+                </p>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Order Status Distribution */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                Order Status (30 Days)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {Object.entries(analytics?.statusCounts || {}).map(([status, count]: [string, any]) => (
-                  <div key={status} className="flex justify-between items-center">
-                    <span className="text-sm font-medium capitalize">{status}</span>
-                    <span className="font-bold">{count}</span>
-                  </div>
-                ))}
-                {Object.keys(analytics?.statusCounts || {}).length === 0 && (
-                  <p className="text-muted-foreground text-sm">No order data available</p>
-                )}
+              <div className="p-3 bg-green-100 rounded-lg">
+                <DollarSign className="h-6 w-6 text-green-600" />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Top Selling Products */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Package className="h-5 w-5 mr-2" />
-                Top Products (30 Days)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {analytics?.topSellingProducts?.map((product: any, index: number) => (
-                  <div key={index} className="flex justify-between items-center">
-                    <span className="text-sm font-medium truncate">{product.name}</span>
-                    <span className="font-bold">{product.quantity} sold</span>
-                  </div>
-                ))}
-                {(!analytics?.topSellingProducts || analytics.topSellingProducts.length === 0) && (
-                  <p className="text-muted-foreground text-sm">No sales data available</p>
-                )}
+        <Card className="border-border/50 hover:shadow-medium transition-all duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
+                <p className="text-2xl font-bold">
+                  {(Object.values(analytics?.statusCounts || {}) as number[]).reduce((acc: number, val: number) => acc + val, 0)}
+                </p>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <ShoppingCart className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Recent Activity */}
-        <Card>
+        <Card className="border-border/50 hover:shadow-medium transition-all duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Top Products</p>
+                <p className="text-2xl font-bold">{analytics?.topSellingProducts?.length || 0}</p>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Package className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 hover:shadow-medium transition-all duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Recent Activity</p>
+                <p className="text-2xl font-bold">{analytics?.recentActivity?.length || 0}</p>
+              </div>
+              <div className="p-3 bg-orange-100 rounded-lg">
+                <Activity className="h-6 w-6 text-orange-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Detailed Analytics */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Monthly Revenue */}
+        <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <BarChart3 className="h-5 w-5 mr-2" />
-              Recent Activity
+            <CardTitle className="flex items-center text-xl">
+              <DollarSign className="h-6 w-6 mr-3 text-primary" />
+              Monthly Revenue
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {analytics?.recentActivity?.map((order: any) => (
-                <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div>
-                    <p className="font-medium">{order.order_number}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {order.profiles?.first_name} {order.profiles?.last_name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(order.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold">${Number(order.total_amount).toFixed(2)}</p>
-                    <p className="text-sm text-muted-foreground capitalize">{order.status}</p>
-                  </div>
+              {Object.entries(analytics?.monthlyRevenue || {}).map(([month, revenue]: [string, any]) => (
+                <div key={month} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                  <span className="text-sm font-medium">{month}</span>
+                  <span className="font-bold text-lg">${Number(revenue).toFixed(2)}</span>
                 </div>
               ))}
-              {(!analytics?.recentActivity || analytics.recentActivity.length === 0) && (
-                <p className="text-muted-foreground">No recent activity to display.</p>
+              {Object.keys(analytics?.monthlyRevenue || {}).length === 0 && (
+                <div className="text-center py-8">
+                  <DollarSign className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No revenue data available</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Order Status Distribution */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center text-xl">
+              <ShoppingCart className="h-6 w-6 mr-3 text-primary" />
+              Order Status (30 Days)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {Object.entries(analytics?.statusCounts || {}).map(([status, count]: [string, any]) => (
+                <div key={status} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                  <span className="text-sm font-medium capitalize">{status}</span>
+                  <span className="font-bold text-lg">{count}</span>
+                </div>
+              ))}
+              {Object.keys(analytics?.statusCounts || {}).length === 0 && (
+                <div className="text-center py-8">
+                  <ShoppingCart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No order data available</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Top Selling Products */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center text-xl">
+              <Package className="h-6 w-6 mr-3 text-primary" />
+              Top Products (30 Days)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {analytics?.topSellingProducts?.map((product: any, index: number) => (
+                <div key={index} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center text-xs font-bold text-primary">
+                      {index + 1}
+                    </div>
+                    <span className="text-sm font-medium truncate">{product.name}</span>
+                  </div>
+                  <span className="font-bold text-lg">{product.quantity} sold</span>
+                </div>
+              ))}
+              {(!analytics?.topSellingProducts || analytics.topSellingProducts.length === 0) && (
+                <div className="text-center py-8">
+                  <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No sales data available</p>
+                </div>
               )}
             </div>
           </CardContent>
         </Card>
       </div>
-    </AdminLayout>
+
+      {/* Recent Activity */}
+      <Card className="border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center text-xl">
+            <BarChart3 className="h-6 w-6 mr-3 text-primary" />
+            Recent Activity
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {analytics?.recentActivity?.map((order: any) => (
+              <div key={order.id} className="flex items-center justify-between p-4 border border-border/50 rounded-lg hover:bg-muted/30 transition-colors">
+                <div className="space-y-1">
+                  <p className="font-semibold text-foreground">{order.order_number}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {order.profiles?.first_name || 'Customer'} {order.profiles?.last_name || ''}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(order.created_at).toLocaleString()}
+                  </p>
+                </div>
+                <div className="text-right space-y-1">
+                  <p className="font-bold text-lg">${Number(order.total_amount).toFixed(2)}</p>
+                  <p className="text-sm text-muted-foreground capitalize px-2 py-1 bg-muted rounded">
+                    {order.status}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {(!analytics?.recentActivity || analytics.recentActivity.length === 0) && (
+              <div className="text-center py-12">
+                <Activity className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">No recent activity</h3>
+                <p className="text-muted-foreground">Recent orders and activities will appear here.</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
