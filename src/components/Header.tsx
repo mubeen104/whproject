@@ -104,11 +104,9 @@ const Header = () => {
                   {isAdmin && (
                     <>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <a href="/admin" className="flex items-center w-full">
-                          <Settings className="h-4 w-4 mr-2" />
-                          Admin Dashboard
-                        </a>
+                      <DropdownMenuItem onClick={() => navigate('/admin')}>
+                        <Settings className="h-4 w-4 mr-2" />
+                        Admin Dashboard
                       </DropdownMenuItem>
                     </>
                   )}
