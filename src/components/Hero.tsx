@@ -59,12 +59,13 @@ const Hero = () => {
               </Button>
               
               <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-primary-foreground/20 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground hover:text-primary backdrop-blur-sm"
-              >
-                Learn More
-              </Button>
+  size="lg" 
+  variant="outline" 
+  className="border-primary-foreground/20 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground hover:text-primary backdrop-blur-sm"
+  asChild
+>
+  <a href="/about">Learn More</a>
+</Button>
             </div>
 
             {/* Features */}
