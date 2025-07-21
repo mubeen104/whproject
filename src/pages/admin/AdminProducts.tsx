@@ -1,4 +1,3 @@
-import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Edit, Trash2, Package, DollarSign, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit, Trash2, Package, DollarSign, Eye, EyeOff, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,6 +28,7 @@ interface Product {
 export default function AdminProducts() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -169,43 +169,59 @@ export default function AdminProducts() {
     productMutation.mutate(productData);
   };
 
+  // Filter products based on search
+  const filteredProducts = products?.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.sku?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <AdminLayout>
-      <div className="space-y-8">
-        {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Products</h1>
-            <p className="text-muted-foreground mt-1">
-              Manage your product inventory
-            </p>
+    <div className="space-y-8 animate-fade-in">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+        <div>
+          <h1 className="text-4xl font-bold text-foreground">Products</h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Manage your product inventory and pricing
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 w-64"
+            />
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => { setEditingProduct(null); resetForm(); }}>
+              <Button onClick={() => { setEditingProduct(null); resetForm(); }} className="hover-scale">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Product
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="text-xl">
                   {editingProduct ? 'Edit Product' : 'Add New Product'}
                 </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Product Name</Label>
+                    <Label htmlFor="name">Product Name *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
+                      placeholder="Enter product name"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="price">Price (PKR)</Label>
+                    <Label htmlFor="price">Price (PKR) *</Label>
                     <Input
                       id="price"
                       type="number"
@@ -213,6 +229,7 @@ export default function AdminProducts() {
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                       required
+                      placeholder="0.00"
                     />
                   </div>
                 </div>
@@ -224,18 +241,20 @@ export default function AdminProducts() {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
+                    placeholder="Describe your product..."
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="inventory">Inventory Quantity</Label>
+                    <Label htmlFor="inventory">Inventory Quantity *</Label>
                     <Input
                       id="inventory"
                       type="number"
                       value={formData.inventory_quantity}
                       onChange={(e) => setFormData({ ...formData, inventory_quantity: e.target.value })}
                       required
+                      placeholder="0"
                     />
                   </div>
                   <div className="space-y-2">
@@ -244,30 +263,31 @@ export default function AdminProducts() {
                       id="sku"
                       value={formData.sku}
                       onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                      placeholder="Product SKU"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-6">
-                  <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-8">
+                  <div className="flex items-center space-x-3">
                     <Switch
                       id="is_active"
                       checked={formData.is_active}
                       onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
                     />
-                    <Label htmlFor="is_active">Active</Label>
+                    <Label htmlFor="is_active" className="text-sm font-medium">Active Product</Label>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-3">
                     <Switch
                       id="is_featured"
                       checked={formData.is_featured}
                       onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
                     />
-                    <Label htmlFor="is_featured">Featured</Label>
+                    <Label htmlFor="is_featured" className="text-sm font-medium">Featured Product</Label>
                   </div>
                 </div>
 
-                <div className="flex justify-end space-x-2">
+                <div className="flex justify-end space-x-3 pt-4">
                   <Button
                     type="button"
                     variant="outline"
@@ -275,64 +295,122 @@ export default function AdminProducts() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={productMutation.isPending}>
-                    {productMutation.isPending ? 'Saving...' : (editingProduct ? 'Update' : 'Create')}
+                  <Button type="submit" disabled={productMutation.isPending} className="hover-scale">
+                    {productMutation.isPending ? 'Saving...' : (editingProduct ? 'Update Product' : 'Create Product')}
                   </Button>
                 </div>
               </form>
             </DialogContent>
           </Dialog>
         </div>
+      </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Package className="h-5 w-5 mr-2" />
-              Product List
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-12 bg-muted rounded animate-pulse"></div>
-                ))}
+      {/* Stats Cards */}
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card className="border-border/50 hover:shadow-medium transition-all duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total Products</p>
+                <p className="text-2xl font-bold">{products?.length || 0}</p>
               </div>
-            ) : (
+              <div className="p-3 bg-primary/10 rounded-lg">
+                <Package className="h-6 w-6 text-primary" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="border-border/50 hover:shadow-medium transition-all duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Active Products</p>
+                <p className="text-2xl font-bold">{products?.filter(p => p.is_active).length || 0}</p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-lg">
+                <Eye className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 hover:shadow-medium transition-all duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Featured Products</p>
+                <p className="text-2xl font-bold">{products?.filter(p => p.is_featured).length || 0}</p>
+              </div>
+              <div className="p-3 bg-yellow-100 rounded-lg">
+                <DollarSign className="h-6 w-6 text-yellow-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Products Table */}
+      <Card className="border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center text-xl">
+            <Package className="h-6 w-6 mr-3 text-primary" />
+            Product Inventory
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-16 bg-muted rounded-lg animate-pulse"></div>
+              ))}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Stock</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="font-semibold">Product Details</TableHead>
+                    <TableHead className="font-semibold">Price</TableHead>
+                    <TableHead className="font-semibold">Stock Level</TableHead>
+                    <TableHead className="font-semibold">Status</TableHead>
+                    <TableHead className="font-semibold text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {products?.map((product: Product) => (
-                    <TableRow key={product.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{product.name}</p>
+                  {filteredProducts?.map((product: Product) => (
+                    <TableRow key={product.id} className="hover:bg-muted/30 transition-colors">
+                      <TableCell className="py-4">
+                        <div className="space-y-1">
+                          <p className="font-semibold text-foreground">{product.name}</p>
                           {product.sku && (
                             <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
                           )}
+                          {product.description && (
+                            <p className="text-sm text-muted-foreground max-w-md truncate">{product.description}</p>
+                          )}
                         </div>
                       </TableCell>
-                       <TableCell>
-                         <div className="flex items-center">
-                           <span className="text-sm font-medium mr-1">PKR</span>
-                           {product.price.toFixed(2)}
-                         </div>
-                       </TableCell>
-                      <TableCell>
-                        <Badge variant={product.inventory_quantity > 10 ? "default" : product.inventory_quantity > 0 ? "secondary" : "destructive"}>
+                      <TableCell className="py-4">
+                        <div className="flex items-center font-semibold">
+                          <span className="text-xs text-muted-foreground mr-1">PKR</span>
+                          <span className="text-lg">{product.price.toFixed(2)}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <Badge 
+                          variant={
+                            product.inventory_quantity > 20 ? "default" : 
+                            product.inventory_quantity > 5 ? "secondary" : 
+                            product.inventory_quantity > 0 ? "destructive" : "outline"
+                          }
+                          className="font-medium"
+                        >
                           {product.inventory_quantity} units
                         </Badge>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
+                      <TableCell className="py-4">
+                        <div className="flex flex-wrap gap-2">
                           <Badge variant={product.is_active ? "default" : "secondary"}>
                             {product.is_active ? (
                               <><Eye className="h-3 w-3 mr-1" />Active</>
@@ -341,16 +419,19 @@ export default function AdminProducts() {
                             )}
                           </Badge>
                           {product.is_featured && (
-                            <Badge variant="outline">Featured</Badge>
+                            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                              ⭐ Featured
+                            </Badge>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
+                      <TableCell className="py-4">
+                        <div className="flex justify-center space-x-2">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleEdit(product)}
+                            className="hover:bg-primary hover:text-primary-foreground transition-colors"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -359,6 +440,7 @@ export default function AdminProducts() {
                             size="sm"
                             onClick={() => deleteMutation.mutate(product.id)}
                             disabled={deleteMutation.isPending}
+                            className="hover:bg-destructive hover:text-destructive-foreground transition-colors"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -368,17 +450,31 @@ export default function AdminProducts() {
                   ))}
                 </TableBody>
               </Table>
-            )}
-            
-            {products?.length === 0 && !isLoading && (
-              <div className="text-center py-8">
-                <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">No products found. Create your first product!</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </AdminLayout>
+            </div>
+          )}
+          
+          {filteredProducts?.length === 0 && !isLoading && (
+            <div className="text-center py-12">
+              <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                {searchQuery ? 'No products found' : 'No products yet'}
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                {searchQuery 
+                  ? 'Try adjusting your search terms' 
+                  : 'Create your first product to get started selling!'
+                }
+              </p>
+              {!searchQuery && (
+                <Button onClick={() => { setEditingProduct(null); resetForm(); setIsDialogOpen(true); }}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Your First Product
+                </Button>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
