@@ -1,12 +1,15 @@
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, ShoppingCart, Users, DollarSign, TrendingUp, TrendingDown, Eye, Clock } from 'lucide-react';
+import { Package, ShoppingCart, Users, DollarSign, TrendingUp, TrendingDown, Eye, Clock, ArrowUpRight, Activity, Plus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+  
   // Fetch dashboard statistics
   const { data: stats, isLoading } = useQuery({
     queryKey: ['admin-dashboard-stats'],
@@ -62,16 +65,17 @@ export default function AdminDashboard() {
       <AdminLayout>
         <div className="space-y-6">
           <div className="animate-pulse">
-            <div className="h-8 bg-muted rounded w-1/4 mb-2"></div>
-            <div className="h-4 bg-muted rounded w-1/2"></div>
+            <div className="h-10 bg-muted rounded-lg w-1/3 mb-3"></div>
+            <div className="h-5 bg-muted rounded w-1/2"></div>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
-              <Card key={i}>
+              <Card key={i} className="border-border/50">
                 <CardContent className="p-6">
-                  <div className="animate-pulse space-y-2">
-                    <div className="h-4 bg-muted rounded w-1/2"></div>
-                    <div className="h-8 bg-muted rounded w-1/3"></div>
+                  <div className="animate-pulse space-y-3">
+                    <div className="h-4 bg-muted rounded w-2/3"></div>
+                    <div className="h-8 bg-muted rounded w-1/2"></div>
+                    <div className="h-3 bg-muted rounded w-full"></div>
                   </div>
                 </CardContent>
               </Card>
@@ -82,91 +86,132 @@ export default function AdminDashboard() {
     );
   }
 
+  const statCards = [
+    {
+      title: 'Total Products',
+      value: stats?.products || 0,
+      icon: Package,
+      trend: '+12%',
+      trendUp: true,
+      description: 'Products in inventory',
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+    },
+    {
+      title: 'Total Orders',
+      value: stats?.orders || 0,
+      icon: ShoppingCart,
+      trend: '+8%',
+      trendUp: true,
+      description: 'All time orders',
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+    },
+    {
+      title: 'Total Users',
+      value: stats?.users || 0,
+      icon: Users,
+      trend: '+5%',
+      trendUp: true,
+      description: 'Registered users',
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+    },
+    {
+      title: 'Total Revenue',
+      value: `$${(stats?.revenue || 0).toFixed(2)}`,
+      icon: DollarSign,
+      trend: '+15%',
+      trendUp: true,
+      description: 'Total revenue',
+      color: 'text-emerald-600',
+      bgColor: 'bg-emerald-50',
+    },
+  ];
+
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Overview of your store's performance
-          </p>
+      <div className="space-y-8">
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground mt-1">
+              Welcome back! Here's what's happening with your store today.
+            </p>
+          </div>
+          <div className="flex space-x-3">
+            <Button variant="outline" className="hover:bg-muted">
+              <Eye className="h-4 w-4 mr-2" />
+              View Store
+            </Button>
+            <Button onClick={() => navigate('/admin/products')} className="bg-primary hover:bg-primary-hover">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Product
+            </Button>
+          </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.products}</div>
-              <p className="text-xs text-muted-foreground flex items-center">
-                <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                Products in inventory
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.orders}</div>
-              <p className="text-xs text-muted-foreground flex items-center">
-                <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                All time orders
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.users}</div>
-              <p className="text-xs text-muted-foreground flex items-center">
-                <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                Registered users
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">${stats?.revenue?.toFixed(2) || '0.00'}</div>
-              <p className="text-xs text-muted-foreground flex items-center">
-                <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                Total revenue
-              </p>
-            </CardContent>
-          </Card>
+        {/* Stats Cards */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {statCards.map((stat, index) => (
+            <Card key={index} className="border-border/50 hover:shadow-medium transition-all duration-200 hover:scale-[1.02]">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {stat.title}
+                </CardTitle>
+                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                  <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-foreground">{stat.value}</div>
+                  <div className="flex items-center space-x-2 text-sm">
+                    <div className={`flex items-center ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>
+                      {stat.trendUp ? (
+                        <TrendingUp className="h-3 w-3 mr-1" />
+                      ) : (
+                        <TrendingDown className="h-3 w-3 mr-1" />
+                      )}
+                      <span className="font-medium">{stat.trend}</span>
+                    </div>
+                    <span className="text-muted-foreground">from last month</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Clock className="h-5 w-5 mr-2" />
-                Recent Orders
-              </CardTitle>
+        {/* Main Content Grid */}
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* Recent Orders - Takes 2 columns */}
+          <Card className="lg:col-span-2 border-border/50">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center text-lg">
+                  <Clock className="h-5 w-5 mr-2 text-primary" />
+                  Recent Orders
+                </CardTitle>
+                <Button variant="ghost" size="sm" onClick={() => navigate('/admin/orders')}>
+                  View All
+                  <ArrowUpRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {stats?.recentOrders?.length === 0 ? (
-                  <p className="text-muted-foreground text-sm">No recent orders to display.</p>
+                  <div className="text-center py-8">
+                    <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground">No recent orders to display.</p>
+                  </div>
                 ) : (
                   stats?.recentOrders?.map((order: any) => (
-                    <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <p className="font-medium">{order.order_number}</p>
+                    <div key={order.id} className="flex items-center justify-between p-4 border border-border/50 rounded-lg hover:bg-muted/20 transition-colors">
+                      <div className="space-y-1">
+                        <p className="font-semibold text-foreground">{order.order_number}</p>
                         <p className="text-sm text-muted-foreground">
                           {order.profiles?.first_name} {order.profiles?.last_name}
                         </p>
@@ -174,8 +219,10 @@ export default function AdminDashboard() {
                           {new Date(order.created_at).toLocaleDateString()}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold">${Number(order.total_amount).toFixed(2)}</p>
+                      <div className="text-right space-y-2">
+                        <p className="font-bold text-lg text-foreground">
+                          ${Number(order.total_amount).toFixed(2)}
+                        </p>
                         <Badge className={getStatusColor(order.status)}>
                           {order.status}
                         </Badge>
@@ -187,39 +234,33 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          {/* Quick Actions */}
+          <Card className="border-border/50">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Eye className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-lg">
+                <Activity className="h-5 w-5 mr-2 text-primary" />
                 Quick Actions
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <a href="/admin/products">
-                    <Package className="h-4 w-4 mr-2" />
-                    Manage Products
-                  </a>
-                </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <a href="/admin/orders">
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    View Orders
-                  </a>
-                </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <a href="/admin/categories">
-                    <Package className="h-4 w-4 mr-2" />
-                    Manage Categories
-                  </a>
-                </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <a href="/admin/users">
-                    <Users className="h-4 w-4 mr-2" />
-                    Manage Users
-                  </a>
-                </Button>
+                {[
+                  { label: 'Manage Products', icon: Package, path: '/admin/products' },
+                  { label: 'View Orders', icon: ShoppingCart, path: '/admin/orders' },
+                  { label: 'Manage Categories', icon: Package, path: '/admin/categories' },
+                  { label: 'Manage Users', icon: Users, path: '/admin/users' },
+                ].map((action, index) => (
+                  <Button 
+                    key={index}
+                    variant="outline" 
+                    className="w-full justify-start hover:bg-muted border-border/50" 
+                    onClick={() => navigate(action.path)}
+                  >
+                    <action.icon className="h-4 w-4 mr-3" />
+                    {action.label}
+                    <ArrowUpRight className="h-4 w-4 ml-auto" />
+                  </Button>
+                ))}
               </div>
             </CardContent>
           </Card>
