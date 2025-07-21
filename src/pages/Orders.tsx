@@ -198,11 +198,11 @@ const Orders = () => {
                               {item.products.name}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              Quantity: {item.quantity} × ${item.price}
+                              Quantity: {item.quantity} × PKR {item.price}
                             </p>
                           </div>
                           <p className="font-medium text-foreground">
-                            ${item.total}
+                            PKR {item.total}
                           </p>
                         </div>
                       ))}
@@ -212,7 +212,7 @@ const Orders = () => {
                     <div className="flex items-center justify-between pt-4 border-t border-border">
                       <p className="text-lg font-semibold text-foreground">Total</p>
                       <p className="text-lg font-semibold text-primary">
-                        ${order.total_amount}
+                        PKR {order.total_amount}
                       </p>
                     </div>
                   </div>

@@ -141,14 +141,14 @@ const FeaturedProducts = () => {
 
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-lg">
-                        ${product.price.toFixed(2)}
-                      </span>
-                      {product.compare_price && product.compare_price > product.price && (
-                        <span className="text-sm text-muted-foreground line-through">
-                          ${product.compare_price.toFixed(2)}
-                        </span>
-                      )}
+                       <span className="font-bold text-lg">
+                         PKR {product.price.toFixed(2)}
+                       </span>
+                       {product.compare_price && product.compare_price > product.price && (
+                         <span className="text-sm text-muted-foreground line-through">
+                           PKR {product.compare_price.toFixed(2)}
+                         </span>
+                       )}
                     </div>
                     <div className="flex items-center text-sm text-muted-foreground">
                       <Star className="h-4 w-4 fill-current text-yellow-400 mr-1" />
@@ -236,14 +236,14 @@ const FeaturedProducts = () => {
                             <div className="space-y-4">
                               <div>
                                 <div className="flex items-center gap-2 mb-2">
-                                  <span className="text-2xl font-bold">
-                                    ${selectedProduct.price.toFixed(2)}
-                                  </span>
-                                  {selectedProduct.compare_price && selectedProduct.compare_price > selectedProduct.price && (
-                                    <span className="text-lg text-muted-foreground line-through">
-                                      ${selectedProduct.compare_price.toFixed(2)}
-                                    </span>
-                                  )}
+                                   <span className="text-2xl font-bold">
+                                     PKR {selectedProduct.price.toFixed(2)}
+                                   </span>
+                                   {selectedProduct.compare_price && selectedProduct.compare_price > selectedProduct.price && (
+                                     <span className="text-lg text-muted-foreground line-through">
+                                       PKR {selectedProduct.compare_price.toFixed(2)}
+                                     </span>
+                                   )}
                                 </div>
                                 <div className="flex items-center text-sm text-muted-foreground mb-4">
                                   <Star className="h-4 w-4 fill-current text-yellow-400 mr-1" />

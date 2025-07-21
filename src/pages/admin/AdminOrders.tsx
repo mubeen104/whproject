@@ -216,7 +216,7 @@ export default function AdminOrders() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <p className="font-bold">${Number(order.total_amount).toFixed(2)}</p>
+                        <p className="font-bold">PKR {Number(order.total_amount).toFixed(2)}</p>
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1">
@@ -305,8 +305,8 @@ export default function AdminOrders() {
                                             <TableCell>{item.products?.name}</TableCell>
                                             <TableCell>{item.products?.sku || 'N/A'}</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
-                                            <TableCell>${Number(item.price).toFixed(2)}</TableCell>
-                                            <TableCell>${Number(item.total).toFixed(2)}</TableCell>
+                                             <TableCell>PKR {Number(item.price).toFixed(2)}</TableCell>
+                                             <TableCell>PKR {Number(item.total).toFixed(2)}</TableCell>
                                           </TableRow>
                                         ))}
                                       </TableBody>
@@ -314,9 +314,9 @@ export default function AdminOrders() {
                                   </div>
 
                                   <div className="text-right">
-                                    <p className="text-lg font-bold">
-                                      Total: ${Number(selectedOrder.total_amount).toFixed(2)}
-                                    </p>
+                                     <p className="text-lg font-bold">
+                                       Total: PKR {Number(selectedOrder.total_amount).toFixed(2)}
+                                     </p>
                                   </div>
                                 </div>
                               )}

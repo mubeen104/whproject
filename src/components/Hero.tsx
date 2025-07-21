@@ -110,7 +110,7 @@ const Hero = () => {
               <div className="absolute bottom-4 left-4 bg-card/95 backdrop-blur-sm rounded-lg p-4 shadow-medium">
                 <p className="text-card-foreground font-medium">Premium Tea Blend</p>
                 <p className="text-muted-foreground text-sm">Chamomile & Lavender</p>
-                <p className="text-primary font-bold mt-1">$24.99</p>
+                <p className="text-primary font-bold mt-1">PKR 4,999</p>
               </div>
             </div>
           </div>

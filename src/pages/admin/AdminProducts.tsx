@@ -204,7 +204,7 @@ export default function AdminProducts() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="price">Price ($)</Label>
+                    <Label htmlFor="price">Price (PKR)</Label>
                     <Input
                       id="price"
                       type="number"
@@ -319,12 +319,12 @@ export default function AdminProducts() {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <DollarSign className="h-4 w-4 mr-1" />
-                          {product.price.toFixed(2)}
-                        </div>
-                      </TableCell>
+                       <TableCell>
+                         <div className="flex items-center">
+                           <span className="text-sm font-medium mr-1">PKR</span>
+                           {product.price.toFixed(2)}
+                         </div>
+                       </TableCell>
                       <TableCell>
                         <Badge variant={product.inventory_quantity > 10 ? "default" : product.inventory_quantity > 0 ? "secondary" : "destructive"}>
                           {product.inventory_quantity} units

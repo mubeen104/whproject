@@ -178,9 +178,9 @@ const Cart = () => {
                           <h3 className="text-lg font-semibold text-foreground truncate">
                             {item.product?.name || 'Unknown Product'}
                           </h3>
-                          <p className="text-xl font-bold text-primary">
-                            ${item.product?.price?.toFixed(2) || '0.00'}
-                          </p>
+                           <p className="text-xl font-bold text-primary">
+                             PKR {item.product?.price?.toFixed(2) || '0.00'}
+                           </p>
                         </div>
 
                         {/* Quantity Controls */}
@@ -218,9 +218,9 @@ const Cart = () => {
 
                         {/* Item Total */}
                         <div className="text-right min-w-0">
-                          <p className="text-lg font-semibold text-foreground">
-                            ${((item.product?.price || 0) * item.quantity).toFixed(2)}
-                          </p>
+                           <p className="text-lg font-semibold text-foreground">
+                             PKR {((item.product?.price || 0) * item.quantity).toFixed(2)}
+                           </p>
                         </div>
 
                         {/* Remove Button */}
@@ -248,7 +248,7 @@ const Cart = () => {
                   <CardContent className="space-y-4">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal ({cartCount} items)</span>
-                      <span className="font-semibold">${cartTotal.toFixed(2)}</span>
+                      <span className="font-semibold">PKR {cartTotal.toFixed(2)}</span>
                     </div>
                     
                     <div className="flex justify-between">
@@ -265,7 +265,7 @@ const Cart = () => {
                     
                     <div className="flex justify-between text-lg font-bold">
                       <span>Total</span>
-                      <span>${cartTotal.toFixed(2)}</span>
+                      <span>PKR {cartTotal.toFixed(2)}</span>
                     </div>
                     
                     <Button 
@@ -282,7 +282,7 @@ const Cart = () => {
                     
                     <div className="pt-4">
                       <Badge variant="secondary" className="w-full justify-center py-2">
-                        Free shipping on orders over $50
+                        Free shipping on orders over PKR 10,000
                       </Badge>
                     </div>
                   </CardContent>
