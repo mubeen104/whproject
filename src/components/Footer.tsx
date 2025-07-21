@@ -73,16 +73,11 @@ const Footer = () => {
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <Phone className="h-4 w-4 text-accent" />
-                  <span className="text-sm">1-800-HERBALS</span>
+                  <span className="text-sm">+92 304 307 3838</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="h-4 w-4 text-accent" />
-                  <span className="text-sm">hello@neweraherbals.com</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <MapPin className="h-4 w-4 text-accent" />
-                  <span className="text-sm">123 Wellness Way, Nature City</span>
-                </div>
+                  <span className="text-sm">neweraorganic101@gmail.com</span>
               </div>
             </div>
 
