@@ -50,9 +50,12 @@ const Hero = () => {
               <Button 
                 size="lg" 
                 className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 group"
+                asChild
               >
-                Shop Now
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <a href="/shop">
+                  Shop Now
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </a>
               </Button>
               
               <Button 

@@ -16,8 +16,9 @@ const Header = () => {
   const navigate = useNavigate();
 
   const navigation = [
+    { name: "Home", href: "/" },
     { name: "Shop", href: "/shop" },
-    { name: "About", href: "#" },
+    { name: "Contact Us", href: "#" },
   ];
 
   const handleSearch = (e: React.FormEvent) => {
