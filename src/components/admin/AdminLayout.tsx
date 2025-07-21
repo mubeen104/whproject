@@ -35,7 +35,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
     <SidebarProvider>
       <div className="h-screen flex w-full bg-background overflow-hidden">
         <AdminSidebar />
-        <main className="flex-1 flex flex-col h-full">
+        <main className="flex-1 flex flex-col h-full min-w-0">
           {/* Modern Admin Header */}
           <header className="h-16 flex items-center justify-between px-6 bg-background border-b border-border/50 backdrop-blur-sm shrink-0">
             <div className="flex items-center space-x-4">
