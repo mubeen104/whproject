@@ -120,11 +120,11 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <AuthModal>
-                <Button variant="ghost" size="icon" className="text-foreground hover:text-primary">
+              <Button variant="ghost" size="icon" className="text-foreground hover:text-primary" asChild>
+                <a href="/auth">
                   <User className="h-5 w-5" />
-                </Button>
-              </AuthModal>
+                </a>
+              </Button>
             )}
             
             <Button variant="ghost" size="icon" className="text-foreground hover:text-primary relative" asChild>
