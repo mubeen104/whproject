@@ -3,23 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const Footer = () => {
-  const quickLinks = [
-    { name: "About Us", href: "#" },
-    { name: "Contact", href: "#" },
-    { name: "Shipping Info", href: "#" },
-    { name: "Returns", href: "#" },
-    { name: "FAQ", href: "#" },
-    { name: "Blog", href: "#" }
-  ];
-
-  const categories = [
-    { name: "Herbal Teas", href: "#" },
-    { name: "Supplements", href: "#" },
-    { name: "Essential Oils", href: "#" },
-    { name: "Skincare", href: "#" },
-    { name: "Superfoods", href: "#" },
-    { name: "Gift Sets", href: "#" }
-  ];
 
   const legalLinks = [
     { name: "Privacy Policy", href: "#" },
@@ -53,7 +36,7 @@ const Footer = () => {
 
         {/* Main Footer Content */}
         <div className="py-12">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 gap-8">
             {/* Company Info */}
             <div className="space-y-6">
               <div className="flex items-center">
@@ -82,39 +65,6 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Quick Links */}
-            <div>
-              <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
-              <ul className="space-y-3">
-                {quickLinks.map((link) => (
-                  <li key={link.name}>
-                    <a
-                      href={link.href}
-                      className="text-primary-foreground/80 hover:text-accent transition-colors duration-200"
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Categories */}
-            <div>
-              <h3 className="text-lg font-semibold mb-6">Categories</h3>
-              <ul className="space-y-3">
-                {categories.map((category) => (
-                  <li key={category.name}>
-                    <a
-                      href={category.href}
-                      className="text-primary-foreground/80 hover:text-accent transition-colors duration-200"
-                    >
-                      {category.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
 
             {/* Certifications & Trust */}
             <div>
