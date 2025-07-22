@@ -1,18 +1,74 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, ShoppingCart, Users, DollarSign, TrendingUp, TrendingDown, Eye, Clock, ArrowUpRight, Activity, Plus } from 'lucide-react';
+import { Package, ShoppingCart, Users, DollarSign, TrendingUp, TrendingDown, Eye, Clock, ArrowUpRight, Activity, Plus, Calendar } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const [timeFilter, setTimeFilter] = useState<string>('all');
+
+  const getDateRange = (filter: string) => {
+    const now = new Date();
+    const ranges: { [key: string]: Date | null } = {
+      'hour': new Date(now.getTime() - 60 * 60 * 1000), // Last hour
+      'day': new Date(now.getTime() - 24 * 60 * 60 * 1000), // Last 24 hours
+      'week': new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
+      'month': new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
+      'year': new Date(now.getFullYear(), 0, 1), // This year
+      'all': null // All time
+    };
+    return ranges[filter] || null;
+  };
+
+  const getTimeFilterLabel = (filter: string) => {
+    const labels: { [key: string]: string } = {
+      'hour': 'Last Hour',
+      'day': 'Last 24 Hours', 
+      'week': 'Last 7 Days',
+      'month': 'Last 30 Days',
+      'year': 'This Year',
+      'all': 'All Time'
+    };
+    return labels[filter] || 'All Time';
+  };
   
   // Fetch dashboard statistics
   const { data: stats, isLoading } = useQuery({
-    queryKey: ['admin-dashboard-stats'],
+    queryKey: ['admin-dashboard-stats', timeFilter],
     queryFn: async () => {
+      const startDate = getDateRange(timeFilter);
+      const dateFilter = startDate ? `created_at.gte.${startDate.toISOString()}` : null;
+
+      let productsQuery = supabase.from('products').select('*', { count: 'exact', head: true });
+      let ordersQuery = supabase.from('orders').select('*', { count: 'exact', head: true });
+      let usersQuery = supabase.from('profiles').select('*', { count: 'exact', head: true });
+      let revenueQuery = supabase.from('orders').select('total_amount').eq('payment_status', 'completed');
+      let recentOrdersQuery = supabase.from('orders')
+        .select(`
+          id,
+          order_number,
+          total_amount,
+          status,
+          created_at,
+          profiles!orders_user_id_fkey(first_name, last_name, email)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      // Apply date filters when not "all time"
+      if (dateFilter) {
+        productsQuery = productsQuery.gte('created_at', startDate!.toISOString());
+        ordersQuery = ordersQuery.gte('created_at', startDate!.toISOString());
+        usersQuery = usersQuery.gte('created_at', startDate!.toISOString());
+        revenueQuery = revenueQuery.gte('created_at', startDate!.toISOString());
+        recentOrdersQuery = recentOrdersQuery.gte('created_at', startDate!.toISOString());
+      }
+
       const [
         { count: productsCount },
         { count: ordersCount },
@@ -20,21 +76,11 @@ export default function AdminDashboard() {
         { data: revenueData },
         { data: recentOrders }
       ] = await Promise.all([
-        supabase.from('products').select('*', { count: 'exact', head: true }),
-        supabase.from('orders').select('*', { count: 'exact', head: true }),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('orders').select('total_amount').eq('payment_status', 'completed'),
-        supabase.from('orders')
-          .select(`
-            id,
-            order_number,
-            total_amount,
-            status,
-            created_at,
-            profiles!orders_user_id_fkey(first_name, last_name, email)
-          `)
-          .order('created_at', { ascending: false })
-          .limit(5)
+        productsQuery,
+        ordersQuery,
+        usersQuery,
+        revenueQuery,
+        recentOrdersQuery
       ]);
 
       const totalRevenue = revenueData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
@@ -133,20 +179,36 @@ export default function AdminDashboard() {
         <div>
           <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground mt-1">
-            Welcome back! Here's what's happening with your store today.
+            Welcome back! Here's what's happening with your store.
           </p>
         </div>
-        <div className="flex space-x-3">
-          <Button variant="outline" className="hover:bg-muted" asChild>
-            <a href="/" target="_blank" rel="noopener noreferrer">
-              <Eye className="h-4 w-4 mr-2" />
-              View Store
-            </a>
-          </Button>
-          <Button onClick={() => navigate('/admin/products')} className="bg-primary hover:bg-primary-hover">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Product
-          </Button>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Select value={timeFilter} onValueChange={setTimeFilter}>
+            <SelectTrigger className="w-[180px]">
+              <Calendar className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Select time period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="hour">Last Hour</SelectItem>
+              <SelectItem value="day">Last 24 Hours</SelectItem>
+              <SelectItem value="week">Last 7 Days</SelectItem>
+              <SelectItem value="month">Last 30 Days</SelectItem>
+              <SelectItem value="year">This Year</SelectItem>
+              <SelectItem value="all">All Time</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="flex space-x-3">
+            <Button variant="outline" className="hover:bg-muted" asChild>
+              <a href="/" target="_blank" rel="noopener noreferrer">
+                <Eye className="h-4 w-4 mr-2" />
+                View Store
+              </a>
+            </Button>
+            <Button onClick={() => navigate('/admin/products')} className="bg-primary hover:bg-primary-hover">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Product
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -174,7 +236,7 @@ export default function AdminDashboard() {
                     )}
                     <span className="font-medium">{stat.trend}</span>
                   </div>
-                  <span className="text-muted-foreground">from last month</span>
+                  <span className="text-muted-foreground">for {getTimeFilterLabel(timeFilter).toLowerCase()}</span>
                 </div>
               </div>
             </CardContent>
@@ -190,7 +252,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center text-lg">
                 <Clock className="h-5 w-5 mr-2 text-primary" />
-                Recent Orders
+                Recent Orders ({getTimeFilterLabel(timeFilter)})
               </CardTitle>
               <Button variant="ghost" size="sm" onClick={() => navigate('/admin/orders')}>
                 View All
