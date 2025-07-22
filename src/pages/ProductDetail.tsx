@@ -192,13 +192,6 @@ const ProductDetail = () => {
             {/* Title */}
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">{product.name}</h1>
-              {product.tags && product.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {product.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">{tag}</Badge>
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* Price */}

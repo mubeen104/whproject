@@ -212,15 +212,6 @@ export default function Shop() {
                       </div>
                     </div>
 
-                    {product.tags && product.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {product.tags.slice(0, 2).map((tag: string, index: number) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
 
                     <div className="flex gap-2">
                       <Button
@@ -301,18 +292,6 @@ export default function Shop() {
                                   </p>
                                 </div>
 
-                                {selectedProduct.tags && selectedProduct.tags.length > 0 && (
-                                  <div>
-                                    <h4 className="font-semibold mb-2">Tags</h4>
-                                    <div className="flex flex-wrap gap-2">
-                                      {selectedProduct.tags.map((tag: string, index: number) => (
-                                        <Badge key={index} variant="secondary">
-                                          {tag}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
 
                                 <div className="space-y-2">
                                   <div className="flex justify-between text-sm">
