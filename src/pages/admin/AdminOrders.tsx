@@ -514,8 +514,10 @@ export default function AdminOrders() {
                       <TableCell className="py-4">
                         <div className="space-y-2">
                           <Badge className={getStatusColor(order.status)}>
-                            {getStatusIcon(order.status)}
-                            <span className="ml-1 capitalize">{order.status}</span>
+                            <div className="flex items-center">
+                              {getStatusIcon(order.status)}
+                              <span className="ml-1 capitalize">{order.status}</span>
+                            </div>
                           </Badge>
                           <Select 
                             value={order.status} 
@@ -627,8 +629,10 @@ export default function AdminOrders() {
                       <p>Time: {new Date(selectedOrder.created_at).toLocaleTimeString()}</p>
                       <div className="flex items-center gap-2 mt-2">
                         <Badge className={getStatusColor(selectedOrder.status)}>
-                          {getStatusIcon(selectedOrder.status)}
-                          <span className="ml-1 capitalize">{selectedOrder.status}</span>
+                          <div className="flex items-center">
+                            {getStatusIcon(selectedOrder.status)}
+                            <span className="ml-1 capitalize">{selectedOrder.status}</span>
+                          </div>
                         </Badge>
                       </div>
                     </div>
