@@ -42,6 +42,8 @@ interface Order {
 }
 
 export default function AdminOrders() {
+  console.log('AdminOrders component starting to render...');
+  
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,10 +53,13 @@ export default function AdminOrders() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  console.log('AdminOrders state initialized, about to start queries...');
+
   // Fetch orders
   const { data: allOrders, isLoading } = useQuery<Order[]>({
     queryKey: ['admin-orders', statusFilter],
     queryFn: async () => {
+      console.log('Starting to fetch orders...');
       // First get orders
       let query = supabase
         .from('orders')
@@ -78,10 +83,12 @@ export default function AdminOrders() {
       }
 
       const { data: ordersData, error: ordersError } = await query;
+      console.log('Orders data received:', ordersData, 'Error:', ordersError);
       if (ordersError) throw ordersError;
 
       // Then get profiles for each order
       if (ordersData && ordersData.length > 0) {
+        console.log('Fetching profiles for', ordersData.length, 'orders');
         const userIds = [...new Set(ordersData.map(order => order.user_id))];
         const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')
@@ -90,15 +97,18 @@ export default function AdminOrders() {
 
         if (profilesError) throw profilesError;
 
+        console.log('Profiles data received:', profilesData);
         // Combine orders with profiles
         const ordersWithProfiles: Order[] = ordersData.map(order => ({
           ...order,
           profiles: profilesData?.find(profile => profile.user_id === order.user_id) || null
         }));
 
+        console.log('Combined orders with profiles:', ordersWithProfiles);
         return ordersWithProfiles;
       }
 
+      console.log('No orders found, returning empty ordersData');
       return (ordersData || []) as Order[];
     }
   });
