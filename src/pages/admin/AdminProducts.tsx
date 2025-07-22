@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Edit, Trash2, Package, DollarSign, Eye, EyeOff, Search } from 'lucide-react';
-import { useState } from 'react';
+import { Plus, Edit, Trash2, Package, DollarSign, Eye, EyeOff, Search, Upload, Image, CheckSquare, Square, AlertTriangle, ExternalLink } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -29,6 +29,8 @@ export default function AdminProducts() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -127,6 +129,59 @@ export default function AdminProducts() {
     }
   });
 
+  // Bulk actions mutations
+  const bulkUpdateMutation = useMutation({
+    mutationFn: async ({ productIds, updates }: { productIds: string[], updates: any }) => {
+      const { error } = await supabase
+        .from('products')
+        .update(updates)
+        .in('id', productIds);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      setSelectedProducts([]);
+      setShowBulkActions(false);
+      toast({
+        title: "Success",
+        description: "Products updated successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (productIds: string[]) => {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .in('id', productIds);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      setSelectedProducts([]);
+      setShowBulkActions(false);
+      toast({
+        title: "Success",
+        description: "Products deleted successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -169,6 +224,28 @@ export default function AdminProducts() {
     productMutation.mutate(productData);
   };
 
+  // Selection handlers
+  const handleSelectAll = () => {
+    if (selectedProducts.length === filteredProducts?.length) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts(filteredProducts?.map(p => p.id) || []);
+    }
+  };
+
+  const handleSelectProduct = (productId: string) => {
+    setSelectedProducts(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
+  };
+
+  // Effect to show/hide bulk actions
+  useEffect(() => {
+    setShowBulkActions(selectedProducts.length > 0);
+  }, [selectedProducts]);
+
   // Filter products based on search
   const filteredProducts = products?.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -186,6 +263,12 @@ export default function AdminProducts() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+          <Button variant="outline" asChild>
+            <a href="/" target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="h-4 w-4 mr-2" />
+              View Store
+            </a>
+          </Button>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
@@ -350,6 +433,78 @@ export default function AdminProducts() {
         </Card>
       </div>
 
+      {/* Bulk Actions Bar */}
+      {showBulkActions && (
+        <Card className="border-border/50 bg-accent/10">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <span className="text-sm font-medium">
+                  {selectedProducts.length} product{selectedProducts.length !== 1 ? 's' : ''} selected
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedProducts([])}
+                >
+                  Clear Selection
+                </Button>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => bulkUpdateMutation.mutate({
+                    productIds: selectedProducts,
+                    updates: { is_active: true }
+                  })}
+                  disabled={bulkUpdateMutation.isPending}
+                >
+                  <Eye className="h-4 w-4 mr-1" />
+                  Enable
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => bulkUpdateMutation.mutate({
+                    productIds: selectedProducts,
+                    updates: { is_active: false }
+                  })}
+                  disabled={bulkUpdateMutation.isPending}
+                >
+                  <EyeOff className="h-4 w-4 mr-1" />
+                  Disable
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => bulkUpdateMutation.mutate({
+                    productIds: selectedProducts,
+                    updates: { is_featured: true }
+                  })}
+                  disabled={bulkUpdateMutation.isPending}
+                >
+                  ⭐ Feature
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    if (confirm(`Are you sure you want to delete ${selectedProducts.length} product${selectedProducts.length !== 1 ? 's' : ''}?`)) {
+                      bulkDeleteMutation.mutate(selectedProducts);
+                    }
+                  }}
+                  disabled={bulkDeleteMutation.isPending}
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Products Table */}
       <Card className="border-border/50">
         <CardHeader>
@@ -370,6 +525,18 @@ export default function AdminProducts() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-12">
+                      <button
+                        onClick={handleSelectAll}
+                        className="flex items-center justify-center w-full h-full"
+                      >
+                        {selectedProducts.length === filteredProducts?.length && filteredProducts?.length > 0 ? (
+                          <CheckSquare className="h-4 w-4" />
+                        ) : (
+                          <Square className="h-4 w-4" />
+                        )}
+                      </button>
+                    </TableHead>
                     <TableHead className="font-semibold">Product Details</TableHead>
                     <TableHead className="font-semibold">Price</TableHead>
                     <TableHead className="font-semibold">Stock Level</TableHead>
@@ -381,8 +548,33 @@ export default function AdminProducts() {
                   {filteredProducts?.map((product: Product) => (
                     <TableRow key={product.id} className="hover:bg-muted/30 transition-colors">
                       <TableCell className="py-4">
+                        <button
+                          onClick={() => handleSelectProduct(product.id)}
+                          className="flex items-center justify-center w-full h-full"
+                        >
+                          {selectedProducts.includes(product.id) ? (
+                            <CheckSquare className="h-4 w-4 text-primary" />
+                          ) : (
+                            <Square className="h-4 w-4" />
+                          )}
+                        </button>
+                      </TableCell>
+                      <TableCell className="py-4">
                         <div className="space-y-1">
-                          <p className="font-semibold text-foreground">{product.name}</p>
+                          <div className="flex items-center space-x-2">
+                            <p className="font-semibold text-foreground">{product.name}</p>
+                            {product.inventory_quantity <= 5 && product.inventory_quantity > 0 && (
+                              <Badge variant="destructive" className="text-xs">
+                                <AlertTriangle className="h-3 w-3 mr-1" />
+                                Low Stock
+                              </Badge>
+                            )}
+                            {product.inventory_quantity === 0 && (
+                              <Badge variant="outline" className="text-xs border-red-200 text-red-600">
+                                Out of Stock
+                              </Badge>
+                            )}
+                          </div>
                           {product.sku && (
                             <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
                           )}
@@ -427,6 +619,16 @@ export default function AdminProducts() {
                       </TableCell>
                       <TableCell className="py-4">
                         <div className="flex justify-center space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            asChild
+                            className="hover:bg-primary/10 hover:text-primary"
+                          >
+                            <a href={`/product/${product.id}`} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"

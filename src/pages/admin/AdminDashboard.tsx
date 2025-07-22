@@ -137,9 +137,11 @@ export default function AdminDashboard() {
           </p>
         </div>
         <div className="flex space-x-3">
-          <Button variant="outline" className="hover:bg-muted">
-            <Eye className="h-4 w-4 mr-2" />
-            View Store
+          <Button variant="outline" className="hover:bg-muted" asChild>
+            <a href="/" target="_blank" rel="noopener noreferrer">
+              <Eye className="h-4 w-4 mr-2" />
+              View Store
+            </a>
           </Button>
           <Button onClick={() => navigate('/admin/products')} className="bg-primary hover:bg-primary-hover">
             <Plus className="h-4 w-4 mr-2" />
