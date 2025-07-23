@@ -94,108 +94,51 @@ const FeaturedProducts = () => {
           {products.map((product) => (
             <Card 
               key={product.id} 
-              className="group hover:shadow-medium transition-all duration-300 hover:-translate-y-1 border-border"
+              className="group overflow-hidden border-0 bg-card shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-2"
             >
               <CardContent className="p-0">
                 {/* Product Image */}
-                <div className="relative overflow-hidden rounded-t-lg">
+                <div className="relative overflow-hidden">
                   <img
                     src={getMainImage(product)}
                     alt={product.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   
-                  {/* Badge */}
-                  {product.is_featured && (
-                    <Badge className="absolute top-2 left-2 bg-primary">
-                      Featured
-                    </Badge>
-                  )}
+                  {/* Badges */}
+                  <div className="absolute top-3 left-3 flex flex-col gap-2">
+                    {product.is_featured && (
+                      <Badge className="bg-primary/90 text-primary-foreground backdrop-blur-sm">
+                        Featured
+                      </Badge>
+                    )}
+                  </div>
                   
-                  {/* Sale Badge */}
                   {product.compare_price && product.compare_price > product.price && (
-                    <Badge className="absolute top-2 right-2 bg-destructive">
+                    <Badge className="absolute top-3 right-3 bg-destructive/90 text-destructive-foreground backdrop-blur-sm">
                       Sale
                     </Badge>
                   )}
                   
                   {/* Out of Stock Overlay */}
                   {product.inventory_quantity === 0 && (
-                    <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
-                      <Badge variant="secondary" className="text-lg">Out of Stock</Badge>
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
+                      <Badge variant="secondary" className="text-lg font-medium">Out of Stock</Badge>
                     </div>
                   )}
-                </div>
 
-                {/* Product Info */}
-                <div className="p-4 space-y-3">
-                  <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                    {product.name}
-                  </h3>
-
-                  {product.short_description && (
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                      {product.short_description}
-                    </p>
-                  )}
-
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                       <span className="font-bold text-lg">
-                         PKR {product.price.toFixed(2)}
-                       </span>
-                       {product.compare_price && product.compare_price > product.price && (
-                         <span className="text-sm text-muted-foreground line-through">
-                           PKR {product.compare_price.toFixed(2)}
-                         </span>
-                       )}
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Star className="h-4 w-4 fill-current text-yellow-400 mr-1" />
-                      4.5
-                    </div>
-                  </div>
-
-
-                  <div className="flex gap-2">
-                    {user ? (
-                      <Button
-                        onClick={() => handleAddToCart(product)}
-                        disabled={addToCart.isPending || product.inventory_quantity === 0}
-                        className="flex-1"
-                        variant="outline"
-                      >
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        {product.inventory_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
-                      </Button>
-                    ) : (
-                      <AuthModal>
-                        <Button 
-                          className="flex-1"
-                          variant="outline"
-                          disabled={product.inventory_quantity === 0}
-                        >
-                          <ShoppingCart className="h-4 w-4 mr-2" />
-                          Add to Cart
-                        </Button>
-                      </AuthModal>
-                    )}
-                    
-                    <Button
-                      onClick={() => navigate(`/product/${product.id}`)}
-                      className="flex-1"
-                    >
-                      View Details
-                    </Button>
-                    
+                  {/* Quick Actions Overlay */}
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
-                          variant="outline"
-                          size="icon"
+                          variant="secondary"
+                          size="sm"
+                          className="bg-white/90 text-foreground hover:bg-white"
                           onClick={() => setSelectedProduct(product)}
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-4 w-4 mr-2" />
+                          Quick View
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -293,6 +236,77 @@ const FeaturedProducts = () => {
                         )}
                       </DialogContent>
                     </Dialog>
+                  </div>
+                </div>
+
+                {/* Product Info */}
+                <div className="p-5">
+                  <div className="mb-3">
+                    <h3 className="font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-200">
+                      {product.name}
+                    </h3>
+                    {product.short_description && (
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
+                        {product.short_description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Rating */}
+                  <div className="flex items-center gap-1 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <Star 
+                        key={i} 
+                        className={`h-3.5 w-3.5 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground/30'}`} 
+                      />
+                    ))}
+                    <span className="text-xs text-muted-foreground ml-1">(4.5)</span>
+                  </div>
+
+                  {/* Price */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="font-bold text-xl text-foreground">
+                      PKR {product.price.toFixed(2)}
+                    </span>
+                    {product.compare_price && product.compare_price > product.price && (
+                      <span className="text-sm text-muted-foreground line-through">
+                        PKR {product.compare_price.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2">
+                    {user ? (
+                      <Button
+                        onClick={() => handleAddToCart(product)}
+                        disabled={addToCart.isPending || product.inventory_quantity === 0}
+                        className="flex-1 h-9"
+                        variant="outline"
+                      >
+                        <ShoppingCart className="h-4 w-4 mr-2" />
+                        {product.inventory_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                      </Button>
+                    ) : (
+                      <AuthModal>
+                        <Button 
+                          className="flex-1 h-9"
+                          variant="outline"
+                          disabled={product.inventory_quantity === 0}
+                        >
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          Add to Cart
+                        </Button>
+                      </AuthModal>
+                    )}
+                    
+                    <Button
+                      onClick={() => navigate(`/product/${product.id}`)}
+                      className="flex-1 h-9"
+                      size="sm"
+                    >
+                      Details
+                    </Button>
                   </div>
                 </div>
               </CardContent>
