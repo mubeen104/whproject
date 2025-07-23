@@ -97,14 +97,14 @@ const Footer = () => {
 
             {/* Social Links */}
             <div className="flex items-center space-x-4">
-              <a href="#" className="text-primary-foreground/80 hover:text-accent transition-colors duration-200">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-primary-foreground/80 hover:text-accent transition-colors duration-200">
+              <a href="https://www.instagram.com/neweraherbal/" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-accent transition-colors duration-200">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-primary-foreground/80 hover:text-accent transition-colors duration-200">
+              <a href="https://www.tiktok.com/@new.era7904?_t=ZS-8yCtFWlprdo&_r=1" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-accent transition-colors duration-200">
                 <Video className="h-5 w-5" />
+              </a>
+              <a href="https://www.facebook.com/new.era.151908" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-accent transition-colors duration-200">
+                <Facebook className="h-5 w-5" />
               </a>
             </div>
 
