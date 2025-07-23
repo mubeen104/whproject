@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCart } from '@/hooks/useCart';
@@ -296,18 +296,20 @@ const ProductDetail = () => {
         </div>
 
         {/* Additional Information Tabs */}
-        <Tabs defaultValue="information" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="information">Product Information</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews ({reviews?.length || 0})</TabsTrigger>
+        <Tabs defaultValue="details" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="features">Features</TabsTrigger>
+            <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
+            <TabsTrigger value="usage">Usage</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="information" className="mt-6">
+          <TabsContent value="details" className="mt-6">
             <Card>
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="font-semibold text-foreground mb-3">Product Details</h4>
+                    <h4 className="font-semibold text-foreground mb-3">Product Information</h4>
                     <dl className="space-y-2">
                       {product.sku && (
                         <div className="flex justify-between">
@@ -316,21 +318,11 @@ const ProductDetail = () => {
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <dt className="text-sm text-muted-foreground">Stock:</dt>
-                        <dd className="text-sm text-foreground">{product.inventory_quantity || 0} units</dd>
-                      </div>
-                      <div className="flex justify-between">
-                        <dt className="text-sm text-muted-foreground">Status:</dt>
+                        <dt className="text-sm text-muted-foreground">Availability:</dt>
                         <dd className="text-sm text-foreground">
                           {(product.inventory_quantity || 0) > 0 ? 'In Stock' : 'Out of Stock'}
                         </dd>
                       </div>
-                      {false && (
-                        <div className="flex justify-between">
-                          <dt className="text-sm text-muted-foreground">In Stock:</dt>
-                          <dd className="text-sm text-foreground">{product.inventory_quantity || 0} units</dd>
-                        </div>
-                      )}
                     </dl>
                   </div>
                   
@@ -347,54 +339,107 @@ const ProductDetail = () => {
               </CardContent>
             </Card>
           </TabsContent>
-          
-          <TabsContent value="reviews" className="mt-6">
+
+          <TabsContent value="features" className="mt-6">
             <Card>
               <CardContent className="p-6">
-                {reviews && reviews.length > 0 ? (
-                  <div className="space-y-6">
-                    {reviews.map((review) => (
-                      <div key={review.id} className="border-b border-border pb-6 last:border-0">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium text-foreground">
-                              Anonymous User
-                            </span>
-                            <div className="flex items-center">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${
-                                    i < review.rating
-                                      ? 'text-yellow-400 fill-yellow-400'
-                                      : 'text-muted-foreground'
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <span className="text-sm text-muted-foreground">
-                            {new Date(review.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                        {review.title && (
-                          <h5 className="font-medium text-foreground mb-2">{review.title}</h5>
-                        )}
-                        {review.content && (
-                          <p className="text-muted-foreground">{review.content}</p>
-                        )}
-                      </div>
-                    ))}
+                <h4 className="font-semibold text-foreground mb-4">Product Features</h4>
+                {product.features ? (
+                  <div className="prose max-w-none">
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                      {product.features}
+                    </p>
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">No reviews yet. Be the first to review this product!</p>
+                  <p className="text-muted-foreground italic">No features information available.</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="ingredients" className="mt-6">
+            <Card>
+              <CardContent className="p-6">
+                <h4 className="font-semibold text-foreground mb-4">Ingredients</h4>
+                {product.ingredients ? (
+                  <div className="prose max-w-none">
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                      {product.ingredients}
+                    </p>
                   </div>
+                ) : (
+                  <p className="text-muted-foreground italic">No ingredients information available.</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="usage" className="mt-6">
+            <Card>
+              <CardContent className="p-6">
+                <h4 className="font-semibold text-foreground mb-4">Usage Instructions</h4>
+                {product.usage_instructions ? (
+                  <div className="prose max-w-none">
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                      {product.usage_instructions}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground italic">No usage instructions available.</p>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Reviews Section */}
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>Customer Reviews ({reviews?.length || 0})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {reviews && reviews.length > 0 ? (
+              <div className="space-y-6">
+                {reviews.map((review) => (
+                  <div key={review.id} className="border-b border-border pb-6 last:border-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-medium text-foreground">
+                          Anonymous User
+                        </span>
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-4 h-4 ${
+                                i < review.rating
+                                  ? 'text-yellow-400 fill-yellow-400'
+                                  : 'text-muted-foreground'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <span className="text-sm text-muted-foreground">
+                        {new Date(review.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    {review.title && (
+                      <h5 className="font-medium text-foreground mb-2">{review.title}</h5>
+                    )}
+                    {review.content && (
+                      <p className="text-muted-foreground">{review.content}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No reviews yet. Be the first to review this product!</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </main>
 
       <Footer />

@@ -22,6 +22,9 @@ interface Product {
   is_active: boolean;
   is_featured: boolean;
   sku: string;
+  features: string;
+  ingredients: string;
+  usage_instructions: string;
   created_at: string;
 }
 
@@ -35,6 +38,9 @@ export default function AdminProducts() {
     name: '',
     price: '',
     description: '',
+    features: '',
+    ingredients: '',
+    usage_instructions: '',
     inventory_quantity: '',
     sku: '',
     is_active: true,
@@ -187,6 +193,9 @@ export default function AdminProducts() {
       name: '',
       price: '',
       description: '',
+      features: '',
+      ingredients: '',
+      usage_instructions: '',
       inventory_quantity: '',
       sku: '',
       is_active: true,
@@ -200,6 +209,9 @@ export default function AdminProducts() {
       name: product.name,
       price: product.price.toString(),
       description: product.description || '',
+      features: product.features || '',
+      ingredients: product.ingredients || '',
+      usage_instructions: product.usage_instructions || '',
       inventory_quantity: product.inventory_quantity.toString(),
       sku: product.sku || '',
       is_active: product.is_active,
@@ -215,6 +227,9 @@ export default function AdminProducts() {
       name: formData.name,
       price: parseFloat(formData.price),
       description: formData.description,
+      features: formData.features,
+      ingredients: formData.ingredients,
+      usage_instructions: formData.usage_instructions,
       inventory_quantity: parseInt(formData.inventory_quantity),
       sku: formData.sku,
       is_active: formData.is_active,
@@ -325,6 +340,39 @@ export default function AdminProducts() {
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
                     placeholder="Describe your product..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="features">Features</Label>
+                  <Textarea
+                    id="features"
+                    value={formData.features}
+                    onChange={(e) => setFormData({ ...formData, features: e.target.value })}
+                    rows={3}
+                    placeholder="List key features..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ingredients">Ingredients</Label>
+                  <Textarea
+                    id="ingredients"
+                    value={formData.ingredients}
+                    onChange={(e) => setFormData({ ...formData, ingredients: e.target.value })}
+                    rows={3}
+                    placeholder="List ingredients..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="usage_instructions">Usage Instructions</Label>
+                  <Textarea
+                    id="usage_instructions"
+                    value={formData.usage_instructions}
+                    onChange={(e) => setFormData({ ...formData, usage_instructions: e.target.value })}
+                    rows={3}
+                    placeholder="How to use this product..."
                   />
                 </div>
 

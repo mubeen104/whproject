@@ -378,7 +378,9 @@ export type Database = {
           cost_price: number | null
           created_at: string
           description: string | null
+          features: string | null
           id: string
+          ingredients: string | null
           inventory_quantity: number | null
           is_active: boolean | null
           is_featured: boolean | null
@@ -393,6 +395,7 @@ export type Database = {
           tags: string[] | null
           track_inventory: boolean | null
           updated_at: string
+          usage_instructions: string | null
           weight: number | null
         }
         Insert: {
@@ -401,7 +404,9 @@ export type Database = {
           cost_price?: number | null
           created_at?: string
           description?: string | null
+          features?: string | null
           id?: string
+          ingredients?: string | null
           inventory_quantity?: number | null
           is_active?: boolean | null
           is_featured?: boolean | null
@@ -416,6 +421,7 @@ export type Database = {
           tags?: string[] | null
           track_inventory?: boolean | null
           updated_at?: string
+          usage_instructions?: string | null
           weight?: number | null
         }
         Update: {
@@ -424,7 +430,9 @@ export type Database = {
           cost_price?: number | null
           created_at?: string
           description?: string | null
+          features?: string | null
           id?: string
+          ingredients?: string | null
           inventory_quantity?: number | null
           is_active?: boolean | null
           is_featured?: boolean | null
@@ -439,6 +447,7 @@ export type Database = {
           tags?: string[] | null
           track_inventory?: boolean | null
           updated_at?: string
+          usage_instructions?: string | null
           weight?: number | null
         }
         Relationships: []

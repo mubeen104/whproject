@@ -13,6 +13,9 @@ export interface Product {
   inventory_quantity: number;
   is_featured: boolean;
   tags: string[];
+  features: string;
+  ingredients: string;
+  usage_instructions: string;
   created_at: string;
   product_images: Array<{
     id: string;
