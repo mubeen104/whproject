@@ -296,50 +296,14 @@ const ProductDetail = () => {
         </div>
 
         {/* Additional Information Tabs */}
-        <Tabs defaultValue="details" className="w-full">
+        <Tabs defaultValue="features" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="features">Features</TabsTrigger>
             <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
             <TabsTrigger value="usage">Usage</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="details" className="mt-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-3">Product Information</h4>
-                    <dl className="space-y-2">
-                      {product.sku && (
-                        <div className="flex justify-between">
-                          <dt className="text-sm text-muted-foreground">SKU:</dt>
-                          <dd className="text-sm text-foreground">{product.sku}</dd>
-                        </div>
-                      )}
-                      <div className="flex justify-between">
-                        <dt className="text-sm text-muted-foreground">Availability:</dt>
-                        <dd className="text-sm text-foreground">
-                          {(product.inventory_quantity || 0) > 0 ? 'In Stock' : 'Out of Stock'}
-                        </dd>
-                      </div>
-                    </dl>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-3">Shipping & Returns</h4>
-                    <div className="text-sm text-muted-foreground space-y-2">
-                      <p>• Free standard shipping on orders over PKR 10,000</p>
-                      <p>• Express shipping available at checkout</p>
-                      <p>• 30-day return policy</p>
-                      <p>• Returns must be in original condition</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           <TabsContent value="features" className="mt-6">
             <Card>
               <CardContent className="p-6">
@@ -387,6 +351,42 @@ const ProductDetail = () => {
                 ) : (
                   <p className="text-muted-foreground italic">No usage instructions available.</p>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="details" className="mt-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-3">Product Information</h4>
+                    <dl className="space-y-2">
+                      {product.sku && (
+                        <div className="flex justify-between">
+                          <dt className="text-sm text-muted-foreground">SKU:</dt>
+                          <dd className="text-sm text-foreground">{product.sku}</dd>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <dt className="text-sm text-muted-foreground">Availability:</dt>
+                        <dd className="text-sm text-foreground">
+                          {(product.inventory_quantity || 0) > 0 ? 'In Stock' : 'Out of Stock'}
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-3">Shipping & Returns</h4>
+                    <div className="text-sm text-muted-foreground space-y-2">
+                      <p>• Free standard shipping on orders over PKR 10,000</p>
+                      <p>• Express shipping available at checkout</p>
+                      <p>• 30-day return policy</p>
+                      <p>• Returns must be in original condition</p>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
