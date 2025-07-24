@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useNavigate, Link } from "react-router-dom";
@@ -13,6 +14,7 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { user, signOut, isAdmin } = useAuth();
   const { cartCount } = useCart();
+  const { storeName } = useStoreSettings();
   const navigate = useNavigate();
 
   const navigation = [
@@ -45,7 +47,7 @@ const Header = () => {
           <Link to="/" className="flex items-center">
             <img 
               src="/lovable-uploads/22303e3e-d2dd-4bad-a05f-9245ad435b33.png" 
-              alt="New Era Herbals Logo" 
+              alt={`${storeName} Logo`} 
               className="h-12 w-auto"
             />
           </Link>

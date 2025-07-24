@@ -1,9 +1,11 @@
 import { Leaf, Mail, Phone, MapPin, Facebook, Instagram, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 import TikTokIcon from "@/components/icons/TikTokIcon";
 
 const Footer = () => {
+  const { storeName, storeEmail, storePhone } = useStoreSettings();
 
   const legalLinks = [
     { name: "Privacy Policy", href: "#" },
@@ -43,7 +45,7 @@ const Footer = () => {
               <div className="flex items-center">
                 <img 
                   src="/lovable-uploads/22303e3e-d2dd-4bad-a05f-9245ad435b33.png" 
-                  alt="New Era Herbals Logo" 
+                  alt={`${storeName} Logo`} 
                   className="h-16 w-auto"
                 />
               </div>
@@ -57,11 +59,11 @@ const Footer = () => {
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <Phone className="h-4 w-4 text-accent" />
-                  <span className="text-sm">+92 304 307 3838</span>
+                  <span className="text-sm">{storePhone}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="h-4 w-4 text-accent" />
-                  <span className="text-sm">neweraorganic101@gmail.com</span>
+                  <span className="text-sm">{storeEmail}</span>
                 </div>
               </div>
             </div>
@@ -93,7 +95,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
             <p className="text-primary-foreground/80 text-sm">
-              © 2025 New Era Herbals. All rights reserved.
+              © 2025 {storeName}. All rights reserved.
             </p>
 
             {/* Social Links */}

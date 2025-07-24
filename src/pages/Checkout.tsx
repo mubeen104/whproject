@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/hooks/useCart";
 import { useCheckout } from "@/hooks/useCheckout";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -31,6 +32,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { cartItems, cartTotal, cartCount, clearCart } = useCart();
   const { createOrder, isCreatingOrder } = useCheckout();
+  const { taxRate, shippingRate, freeShippingThreshold } = useStoreSettings();
   const { toast } = useToast();
 
   const [shippingAddress, setShippingAddress] = useState<Address>({
@@ -63,8 +65,8 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [notes, setNotes] = useState("");
 
-  const shippingCost = cartTotal >= 10000 ? 0 : 500; // Free shipping over PKR 10,000
-  const tax = 0; // No tax for now
+  const shippingCost = cartTotal >= freeShippingThreshold ? 0 : shippingRate;
+  const tax = cartTotal * (taxRate / 100);
   const totalAmount = cartTotal + shippingCost + tax;
 
   const handleShippingAddressChange = (field: keyof Address, value: string) => {
@@ -515,6 +517,12 @@ const Checkout = () => {
                         {shippingCost === 0 ? "Free" : `PKR ${shippingCost.toFixed(2)}`}
                       </span>
                     </div>
+                    
+                    {shippingCost > 0 && (
+                      <div className="text-xs text-muted-foreground">
+                        Free shipping on orders over PKR {freeShippingThreshold.toFixed(0)}
+                      </div>
+                    )}
                     
                     <div className="flex justify-between text-sm">
                       <span>Tax</span>
