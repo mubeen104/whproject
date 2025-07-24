@@ -48,6 +48,8 @@ export const useUpdateSettings = () => {
             key: setting.key,
             value: setting.value,
             category: setting.category,
+          }, {
+            onConflict: 'key'
           });
 
         if (error) throw error;
