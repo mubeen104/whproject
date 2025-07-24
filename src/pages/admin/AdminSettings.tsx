@@ -6,61 +6,131 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Settings, Store, Mail, Shield, Database, Palette, Save, AlertTriangle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useSettings, useUpdateSettings } from '@/hooks/useSettings';
 
 export default function AdminSettings() {
-  const [storeSettings, setStoreSettings] = useState({
-    storeName: 'Natural Elements Herbals',
-    storeEmail: 'admin@naturalelementsherbal.com',
-    storePhone: '+1 (555) 123-4567',
-    storeAddress: '123 Herbal Way, Wellness City, WC 12345',
-    storeDescription: 'Premium natural health products and herbal supplements.',
-    currency: 'USD',
-    taxRate: '8.5',
-    shippingRate: '9.99',
-    freeShippingThreshold: '75.00'
+  const { toast } = useToast();
+  const { data: storeSettings, isLoading: storeLoading } = useSettings('store');
+  const { data: emailSettings, isLoading: emailLoading } = useSettings('email');
+  const { data: securitySettings, isLoading: securityLoading } = useSettings('security');
+  const updateSettings = useUpdateSettings();
+
+  const [localStoreSettings, setLocalStoreSettings] = useState({
+    storeName: '',
+    storeEmail: '',
+    storePhone: '',
+    storeAddress: '',
+    storeDescription: '',
+    currency: '',
+    taxRate: '',
+    shippingRate: '',
+    freeShippingThreshold: ''
   });
 
-  const [emailSettings, setEmailSettings] = useState({
-    orderConfirmation: true,
-    shippingNotification: true,
+  const [localEmailSettings, setLocalEmailSettings] = useState({
+    orderConfirmation: false,
+    shippingNotification: false,
     marketingEmails: false,
-    lowStockAlerts: true
+    lowStockAlerts: false
   });
 
-  const [securitySettings, setSecuritySettings] = useState({
-    requireEmailVerification: true,
+  const [localSecuritySettings, setLocalSecuritySettings] = useState({
+    requireEmailVerification: false,
     twoFactorAuth: false,
     passwordMinLength: '8',
     sessionTimeout: '30'
   });
 
-  const { toast } = useToast();
+  // Update local state when settings are loaded
+  useEffect(() => {
+    if (storeSettings) {
+      setLocalStoreSettings({
+        storeName: storeSettings.store_name || '',
+        storeEmail: storeSettings.store_email || '',
+        storePhone: storeSettings.store_phone || '',
+        storeAddress: storeSettings.store_address || '',
+        storeDescription: storeSettings.store_description || '',
+        currency: storeSettings.currency || '',
+        taxRate: String(storeSettings.tax_rate || ''),
+        shippingRate: String(storeSettings.shipping_rate || ''),
+        freeShippingThreshold: String(storeSettings.free_shipping_threshold || '')
+      });
+    }
+  }, [storeSettings]);
+
+  useEffect(() => {
+    if (emailSettings) {
+      setLocalEmailSettings({
+        orderConfirmation: emailSettings.order_confirmation_emails || false,
+        shippingNotification: emailSettings.shipping_notification_emails || false,
+        marketingEmails: emailSettings.marketing_emails || false,
+        lowStockAlerts: emailSettings.low_stock_alerts || false
+      });
+    }
+  }, [emailSettings]);
+
+  useEffect(() => {
+    if (securitySettings) {
+      setLocalSecuritySettings({
+        requireEmailVerification: securitySettings.require_email_verification || false,
+        twoFactorAuth: securitySettings.two_factor_auth || false,
+        passwordMinLength: String(securitySettings.password_min_length || '8'),
+        sessionTimeout: String(securitySettings.session_timeout || '30')
+      });
+    }
+  }, [securitySettings]);
 
   const handleSaveStoreSettings = () => {
-    // In a real app, this would save to database
-    toast({
-      title: "Success",
-      description: "Store settings saved successfully.",
-    });
+    updateSettings.mutate([
+      { key: 'store_name', value: localStoreSettings.storeName, category: 'store' },
+      { key: 'store_email', value: localStoreSettings.storeEmail, category: 'store' },
+      { key: 'store_phone', value: localStoreSettings.storePhone, category: 'store' },
+      { key: 'store_address', value: localStoreSettings.storeAddress, category: 'store' },
+      { key: 'store_description', value: localStoreSettings.storeDescription, category: 'store' },
+      { key: 'currency', value: localStoreSettings.currency, category: 'store' },
+      { key: 'tax_rate', value: parseFloat(localStoreSettings.taxRate) || 0, category: 'store' },
+      { key: 'shipping_rate', value: parseFloat(localStoreSettings.shippingRate) || 0, category: 'store' },
+      { key: 'free_shipping_threshold', value: parseFloat(localStoreSettings.freeShippingThreshold) || 0, category: 'store' }
+    ]);
   };
 
   const handleSaveEmailSettings = () => {
-    // In a real app, this would save to database
-    toast({
-      title: "Success",
-      description: "Email settings saved successfully.",
-    });
+    updateSettings.mutate([
+      { key: 'order_confirmation_emails', value: localEmailSettings.orderConfirmation, category: 'email' },
+      { key: 'shipping_notification_emails', value: localEmailSettings.shippingNotification, category: 'email' },
+      { key: 'marketing_emails', value: localEmailSettings.marketingEmails, category: 'email' },
+      { key: 'low_stock_alerts', value: localEmailSettings.lowStockAlerts, category: 'email' }
+    ]);
   };
 
   const handleSaveSecuritySettings = () => {
-    // In a real app, this would save to database
-    toast({
-      title: "Success",
-      description: "Security settings saved successfully.",
-    });
+    updateSettings.mutate([
+      { key: 'require_email_verification', value: localSecuritySettings.requireEmailVerification, category: 'security' },
+      { key: 'two_factor_auth', value: localSecuritySettings.twoFactorAuth, category: 'security' },
+      { key: 'password_min_length', value: parseInt(localSecuritySettings.passwordMinLength) || 8, category: 'security' },
+      { key: 'session_timeout', value: parseInt(localSecuritySettings.sessionTimeout) || 30, category: 'security' }
+    ]);
   };
+
+  if (storeLoading || emailLoading || securityLoading) {
+    return (
+      <div className="space-y-8 animate-fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground">Settings</h1>
+            <p className="text-muted-foreground mt-2 text-lg">Loading settings...</p>
+          </div>
+        </div>
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-32 bg-muted animate-pulse rounded-lg"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -92,8 +162,8 @@ export default function AdminSettings() {
                 <Label htmlFor="storeName" className="text-sm font-medium">Store Name *</Label>
                 <Input
                   id="storeName"
-                  value={storeSettings.storeName}
-                  onChange={(e) => setStoreSettings({ ...storeSettings, storeName: e.target.value })}
+                  value={localStoreSettings.storeName}
+                  onChange={(e) => setLocalStoreSettings({ ...localStoreSettings, storeName: e.target.value })}
                   className="h-11"
                 />
               </div>
@@ -102,8 +172,8 @@ export default function AdminSettings() {
                 <Input
                   id="storeEmail"
                   type="email"
-                  value={storeSettings.storeEmail}
-                  onChange={(e) => setStoreSettings({ ...storeSettings, storeEmail: e.target.value })}
+                  value={localStoreSettings.storeEmail}
+                  onChange={(e) => setLocalStoreSettings({ ...localStoreSettings, storeEmail: e.target.value })}
                   className="h-11"
                 />
               </div>
@@ -111,8 +181,8 @@ export default function AdminSettings() {
                 <Label htmlFor="storePhone" className="text-sm font-medium">Store Phone</Label>
                 <Input
                   id="storePhone"
-                  value={storeSettings.storePhone}
-                  onChange={(e) => setStoreSettings({ ...storeSettings, storePhone: e.target.value })}
+                  value={localStoreSettings.storePhone}
+                  onChange={(e) => setLocalStoreSettings({ ...localStoreSettings, storePhone: e.target.value })}
                   className="h-11"
                 />
               </div>
@@ -120,8 +190,8 @@ export default function AdminSettings() {
                 <Label htmlFor="currency" className="text-sm font-medium">Currency</Label>
                 <Input
                   id="currency"
-                  value={storeSettings.currency}
-                  onChange={(e) => setStoreSettings({ ...storeSettings, currency: e.target.value })}
+                  value={localStoreSettings.currency}
+                  onChange={(e) => setLocalStoreSettings({ ...localStoreSettings, currency: e.target.value })}
                   className="h-11"
                 />
               </div>
@@ -131,8 +201,8 @@ export default function AdminSettings() {
               <Label htmlFor="storeAddress" className="text-sm font-medium">Store Address</Label>
               <Input
                 id="storeAddress"
-                value={storeSettings.storeAddress}
-                onChange={(e) => setStoreSettings({ ...storeSettings, storeAddress: e.target.value })}
+                value={localStoreSettings.storeAddress}
+                onChange={(e) => setLocalStoreSettings({ ...localStoreSettings, storeAddress: e.target.value })}
                 className="h-11"
               />
             </div>
@@ -141,8 +211,8 @@ export default function AdminSettings() {
               <Label htmlFor="storeDescription" className="text-sm font-medium">Store Description</Label>
               <Textarea
                 id="storeDescription"
-                value={storeSettings.storeDescription}
-                onChange={(e) => setStoreSettings({ ...storeSettings, storeDescription: e.target.value })}
+                value={localStoreSettings.storeDescription}
+                onChange={(e) => setLocalStoreSettings({ ...localStoreSettings, storeDescription: e.target.value })}
                 rows={3}
                 className="resize-none"
               />
@@ -157,8 +227,8 @@ export default function AdminSettings() {
                   id="taxRate"
                   type="number"
                   step="0.1"
-                  value={storeSettings.taxRate}
-                  onChange={(e) => setStoreSettings({ ...storeSettings, taxRate: e.target.value })}
+                  value={localStoreSettings.taxRate}
+                  onChange={(e) => setLocalStoreSettings({ ...localStoreSettings, taxRate: e.target.value })}
                   className="h-11"
                 />
               </div>
@@ -168,8 +238,8 @@ export default function AdminSettings() {
                   id="shippingRate"
                   type="number"
                   step="0.01"
-                  value={storeSettings.shippingRate}
-                  onChange={(e) => setStoreSettings({ ...storeSettings, shippingRate: e.target.value })}
+                  value={localStoreSettings.shippingRate}
+                  onChange={(e) => setLocalStoreSettings({ ...localStoreSettings, shippingRate: e.target.value })}
                   className="h-11"
                 />
               </div>
@@ -179,8 +249,8 @@ export default function AdminSettings() {
                   id="freeShippingThreshold"
                   type="number"
                   step="0.01"
-                  value={storeSettings.freeShippingThreshold}
-                  onChange={(e) => setStoreSettings({ ...storeSettings, freeShippingThreshold: e.target.value })}
+                  value={localStoreSettings.freeShippingThreshold}
+                  onChange={(e) => setLocalStoreSettings({ ...localStoreSettings, freeShippingThreshold: e.target.value })}
                   className="h-11"
                 />
               </div>
@@ -215,8 +285,8 @@ export default function AdminSettings() {
                 </div>
                 <Switch
                   id="orderConfirmation"
-                  checked={emailSettings.orderConfirmation}
-                  onCheckedChange={(checked) => setEmailSettings({ ...emailSettings, orderConfirmation: checked })}
+                  checked={localEmailSettings.orderConfirmation}
+                  onCheckedChange={(checked) => setLocalEmailSettings({ ...localEmailSettings, orderConfirmation: checked })}
                 />
               </div>
 
@@ -227,8 +297,8 @@ export default function AdminSettings() {
                 </div>
                 <Switch
                   id="shippingNotification"
-                  checked={emailSettings.shippingNotification}
-                  onCheckedChange={(checked) => setEmailSettings({ ...emailSettings, shippingNotification: checked })}
+                  checked={localEmailSettings.shippingNotification}
+                  onCheckedChange={(checked) => setLocalEmailSettings({ ...localEmailSettings, shippingNotification: checked })}
                 />
               </div>
 
@@ -239,8 +309,8 @@ export default function AdminSettings() {
                 </div>
                 <Switch
                   id="marketingEmails"
-                  checked={emailSettings.marketingEmails}
-                  onCheckedChange={(checked) => setEmailSettings({ ...emailSettings, marketingEmails: checked })}
+                  checked={localEmailSettings.marketingEmails}
+                  onCheckedChange={(checked) => setLocalEmailSettings({ ...localEmailSettings, marketingEmails: checked })}
                 />
               </div>
 
@@ -251,8 +321,8 @@ export default function AdminSettings() {
                 </div>
                 <Switch
                   id="lowStockAlerts"
-                  checked={emailSettings.lowStockAlerts}
-                  onCheckedChange={(checked) => setEmailSettings({ ...emailSettings, lowStockAlerts: checked })}
+                  checked={localEmailSettings.lowStockAlerts}
+                  onCheckedChange={(checked) => setLocalEmailSettings({ ...localEmailSettings, lowStockAlerts: checked })}
                 />
               </div>
             </div>
@@ -286,8 +356,8 @@ export default function AdminSettings() {
                 </div>
                 <Switch
                   id="requireEmailVerification"
-                  checked={securitySettings.requireEmailVerification}
-                  onCheckedChange={(checked) => setSecuritySettings({ ...securitySettings, requireEmailVerification: checked })}
+                  checked={localSecuritySettings.requireEmailVerification}
+                  onCheckedChange={(checked) => setLocalSecuritySettings({ ...localSecuritySettings, requireEmailVerification: checked })}
                 />
               </div>
 
@@ -298,8 +368,8 @@ export default function AdminSettings() {
                 </div>
                 <Switch
                   id="twoFactorAuth"
-                  checked={securitySettings.twoFactorAuth}
-                  onCheckedChange={(checked) => setSecuritySettings({ ...securitySettings, twoFactorAuth: checked })}
+                  checked={localSecuritySettings.twoFactorAuth}
+                  onCheckedChange={(checked) => setLocalSecuritySettings({ ...localSecuritySettings, twoFactorAuth: checked })}
                 />
               </div>
             </div>
@@ -314,8 +384,8 @@ export default function AdminSettings() {
                   type="number"
                   min="6"
                   max="20"
-                  value={securitySettings.passwordMinLength}
-                  onChange={(e) => setSecuritySettings({ ...securitySettings, passwordMinLength: e.target.value })}
+                  value={localSecuritySettings.passwordMinLength}
+                  onChange={(e) => setLocalSecuritySettings({ ...localSecuritySettings, passwordMinLength: e.target.value })}
                   className="h-11"
                 />
               </div>
@@ -326,8 +396,8 @@ export default function AdminSettings() {
                   type="number"
                   min="15"
                   max="1440"
-                  value={securitySettings.sessionTimeout}
-                  onChange={(e) => setSecuritySettings({ ...securitySettings, sessionTimeout: e.target.value })}
+                  value={localSecuritySettings.sessionTimeout}
+                  onChange={(e) => setLocalSecuritySettings({ ...localSecuritySettings, sessionTimeout: e.target.value })}
                   className="h-11"
                 />
               </div>
