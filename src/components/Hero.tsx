@@ -62,11 +62,11 @@ const Hero = () => {
                 size="lg" 
                 variant="outline" 
                 className="border-primary-foreground/20 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground hover:text-primary backdrop-blur-sm"
-                onClick={() => {
-                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                }}
+                asChild
               >
-                Learn More
+                <a href="/contact">
+                  Learn More
+                </a>
               </Button>
             </div>
 
