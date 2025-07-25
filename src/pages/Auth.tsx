@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,13 +11,6 @@ import { useToast } from '@/hooks/use-toast';
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
-  const [resetEmail, setResetEmail] = useState('');
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [isPasswordReset, setIsPasswordReset] = useState(false);
-  const [newPasswordData, setNewPasswordData] = useState({
-    password: '',
-    confirmPassword: ''
-  });
   const [signInData, setSignInData] = useState({ email: '', password: '' });
   const [signUpData, setSignUpData] = useState({
     email: '',
@@ -28,28 +21,16 @@ export default function Auth() {
     phone: ''
   });
 
-  const { signIn, signUp, user, resetPassword, updatePassword } = useAuth();
+  const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [searchParams] = useSearchParams();
 
-  // Check for password reset mode and redirect if already authenticated
+  // Redirect if already authenticated
   useEffect(() => {
-    // Check if we're in password reset mode (Supabase adds access_token and type=recovery in URL)
-    const type = searchParams.get('type');
-    const accessToken = searchParams.get('access_token');
-    
-    console.log('Auth page - URL params:', { type, accessToken, allParams: Object.fromEntries(searchParams) });
-    
-    if (type === 'recovery' && accessToken) {
-      console.log('Setting password reset mode to true');
-      setIsPasswordReset(true);
-    }
-
-    if (user && !isPasswordReset) {
+    if (user) {
       navigate('/', { replace: true });
     }
-  }, [user, navigate, searchParams, isPasswordReset]);
+  }, [user, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,67 +83,6 @@ export default function Auth() {
     }
   };
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      await resetPassword(resetEmail);
-      setShowForgotPassword(false);
-      setResetEmail('');
-    } catch (error) {
-      console.error('Password reset error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleUpdatePassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (newPasswordData.password !== newPasswordData.confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (newPasswordData.password.length < 6) {
-      toast({
-        title: "Error",
-        description: "Password must be at least 6 characters long",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const { error } = await updatePassword(newPasswordData.password);
-      
-      if (!error) {
-        toast({
-          title: "Password Updated",
-          description: "Your password has been updated successfully. Please sign in with your new password.",
-        });
-        
-        // Clear the recovery URL parameters
-        window.history.replaceState({}, document.title, window.location.pathname);
-        
-        // Reset form and show sign-in page
-        setIsPasswordReset(false);
-        setNewPasswordData({ password: '', confirmPassword: '' });
-      }
-    } catch (error) {
-      console.error('Password update error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -176,97 +96,17 @@ export default function Auth() {
 
         <Card>
           <CardHeader>
-            <CardTitle>
-              {isPasswordReset ? "Set New Password" : showForgotPassword ? "Reset Password" : "Authentication"}
-            </CardTitle>
+            <CardTitle>Authentication</CardTitle>
             <CardDescription>
-              {isPasswordReset 
-                ? "Choose a new password for your account"
-                : showForgotPassword 
-                ? "Enter your email to receive password reset instructions"
-                : "Sign in to your account or create a new one"
-              }
+              Sign in to your account or create a new one
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {isPasswordReset ? (
-              <form onSubmit={handleUpdatePassword} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="new-password">New Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      id="new-password"
-                      type="password"
-                      placeholder="Enter your new password"
-                      value={newPasswordData.password}
-                      onChange={(e) => setNewPasswordData({ ...newPasswordData, password: e.target.value })}
-                      className="pl-10"
-                      required
-                      minLength={6}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-new-password">Confirm New Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      id="confirm-new-password"
-                      type="password"
-                      placeholder="Confirm your new password"
-                      value={newPasswordData.confirmPassword}
-                      onChange={(e) => setNewPasswordData({ ...newPasswordData, confirmPassword: e.target.value })}
-                      className="pl-10"
-                      required
-                      minLength={6}
-                    />
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Updating Password...' : 'Update Password'}
-                </Button>
-              </form>
-            ) : showForgotPassword ? (
-              <form onSubmit={handleForgotPassword} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="reset-email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      id="reset-email"
-                      type="email"
-                      placeholder="your@email.com"
-                      value={resetEmail}
-                      onChange={(e) => setResetEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button type="submit" className="flex-1" disabled={isLoading}>
-                    {isLoading ? 'Sending...' : 'Send Reset Email'}
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => setShowForgotPassword(false)}
-                    disabled={isLoading}
-                  >
-                    Back
-                  </Button>
-                </div>
-              </form>
-            ) : (
-              <Tabs defaultValue="signin" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="signin">Sign In</TabsTrigger>
-                  <TabsTrigger value="signup">Sign Up</TabsTrigger>
-                </TabsList>
+            <Tabs defaultValue="signin" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="signin">Sign In</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              </TabsList>
               
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4">
@@ -305,17 +145,6 @@ export default function Auth() {
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? 'Signing In...' : 'Sign In'}
                   </Button>
-                  
-                  <div className="text-center">
-                    <Button
-                      type="button"
-                      variant="link"
-                      onClick={() => setShowForgotPassword(true)}
-                      className="text-sm text-muted-foreground hover:text-primary"
-                    >
-                      Forgot your password?
-                    </Button>
-                  </div>
                 </form>
               </TabsContent>
               
@@ -417,8 +246,7 @@ export default function Auth() {
                   </Button>
                 </form>
               </TabsContent>
-              </Tabs>
-            )}
+            </Tabs>
           </CardContent>
         </Card>
 
