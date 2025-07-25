@@ -33,10 +33,10 @@ EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Insert default settings
 INSERT INTO public.settings (key, value, category, description) VALUES
-('store_name', '"Natural Elements Herbals"', 'store', 'Store name displayed to customers'),
-('store_email', '"admin@naturalelementsherbal.com"', 'store', 'Primary store contact email'),
-('store_phone', '"+1 (555) 123-4567"', 'store', 'Store contact phone number'),
-('store_address', '"123 Herbal Way, Wellness City, WC 12345"', 'store', 'Physical store address'),
+('store_name', '"New Era Herbals"', 'store', 'Store name displayed to customers'),
+('store_email', '"neweraorganic101@gmail.com"', 'store', 'Primary store contact email'),
+('store_phone', '"+92 304 307 3838"', 'store', 'Store contact phone number'),
+('store_address', '"123 New Era Herbal, Regent Mall, Faisalabad City"', 'store', 'Physical store address'),
 ('store_description', '"Premium natural health products and herbal supplements."', 'store', 'Store description for customers'),
 ('currency', '"USD"', 'store', 'Default store currency'),
 ('tax_rate', '8.5', 'store', 'Default tax rate percentage'),
