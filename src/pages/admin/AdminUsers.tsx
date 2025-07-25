@@ -81,6 +81,11 @@ export default function AdminUsers() {
         user_roles: userRoles?.filter(role => role.user_id === profile.user_id) || []
       })) || [];
 
+      console.log('All profiles:', profiles?.length);
+      console.log('All user roles:', userRoles?.length);
+      console.log('Users with roles:', usersWithRoles?.length);
+      console.log('Sample user:', usersWithRoles[0]);
+
       return usersWithRoles;
     }
   });
