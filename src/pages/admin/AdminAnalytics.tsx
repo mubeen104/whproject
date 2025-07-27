@@ -60,8 +60,7 @@ export default function AdminAnalytics() {
         { data: ordersByStatus },
         { data: topProducts },
         { data: recentActivity },
-        { data: totalOrders },
-        { data: totalCustomers }
+        { data: totalOrders }
       ] = await Promise.all([
         // Revenue data with time filter
         supabase
@@ -74,7 +73,7 @@ export default function AdminAnalytics() {
         // Orders by status with time filter
         supabase
           .from('orders')
-          .select('status, created_at')
+          .select('status, created_at, user_id')
           .gte('created_at', fromDate)
           .lte('created_at', toDate),
         
@@ -98,7 +97,8 @@ export default function AdminAnalytics() {
             total_amount,
             status,
             created_at,
-            profiles!orders_user_id_fkey(first_name, last_name)
+            user_id,
+            profiles!inner(first_name, last_name)
           `)
           .gte('created_at', fromDate)
           .lte('created_at', toDate)
@@ -112,12 +112,8 @@ export default function AdminAnalytics() {
           .gte('created_at', fromDate)
           .lte('created_at', toDate),
 
-        // Unique customers count
-        supabase
-          .from('orders')
-          .select('user_id')
-          .gte('created_at', fromDate)
-          .lte('created_at', toDate)
+        // Get user data for customer count (we'll calculate this from ordersByStatus)
+        Promise.resolve({ data: [] })
       ]);
 
       // Process revenue by time period
@@ -172,8 +168,12 @@ export default function AdminAnalytics() {
       // Calculate total revenue
       const totalRevenue = Object.values(periodRevenue).reduce((acc: number, val: any) => acc + val, 0);
 
-      // Calculate unique customers
-      const uniqueCustomers = new Set(ordersByStatus?.map((order: any) => order.user_id) || []).size;
+      // Calculate unique customers from orders data
+      const uniqueCustomers = new Set(
+        ordersByStatus
+          ?.map((order: any) => order.user_id)
+          .filter((userId: any) => userId != null) || []
+      ).size;
 
       return {
         periodRevenue,
