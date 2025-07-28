@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Leaf, Star } from "lucide-react";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
-import heroImage from "@/assets/organic-products.jpg";
+import heroImage from "@/assets/hero-herbals.jpg";
 
 const Hero = () => {
   const { storeName, storeDescription, currency } = useStoreSettings();
