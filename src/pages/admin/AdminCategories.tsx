@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Edit, Trash2, FolderTree, Eye, EyeOff, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, FolderTree, Eye, EyeOff, Search, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +17,7 @@ interface Category {
   id: string;
   name: string;
   description: string;
+  image_url: string;
   is_active: boolean;
   sort_order: number;
   created_at: string;
@@ -29,9 +30,12 @@ export default function AdminCategories() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    image_url: '',
     is_active: true,
     sort_order: ''
   });
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -123,9 +127,11 @@ export default function AdminCategories() {
     setFormData({
       name: '',
       description: '',
+      image_url: '',
       is_active: true,
       sort_order: ''
     });
+    setImagePreview(null);
   };
 
   const handleEdit = (category: Category) => {
@@ -133,9 +139,11 @@ export default function AdminCategories() {
     setFormData({
       name: category.name,
       description: category.description || '',
+      image_url: category.image_url || '',
       is_active: category.is_active,
       sort_order: category.sort_order.toString()
     });
+    setImagePreview(category.image_url || null);
     setIsDialogOpen(true);
   };
 
@@ -145,11 +153,76 @@ export default function AdminCategories() {
     const categoryData = {
       name: formData.name,
       description: formData.description,
+      image_url: formData.image_url,
       is_active: formData.is_active,
       sort_order: parseInt(formData.sort_order) || 0
     };
 
     categoryMutation.mutate(categoryData);
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (file: File) => {
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Error",
+        description: "Please upload an image file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Error",
+        description: "Image size must be less than 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadingImage(true);
+    
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `categories/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+
+      setFormData({ ...formData, image_url: publicUrl });
+      setImagePreview(publicUrl);
+      
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to upload image.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const removeImage = () => {
+    setFormData({ ...formData, image_url: '' });
+    setImagePreview(null);
   };
 
   // Filter categories based on search
@@ -212,6 +285,74 @@ export default function AdminCategories() {
                     rows={3}
                     placeholder="Describe this category..."
                   />
+                </div>
+
+                {/* Image Upload Section */}
+                <div className="space-y-3">
+                  <Label>Category Image</Label>
+                  
+                  {/* Image Preview */}
+                  {imagePreview && (
+                    <div className="relative w-32 h-32 border border-border rounded-lg overflow-hidden">
+                      <img 
+                        src={imagePreview} 
+                        alt="Category preview" 
+                        className="w-full h-full object-cover"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-1 right-1 h-6 w-6 p-0"
+                        onClick={removeImage}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Upload Button */}
+                  <div className="flex space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.onchange = (e) => {
+                          const file = (e.target as HTMLInputElement).files?.[0];
+                          if (file) handleFileUpload(file);
+                        };
+                        input.click();
+                      }}
+                      disabled={uploadingImage}
+                      className="flex-1"
+                    >
+                      {uploadingImage ? (
+                        <>Uploading...</>
+                      ) : (
+                        <>
+                          <Upload className="h-4 w-4 mr-2" />
+                          Upload Image
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* URL Input */}
+                  <div className="space-y-2">
+                    <Label htmlFor="image_url">Or enter image URL</Label>
+                    <Input
+                      id="image_url"
+                      value={formData.image_url}
+                      onChange={(e) => {
+                        setFormData({ ...formData, image_url: e.target.value });
+                        setImagePreview(e.target.value || null);
+                      }}
+                      placeholder="https://example.com/image.jpg"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -303,6 +444,7 @@ export default function AdminCategories() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="font-semibold">Image</TableHead>
                     <TableHead className="font-semibold">Category Name</TableHead>
                     <TableHead className="font-semibold">Description</TableHead>
                     <TableHead className="font-semibold">Sort Order</TableHead>
@@ -313,6 +455,19 @@ export default function AdminCategories() {
                 <TableBody>
                   {filteredCategories?.map((category: Category) => (
                     <TableRow key={category.id} className="hover:bg-muted/30 transition-colors">
+                      <TableCell className="py-4">
+                        <div className="w-12 h-12 border border-border rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                          {category.image_url ? (
+                            <img 
+                              src={category.image_url} 
+                              alt={category.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell className="py-4">
                         <p className="font-semibold text-foreground">{category.name}</p>
                       </TableCell>
