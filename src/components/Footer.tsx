@@ -3,18 +3,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
 import TikTokIcon from "@/components/icons/TikTokIcon";
-
 const Footer = () => {
-  const { storeName, storeEmail, storePhone } = useStoreSettings();
-
-  const legalLinks = [
-    { name: "Privacy Policy", href: "#" },
-    { name: "Terms of Service", href: "#" },
-    { name: "Cookie Policy", href: "#" }
-  ];
-
-  return (
-    <footer className="bg-primary text-primary-foreground">
+  const {
+    storeName,
+    storeEmail,
+    storePhone
+  } = useStoreSettings();
+  const legalLinks = [{
+    name: "Privacy Policy",
+    href: "#"
+  }, {
+    name: "Terms of Service",
+    href: "#"
+  }, {
+    name: "Cookie Policy",
+    href: "#"
+  }];
+  return <footer className="bg-primary text-primary-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Newsletter Section */}
         <div className="py-12 border-b border-primary-foreground/20">
@@ -25,11 +30,7 @@ const Footer = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/60 focus:border-primary-foreground"
-              />
+              <Input type="email" placeholder="Enter your email" className="bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/60 focus:border-primary-foreground" />
               <Button variant="secondary" className="bg-accent text-accent-foreground hover:bg-accent-hover">
                 Subscribe
               </Button>
@@ -43,11 +44,7 @@ const Footer = () => {
             {/* Company Info */}
             <div className="space-y-6">
               <div className="flex items-center">
-                <img 
-                  src="/lovable-uploads/22303e3e-d2dd-4bad-a05f-9245ad435b33.png" 
-                  alt={`${storeName} Logo`} 
-                  className="h-16 w-auto"
-                />
+                
               </div>
               
               <p className="text-primary-foreground/80 leading-relaxed">
@@ -113,25 +110,16 @@ const Footer = () => {
 
             {/* Legal Links */}
             <div className="flex items-center space-x-4">
-              {legalLinks.map((link, index) => (
-                <span key={link.name} className="flex items-center space-x-4">
-                  <a
-                    href={link.href}
-                    className="text-primary-foreground/80 hover:text-accent transition-colors duration-200 text-sm"
-                  >
+              {legalLinks.map((link, index) => <span key={link.name} className="flex items-center space-x-4">
+                  <a href={link.href} className="text-primary-foreground/80 hover:text-accent transition-colors duration-200 text-sm">
                     {link.name}
                   </a>
-                  {index < legalLinks.length - 1 && (
-                    <span className="text-primary-foreground/40">|</span>
-                  )}
-                </span>
-              ))}
+                  {index < legalLinks.length - 1 && <span className="text-primary-foreground/40">|</span>}
+                </span>)}
             </div>
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
