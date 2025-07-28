@@ -46,12 +46,14 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-4 group">
             <div className="relative">
-              <img 
-                src="/lovable-uploads/22303e3e-d2dd-4bad-a05f-9245ad435b33.png" 
-                alt={`${storeName} Logo`} 
-                className="h-14 w-auto transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-transparent rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl p-2 shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:bg-white">
+                <img 
+                  src="/lovable-uploads/22303e3e-d2dd-4bad-a05f-9245ad435b33.png" 
+                  alt={`${storeName} Logo`} 
+                  className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-transparent rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             <div className="hidden sm:block">
               <span className="text-2xl font-bold text-primary-foreground tracking-tight">
