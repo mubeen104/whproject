@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag, ArrowLeft, Package } from "lucide-react";
 import Header from "@/components/Header";
-
 interface Order {
   id: string;
   order_number: string;
@@ -26,24 +25,26 @@ interface Order {
     };
   }[];
 }
-
 const Orders = () => {
-  const { user } = useAuth();
-  const { currency } = useStoreSettings();
+  const {
+    user
+  } = useAuth();
+  const {
+    currency
+  } = useStoreSettings();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     if (user) {
       fetchOrders();
     }
   }, [user]);
-
   const fetchOrders = async () => {
     try {
-      const { data, error } = await supabase
-        .from("orders")
-        .select(`
+      const {
+        data,
+        error
+      } = await supabase.from("orders").select(`
           id,
           order_number,
           status,
@@ -60,10 +61,9 @@ const Orders = () => {
               slug
             )
           )
-        `)
-        .eq("user_id", user?.id)
-        .order("created_at", { ascending: false });
-
+        `).eq("user_id", user?.id).order("created_at", {
+        ascending: false
+      });
       if (error) throw error;
       setOrders(data || []);
     } catch (error) {
@@ -72,7 +72,6 @@ const Orders = () => {
       setLoading(false);
     }
   };
-
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
@@ -89,7 +88,6 @@ const Orders = () => {
         return "bg-gray-100 text-gray-800";
     }
   };
-
   const getPaymentStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "paid":
@@ -102,10 +100,8 @@ const Orders = () => {
         return "bg-gray-100 text-gray-800";
     }
   };
-
   if (!user) {
-    return (
-      <div className="min-h-screen bg-background">
+    return <div className="min-h-screen bg-background">
         <Header />
         <div className="max-w-4xl mx-auto px-4 py-16">
           <Card>
@@ -116,20 +112,13 @@ const Orders = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Header />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => window.history.back()}
-            className="mb-4"
-          >
+          <Button variant="ghost" onClick={() => window.history.back()} className="mb-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
@@ -143,12 +132,9 @@ const Orders = () => {
           </p>
         </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
+        {loading ? <div className="flex items-center justify-center py-16">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        ) : orders.length === 0 ? (
-          <Card>
+          </div> : orders.length === 0 ? <Card>
             <CardContent className="py-16">
               <div className="text-center">
                 <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -161,11 +147,8 @@ const Orders = () => {
                 </Button>
               </div>
             </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            {orders.map((order) => (
-              <Card key={order.id}>
+          </Card> : <div className="space-y-6">
+            {orders.map(order => <Card key={order.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
@@ -180,9 +163,7 @@ const Orders = () => {
                       <Badge className={getStatusColor(order.status)}>
                         {order.status}
                       </Badge>
-                      <Badge className={getPaymentStatusColor(order.payment_status || "pending")}>
-                        {order.payment_status || "pending"}
-                      </Badge>
+                      
                     </div>
                   </div>
                 </CardHeader>
@@ -190,11 +171,7 @@ const Orders = () => {
                   <div className="space-y-4">
                     {/* Order Items */}
                     <div className="space-y-2">
-                      {order.order_items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center justify-between py-2 border-b border-border last:border-0"
-                        >
+                      {order.order_items.map(item => <div key={item.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                           <div>
                             <p className="font-medium text-foreground">
                               {item.products.name}
@@ -206,8 +183,7 @@ const Orders = () => {
                           <p className="font-medium text-foreground">
                             {currency} {item.total}
                           </p>
-                        </div>
-                      ))}
+                        </div>)}
                     </div>
 
                     {/* Order Total */}
@@ -219,13 +195,9 @@ const Orders = () => {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+              </Card>)}
+          </div>}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Orders;
