@@ -79,7 +79,7 @@ const Footer = () => {
               <div className="grid grid-cols-1 gap-4">
                 <div className="group bg-gradient-to-br from-primary-foreground/10 to-primary-foreground/5 backdrop-blur-sm rounded-xl p-4 border border-primary-foreground/10 hover:border-accent/30 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10">
                   <div className="flex items-center space-x-3">
-                    <div className="text-2xl">🕌</div>
+                    <div className="text-2xl font-bold text-accent">حلال</div>
                     <span className="font-semibold text-primary-foreground group-hover:text-accent transition-colors">Halal Certified</span>
                   </div>
                 </div>
