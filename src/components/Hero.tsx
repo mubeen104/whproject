@@ -2,17 +2,17 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Leaf, Star } from "lucide-react";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
 import heroImage from "@/assets/hero-herbals.jpg";
-
 const Hero = () => {
-  const { storeName, storeDescription, currency } = useStoreSettings();
-  
-  return (
-    <section id="hero" className="relative bg-gradient-hero min-h-[80vh] flex items-center overflow-hidden">
+  const {
+    storeName,
+    storeDescription,
+    currency
+  } = useStoreSettings();
+  return <section id="hero" className="relative bg-gradient-hero min-h-[80vh] flex items-center overflow-hidden">
       {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      />
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20" style={{
+      backgroundImage: `url(${heroImage})`
+    }} />
       
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -49,23 +49,14 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
-                className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 group"
-                asChild
-              >
+              <Button size="lg" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 group" asChild>
                 <a href="/shop">
                   Shop Now
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </a>
               </Button>
               
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-primary-foreground/20 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground hover:text-primary backdrop-blur-sm"
-                asChild
-              >
+              <Button size="lg" variant="outline" className="border-primary-foreground/20 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground hover:text-primary backdrop-blur-sm" asChild>
                 <a href="/contact">
                   Learn More
                 </a>
@@ -100,23 +91,13 @@ const Hero = () => {
           {/* Right Content - Product Showcase */}
           <div className="relative lg:block animate-scale-in">
             <div className="relative">
-              <img
-                src={heroImage}
-                alt="Natural herbal products"
-                className="rounded-2xl shadow-elevated w-full h-[500px] object-cover"
-              />
+              <img src={heroImage} alt="Natural herbal products" className="rounded-2xl shadow-elevated w-full h-[500px] object-cover" />
               
               {/* Floating Badge */}
-              <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium animate-float">
-                New Arrivals
-              </div>
+              
               
               {/* Product Preview Card */}
-              <div className="absolute bottom-4 left-4 bg-card/95 backdrop-blur-sm rounded-lg p-4 shadow-medium">
-                <p className="text-card-foreground font-medium">Premium Tea Blend</p>
-                <p className="text-muted-foreground text-sm">Chamomile & Lavender</p>
-                <p className="text-primary font-bold mt-1">{currency} 4,999</p>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -124,9 +105,9 @@ const Hero = () => {
 
       {/* Decorative Elements */}
       <div className="absolute top-20 right-20 w-20 h-20 bg-accent/10 rounded-full animate-float"></div>
-      <div className="absolute bottom-20 left-20 w-12 h-12 bg-primary-foreground/10 rounded-full animate-float" style={{ animationDelay: '1s' }}></div>
-    </section>
-  );
+      <div className="absolute bottom-20 left-20 w-12 h-12 bg-primary-foreground/10 rounded-full animate-float" style={{
+      animationDelay: '1s'
+    }}></div>
+    </section>;
 };
-
 export default Hero;

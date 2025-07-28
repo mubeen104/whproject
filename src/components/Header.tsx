@@ -39,60 +39,72 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-background border-b border-border sticky top-0 z-50 shadow-soft">
+    <header className="bg-gradient-to-r from-primary/95 to-primary backdrop-blur-md border-b border-primary-foreground/10 sticky top-0 z-50 shadow-elegant">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top bar */}
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
-            <img 
-              src="/lovable-uploads/22303e3e-d2dd-4bad-a05f-9245ad435b33.png" 
-              alt={`${storeName} Logo`} 
-              className="h-12 w-auto"
-            />
-            <span className="text-xl font-bold text-foreground hidden sm:block">
-              {storeName}
-            </span>
+          <Link to="/" className="flex items-center space-x-4 group">
+            <div className="relative">
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl p-2 shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:bg-white">
+                <img 
+                  src="/lovable-uploads/22303e3e-d2dd-4bad-a05f-9245ad435b33.png" 
+                  alt={`${storeName} Logo`} 
+                  className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-transparent rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            <div className="hidden sm:block">
+              <span className="text-2xl font-bold text-primary-foreground tracking-tight">
+                {storeName}
+              </span>
+              <div className="h-0.5 bg-gradient-to-r from-accent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex space-x-2">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+                className="relative px-4 py-2 text-primary-foreground/90 hover:text-primary-foreground transition-all duration-300 font-medium group"
               >
-                {item.name}
+                <span className="relative z-10">{item.name}</span>
+                <div className="absolute inset-0 bg-primary-foreground/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200 origin-center"></div>
+                <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-accent group-hover:w-3/4 transition-all duration-300 transform -translate-x-1/2"></div>
               </Link>
             ))}
           </nav>
 
           {/* Search Bar - Desktop */}
           <div className="hidden lg:flex items-center space-x-4 flex-1 max-w-md mx-8">
-            <form onSubmit={handleSearch} className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <form onSubmit={handleSearch} className="relative w-full group">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary-foreground/60 h-5 w-5 transition-colors group-focus-within:text-accent" />
               <Input
                 type="text"
                 placeholder="Search herbs, supplements..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
-                className="pl-10 bg-muted border-border focus:border-primary"
+                className="pl-12 pr-4 py-3 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60 focus:border-accent focus:bg-primary-foreground/15 rounded-full transition-all duration-300 backdrop-blur-sm"
               />
+              <div className="absolute inset-0 bg-gradient-to-r from-accent/10 to-transparent rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             </form>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="text-foreground hover:text-primary">
+                  <Button variant="ghost" size="icon" className="h-12 w-12 text-primary-foreground hover:text-accent hover:bg-primary-foreground/10 rounded-full transition-all duration-300 group">
                     <User className="h-5 w-5" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </Button>
                 </DropdownMenuTrigger>
-                 <DropdownMenuContent align="end" className="w-48">
+                 <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-md border-border/50">
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="flex items-center w-full">
                       <User className="h-4 w-4 mr-2" />
@@ -122,27 +134,29 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="ghost" size="icon" className="text-foreground hover:text-primary" asChild>
+              <Button variant="ghost" size="icon" className="h-12 w-12 text-primary-foreground hover:text-accent hover:bg-primary-foreground/10 rounded-full transition-all duration-300 group" asChild>
                 <Link to="/auth">
                   <User className="h-5 w-5" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </Link>
               </Button>
             )}
             
-            <Button variant="ghost" size="icon" className="text-foreground hover:text-primary relative" asChild>
+            <Button variant="ghost" size="icon" className="h-12 w-12 text-primary-foreground hover:text-accent hover:bg-primary-foreground/10 rounded-full transition-all duration-300 relative group" asChild>
               <Link to="/cart">
                 <ShoppingBag className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full h-6 w-6 flex items-center justify-center font-semibold shadow-glow animate-pulse">
                     {cartCount}
                   </span>
                 )}
+                <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden text-foreground"
+              className="md:hidden h-12 w-12 text-primary-foreground hover:text-accent hover:bg-primary-foreground/10 rounded-full transition-all duration-300"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -152,32 +166,37 @@ const Header = () => {
 
         {/* Mobile Search */}
         <div className="lg:hidden pb-4">
-          <form onSubmit={handleSearch} className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <form onSubmit={handleSearch} className="relative group">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary-foreground/60 h-5 w-5 transition-colors group-focus-within:text-accent" />
             <Input
               type="text"
               placeholder="Search herbs, supplements..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              className="pl-10 bg-muted border-border focus:border-primary"
+              className="pl-12 pr-4 py-3 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60 focus:border-accent focus:bg-primary-foreground/15 rounded-full transition-all duration-300 backdrop-blur-sm"
             />
+            <div className="absolute inset-0 bg-gradient-to-r from-accent/10 to-transparent rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
           </form>
         </div>
       </div>
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-background border-t border-border">
-          <div className="px-4 py-2 space-y-1">
-            {navigation.map((item) => (
+        <div className="md:hidden bg-primary/90 backdrop-blur-md border-t border-primary-foreground/10 animate-fade-in">
+          <div className="px-4 py-4 space-y-2">
+            {navigation.map((item, index) => (
               <Link
                 key={item.name}
                 to={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="block px-3 py-2 text-foreground hover:text-primary hover:bg-muted rounded-md transition-colors duration-200"
+                className="block px-4 py-3 text-primary-foreground/90 hover:text-primary-foreground hover:bg-primary-foreground/10 rounded-lg transition-all duration-200 group"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                {item.name}
+                <span className="relative">
+                  {item.name}
+                  <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all duration-300"></div>
+                </span>
               </Link>
             ))}
           </div>
