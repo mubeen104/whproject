@@ -65,6 +65,25 @@ const useReviews = (status: 'pending' | 'approved' | 'all' = 'all') => {
   });
 };
 
+const useReviewCounts = () => {
+  return useQuery({
+    queryKey: ['admin-review-counts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('is_approved');
+
+      if (error) throw error;
+      
+      const total = data?.length || 0;
+      const approved = data?.filter(review => review.is_approved).length || 0;
+      const pending = data?.filter(review => !review.is_approved).length || 0;
+
+      return { total, approved, pending };
+    },
+  });
+};
+
 const AdminReviews = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -72,6 +91,7 @@ const AdminReviews = () => {
   const [activeTab, setActiveTab] = useState('pending');
 
   const { data: reviews = [], isLoading } = useReviews(activeTab as any);
+  const { data: counts = { total: 0, approved: 0, pending: 0 } } = useReviewCounts();
 
   const updateReviewStatus = useMutation({
     mutationFn: async ({ reviewId, isApproved }: { reviewId: string; isApproved: boolean }) => {
@@ -88,6 +108,7 @@ const AdminReviews = () => {
         description: isApproved ? 'The review is now visible to customers.' : 'The review has been hidden from customers.',
       });
       queryClient.invalidateQueries({ queryKey: ['admin-reviews'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-review-counts'] });
       queryClient.invalidateQueries({ queryKey: ['product-reviews'] });
     },
     onError: () => {
@@ -114,6 +135,7 @@ const AdminReviews = () => {
         description: 'The review has been permanently deleted.',
       });
       queryClient.invalidateQueries({ queryKey: ['admin-reviews'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-review-counts'] });
       queryClient.invalidateQueries({ queryKey: ['product-reviews'] });
     },
     onError: () => {
@@ -170,9 +192,9 @@ const AdminReviews = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="pending">Pending ({reviews.filter(r => !r.is_approved).length})</TabsTrigger>
-          <TabsTrigger value="approved">Approved ({reviews.filter(r => r.is_approved).length})</TabsTrigger>
-          <TabsTrigger value="all">All Reviews ({reviews.length})</TabsTrigger>
+          <TabsTrigger value="pending">Pending ({counts.pending})</TabsTrigger>
+          <TabsTrigger value="approved">Approved ({counts.approved})</TabsTrigger>
+          <TabsTrigger value="all">All Reviews ({counts.total})</TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="space-y-4">
