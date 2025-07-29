@@ -78,59 +78,78 @@ const FeaturedProducts = () => {
   }
 
   return (
-    <section className="py-16 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+    <section className="py-24 bg-background relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-muted/20" />
+      <div className="absolute inset-0" style={{
+        backgroundImage: `radial-gradient(circle at 20% 50%, hsl(var(--primary) / 0.05) 0%, transparent 50%),
+                         radial-gradient(circle at 80% 50%, hsl(var(--accent) / 0.05) 0%, transparent 50%)`
+      }} />
+      
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Enhanced Section Header */}
+        <div className="text-center mb-16 animate-fade-in">
+          <div className="flex items-center justify-center mb-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent w-24" />
+            <span className="mx-4 text-sm font-semibold text-primary uppercase tracking-wider">Best Sellers</span>
+            <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent w-24" />
+          </div>
+          
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
             Featured Products
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-xl max-w-3xl mx-auto leading-relaxed">
             Discover our most popular herbal supplements and wellness products, 
             carefully selected for their quality and effectiveness.
           </p>
         </div>
 
-        {/* Products Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
+        {/* Enhanced Products Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {products.map((product, index) => (
             <Card 
               key={product.id} 
-              className="group overflow-hidden border-0 bg-card shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-2"
+              className="group overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 hover:rotate-1 animate-fade-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               <CardContent className="p-0">
-                {/* Product Image */}
-                <div className="relative overflow-hidden">
-                  <img
-                    src={getMainImage(product)}
-                    alt={product.name}
-                    className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                {/* Enhanced Product Image */}
+                <div className="relative overflow-hidden rounded-t-xl">
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <img
+                      src={getMainImage(product)}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                  </div>
                   
-                  {/* Badges */}
-                  <div className="absolute top-3 left-3 flex flex-col gap-2">
+                  {/* Animated Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                  
+                  {/* Enhanced Badges */}
+                  <div className="absolute top-4 left-4 flex flex-col gap-2">
                     {product.is_featured && (
-                      <Badge className="bg-primary/90 text-primary-foreground backdrop-blur-sm">
-                        Featured
+                      <Badge className="bg-primary shadow-lg animate-pulse">
+                        ⭐ Featured
                       </Badge>
                     )}
                   </div>
                   
                   {product.compare_price && product.compare_price > product.price && (
-                    <Badge className="absolute top-3 right-3 bg-destructive/90 text-destructive-foreground backdrop-blur-sm">
-                      Sale
+                    <Badge className="absolute top-4 right-4 bg-red-500 text-white shadow-lg animate-bounce">
+                      🔥 Sale
                     </Badge>
                   )}
                   
                   {/* Out of Stock Overlay */}
                   {product.inventory_quantity === 0 && (
-                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
-                      <Badge variant="secondary" className="text-lg font-medium">Out of Stock</Badge>
+                    <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center">
+                      <Badge variant="secondary" className="text-lg font-medium shadow-lg">Out of Stock</Badge>
                     </div>
                   )}
 
-                  {/* Quick Actions Overlay */}
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  {/* Enhanced Quick Actions Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button

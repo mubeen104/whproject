@@ -75,63 +75,83 @@ const Categories = () => {
   }
 
   return (
-    <section className="py-16 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+    <section className="py-24 bg-background relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-gradient-to-br from-muted/10 via-transparent to-primary/5" />
+      <div className="absolute inset-0" style={{
+        backgroundImage: `radial-gradient(circle at 30% 70%, hsl(var(--accent) / 0.05) 0%, transparent 50%),
+                         radial-gradient(circle at 70% 30%, hsl(var(--primary) / 0.05) 0%, transparent 50%)`
+      }} />
+      
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Enhanced Section Header */}
+        <div className="text-center mb-20 animate-fade-in">
+          <div className="flex items-center justify-center mb-6">
+            <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent w-32" />
+            <span className="mx-4 text-sm font-semibold text-accent uppercase tracking-wider">Categories</span>
+            <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent w-32" />
+          </div>
+          
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 bg-gradient-to-r from-foreground via-accent to-foreground bg-clip-text text-transparent">
             Shop by Category
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-xl max-w-3xl mx-auto leading-relaxed">
             Explore our carefully curated categories of natural wellness products, 
             each designed to support your healthy lifestyle.
           </p>
         </div>
 
-        {/* Categories Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category) => (
+        {/* Enhanced Categories Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {categories.map((category, index) => (
             <Card 
               key={category.id}
-              className="group cursor-pointer hover:shadow-medium transition-all duration-300 hover:-translate-y-1 border-border overflow-hidden"
+              className="group cursor-pointer border border-border/50 bg-card/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 hover:rotate-1 overflow-hidden animate-fade-in"
+              style={{ animationDelay: `${index * 0.15}s` }}
             >
               <CardContent className="p-0">
-                {/* Category Image */}
-                <div className="relative h-48 overflow-hidden">
+                {/* Enhanced Category Image */}
+                <div className="relative h-56 overflow-hidden">
                   <img
                     src={category.image_url || getImageForCategory(category.slug)}
                     alt={category.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                   
-                  {/* Gradient Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${getColorForCategory(category.slug)} opacity-20 group-hover:opacity-30 transition-opacity duration-300`} />
+                  {/* Enhanced Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
                   
-                  {/* Icon Badge */}
-                  <div className="absolute top-3 right-3 bg-card/90 backdrop-blur-sm text-card-foreground p-2 rounded-full">
+                  {/* Floating Icon Badge */}
+                  <div className="absolute top-4 right-4 bg-white/90 text-primary p-3 rounded-full shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
                     {getIconForCategory(category.slug)}
+                  </div>
+                  
+                  {/* Category Name Overlay */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-accent transition-colors duration-300">
+                      {category.name}
+                    </h3>
                   </div>
                 </div>
 
-                {/* Category Info */}
-                <div className="p-6 space-y-3">
-                  <h3 className="text-xl font-semibold text-foreground">
-                    {category.name}
-                  </h3>
-                  
-                  <p className="text-muted-foreground">
+                {/* Enhanced Category Info */}
+                <div className="p-6 space-y-4">
+                  <p className="text-muted-foreground leading-relaxed line-clamp-3 group-hover:text-foreground transition-colors duration-300">
                     {category.description}
                   </p>
 
                   <Button 
                     variant="outline" 
-                    className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300"
+                    className="w-full group border-2 border-primary/20 text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary hover:scale-105 transition-all duration-300 font-semibold"
                     onClick={() => {
                       navigate(`/shop?category=${category.slug}`);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                   >
-                    Shop Now
+                    <span className="group-hover:translate-x-1 transition-transform duration-300">
+                      Explore Collection
+                    </span>
+                    <span className="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
                   </Button>
                 </div>
               </CardContent>
