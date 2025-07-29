@@ -194,10 +194,12 @@ export const useGuestCart = () => {
       cartCount: authCart.cartCount,
       cartTotal: authCart.cartTotal,
       isLoading: authCart.isLoading,
-      addToCart: authCart.addToCart.mutateAsync,
-      updateQuantity: authCart.updateQuantity.mutateAsync,
-      removeFromCart: authCart.removeFromCart.mutateAsync,
-      clearCart: authCart.clearCart.mutateAsync,
+      addToCart: (productId: string, quantity: number = 1) => 
+        authCart.addToCart.mutateAsync({ productId, quantity }),
+      updateQuantity: ({ itemId, quantity }: { itemId: string; quantity: number }) => 
+        authCart.updateQuantity.mutateAsync({ itemId, quantity }),
+      removeFromCart: (itemId: string) => authCart.removeFromCart.mutateAsync(itemId),
+      clearCart: () => authCart.clearCart.mutateAsync(),
       transferGuestCartToAuth,
       isGuest: false
     };
