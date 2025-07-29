@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Leaf, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,12 +19,20 @@ export default function ResetPassword() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Check if we have the required tokens in the URL
+  // Handle password reset flow
   useEffect(() => {
-    const accessToken = searchParams.get('access_token');
-    const refreshToken = searchParams.get('refresh_token');
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
+    const type = hashParams.get('type');
     
-    if (!accessToken || !refreshToken) {
+    if (type === 'recovery' && accessToken && refreshToken) {
+      // Set the session with the tokens from the URL
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken
+      });
+    } else {
       toast({
         title: "Invalid reset link",
         description: "This password reset link is invalid or has expired",
@@ -31,14 +40,17 @@ export default function ResetPassword() {
       });
       navigate('/auth');
     }
-  }, [searchParams, navigate, toast]);
+  }, [navigate, toast]);
 
   // Redirect if already authenticated and not in reset flow
   useEffect(() => {
-    if (user && !searchParams.get('access_token')) {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get('type');
+    
+    if (user && type !== 'recovery') {
       navigate('/', { replace: true });
     }
-  }, [user, navigate, searchParams]);
+  }, [user, navigate]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
