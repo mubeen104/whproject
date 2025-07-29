@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ShoppingCart, Eye, Search, Filter, Star } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
 import { useCategories } from '@/hooks/useCategories';
-import { useCart } from '@/hooks/useCart';
+import { useGuestCart } from '@/hooks/useGuestCart';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useToast } from '@/hooks/use-toast';
 
@@ -33,7 +33,7 @@ export default function Shop() {
 
   const { data: products, isLoading: productsLoading } = useProducts();
   const { data: categories, isLoading: categoriesLoading } = useCategories();
-  const { addToCart } = useCart();
+  const { addToCart, isLoading: cartLoading } = useGuestCart();
   const { currency } = useStoreSettings();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -65,14 +65,20 @@ export default function Shop() {
     }
   });
 
-  const handleAddToCart = (product: any) => {
-    addToCart.mutate(
-      { productId: product.id, quantity: 1 }
-    );
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-    });
+  const handleAddToCart = async (product: any) => {
+    try {
+      await addToCart(product.id, 1);
+      toast({
+        title: "Added to cart",
+        description: `${product.name} has been added to your cart.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add product to cart.",
+        variant: "destructive",
+      });
+    }
   };
 
   const getMainImage = (product: any) => {
@@ -330,12 +336,12 @@ export default function Shop() {
                                           </div>
                                         </div>
 
-                                        <Button
-                                          onClick={() => handleAddToCart(selectedProduct)}
-                                          disabled={addToCart.isPending || selectedProduct.inventory_quantity === 0}
-                                          className="w-full rounded-full py-6 text-base font-medium"
-                                          size="lg"
-                                        >
+                        <Button
+                          onClick={() => handleAddToCart(selectedProduct)}
+                          disabled={cartLoading || selectedProduct.inventory_quantity === 0}
+                          className="w-full rounded-full py-6 text-base font-medium"
+                          size="lg"
+                        >
                                           <ShoppingCart className="h-5 w-5 mr-2" />
                                           {selectedProduct.inventory_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
                                         </Button>
@@ -390,7 +396,7 @@ export default function Shop() {
                           <div className="flex gap-3">
                             <Button
                               onClick={() => handleAddToCart(product)}
-                              disabled={addToCart.isPending || product.inventory_quantity === 0}
+                              disabled={cartLoading || product.inventory_quantity === 0}
                               className="flex-1 rounded-full font-medium"
                               variant="outline"
                             >

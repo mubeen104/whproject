@@ -374,14 +374,25 @@ export default function AdminOrders() {
                           </p>
                         </div>
                       </TableCell>
-                      <TableCell className="py-4">
-                        <div className="space-y-1">
-                          <p className="font-medium">
-                            {order.profiles?.first_name || 'N/A'} {order.profiles?.last_name || ''}
-                          </p>
-                          <p className="text-sm text-muted-foreground">{order.profiles?.email || 'No email'}</p>
-                        </div>
-                      </TableCell>
+                       <TableCell className="py-4">
+                         <div className="space-y-1">
+                           <p className="font-medium">
+                             {order.profiles?.first_name ? 
+                               `${order.profiles.first_name} ${order.profiles.last_name || ''}` : 
+                               (order.shipping_address?.firstName ? 
+                                 `${order.shipping_address.firstName} ${order.shipping_address.lastName || ''}` : 
+                                 'Guest User'
+                               )
+                             }
+                           </p>
+                           <p className="text-sm text-muted-foreground">
+                             {order.profiles?.email || order.shipping_address?.email || 'No email'}
+                           </p>
+                           {!order.profiles && order.shipping_address && (
+                             <Badge variant="secondary" className="text-xs">Guest</Badge>
+                           )}
+                         </div>
+                       </TableCell>
                       <TableCell className="py-4">
                         <div className="font-semibold text-lg">
                           Rs {Number(order.total_amount).toFixed(2)}
