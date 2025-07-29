@@ -13,13 +13,13 @@ export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [tokens, setTokens] = useState<{ accessToken: string; refreshToken: string } | null>(null);
   const [searchParams] = useSearchParams();
   
-  const { updatePassword, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Handle password reset flow
+  // Handle password reset flow - store tokens without logging in
   useEffect(() => {
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const accessToken = hashParams.get('access_token');
@@ -27,11 +27,8 @@ export default function ResetPassword() {
     const type = hashParams.get('type');
     
     if (type === 'recovery' && accessToken && refreshToken) {
-      // Set the session with the tokens from the URL
-      supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken
-      });
+      // Store tokens for later use, don't set session immediately
+      setTokens({ accessToken, refreshToken });
     } else {
       toast({
         title: "Invalid reset link",
@@ -41,16 +38,6 @@ export default function ResetPassword() {
       navigate('/auth');
     }
   }, [navigate, toast]);
-
-  // Redirect if already authenticated and not in reset flow
-  useEffect(() => {
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const type = hashParams.get('type');
-    
-    if (user && type !== 'recovery') {
-      navigate('/', { replace: true });
-    }
-  }, [user, navigate]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,18 +62,60 @@ export default function ResetPassword() {
 
     setIsLoading(true);
 
+    if (!tokens) {
+      toast({
+        title: "Error",
+        description: "No valid reset session found",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      const { error } = await updatePassword(password);
-      
-      if (!error) {
+      // Set session with stored tokens and immediately update password
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: tokens.accessToken,
+        refresh_token: tokens.refreshToken
+      });
+
+      if (sessionError) {
         toast({
-          title: "Password updated",
-          description: "Your password has been successfully updated. Please sign in with your new password.",
+          title: "Error",
+          description: "Invalid reset session",
+          variant: "destructive",
         });
-        navigate('/auth');
+        return;
       }
+
+      // Update password
+      const { error } = await supabase.auth.updateUser({
+        password: password
+      });
+      
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Sign out immediately after password update
+      await supabase.auth.signOut();
+      
+      toast({
+        title: "Password updated",
+        description: "Your password has been successfully updated. Please sign in with your new password.",
+      });
+      navigate('/auth');
     } catch (error) {
       console.error('Password update error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update password. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
