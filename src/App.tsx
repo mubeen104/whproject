@@ -9,6 +9,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Contact from "./pages/Contact";
+import AboutUs from "./pages/AboutUs";
 import ProductDetail from "./pages/ProductDetail";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<AboutUs />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
