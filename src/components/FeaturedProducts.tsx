@@ -331,7 +331,7 @@ const FeaturedProducts = () => {
           <Button 
             size="lg" 
             onClick={() => navigate('/shop')}
-            className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white rounded-full px-8 py-6 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300 border-0"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-6 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300 border-0"
           >
             Explore All Products
             <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
