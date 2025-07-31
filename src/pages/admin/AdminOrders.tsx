@@ -104,20 +104,25 @@ export default function AdminOrders() {
       const { data: ordersData, error: ordersError } = await query;
       if (ordersError) throw ordersError;
 
-      // Then get profiles for each order
+      // Then get profiles for each order (only for authenticated users)
       if (ordersData && ordersData.length > 0) {
-        const userIds = [...new Set(ordersData.map(order => order.user_id))];
-        const { data: profilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('user_id, first_name, last_name, email')
-          .in('user_id', userIds);
+        const userIds = [...new Set(ordersData.map(order => order.user_id).filter(Boolean))];
+        let profilesData = [];
+        
+        if (userIds.length > 0) {
+          const { data, error: profilesError } = await supabase
+            .from('profiles')
+            .select('user_id, first_name, last_name, email')
+            .in('user_id', userIds);
 
-        if (profilesError) throw profilesError;
+          if (profilesError) throw profilesError;
+          profilesData = data || [];
+        }
 
         // Combine orders with profiles
         const ordersWithProfiles = ordersData.map(order => ({
           ...order,
-          profiles: profilesData?.find(profile => profile.user_id === order.user_id) || null
+          profiles: order.user_id ? profilesData?.find(profile => profile.user_id === order.user_id) || null : null
         }));
 
         return ordersWithProfiles;
