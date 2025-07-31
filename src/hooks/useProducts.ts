@@ -23,6 +23,14 @@ export interface Product {
     alt_text: string;
     sort_order: number;
   }>;
+  product_categories?: Array<{
+    category_id: string;
+    categories: {
+      id: string;
+      name: string;
+      slug: string;
+    };
+  }>;
 }
 
 export const useProducts = () => {
@@ -38,6 +46,14 @@ export const useProducts = () => {
             image_url,
             alt_text,
             sort_order
+          ),
+          product_categories (
+            category_id,
+            categories (
+              id,
+              name,
+              slug
+            )
           )
         `)
         .eq('is_active', true)
@@ -65,6 +81,14 @@ export const useFeaturedProducts = () => {
             image_url,
             alt_text,
             sort_order
+          ),
+          product_categories (
+            category_id,
+            categories (
+              id,
+              name,
+              slug
+            )
           )
         `)
         .eq('is_active', true)

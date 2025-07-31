@@ -47,7 +47,7 @@ const ShopSection = () => {
       product.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesCategory = selectedCategory === 'all' || 
-      product.tags?.includes(selectedCategory);
+      product.product_categories?.some(pc => pc.categories.slug === selectedCategory);
     
     return matchesSearch && matchesCategory;
   });
