@@ -15,7 +15,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useCategories } from '@/hooks/useCategories';
-import { useProductVariants } from '@/hooks/useProductVariants';
+import { useProductVariants, useCreateProductVariant } from '@/hooks/useProductVariants';
 import { ProductVariantForm } from '@/components/admin/ProductVariantForm';
 
 interface Product {
@@ -65,6 +65,15 @@ export default function AdminProducts() {
     is_active: true,
     is_featured: false
   });
+
+  const [productVariants, setProductVariants] = useState<Array<{
+    id?: string;
+    name: string;
+    price: string;
+    image_url: string;
+    file?: File;
+    isUploading?: boolean;
+  }>>([]);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -147,6 +156,13 @@ export default function AdminProducts() {
           .delete()
           .eq('product_id', editingProduct.id);
         if (deleteImagesError) throw deleteImagesError;
+
+        // For updates, also delete existing variants
+        const { error: deleteVariantsError } = await supabase
+          .from('product_variants')
+          .delete()
+          .eq('product_id', editingProduct.id);
+        if (deleteVariantsError) throw deleteVariantsError;
       }
 
       // Insert new images
@@ -162,6 +178,44 @@ export default function AdminProducts() {
           .from('product_images')
           .insert(imageData);
         if (insertImagesError) throw insertImagesError;
+      }
+
+      // Handle product variants
+      if (productVariants.length > 0) {
+        const variantData = productVariants.map((variant, index) => ({
+          product_id: product.id,
+          name: variant.name,
+          price: parseFloat(variant.price),
+          inventory_quantity: 0,
+          variant_options: {},
+          is_active: true,
+          sort_order: index
+        }));
+
+        const { data: insertedVariants, error: insertVariantsError } = await supabase
+          .from('product_variants')
+          .insert(variantData)
+          .select();
+        
+        if (insertVariantsError) throw insertVariantsError;
+
+        // Handle variant images
+        const variantImagePromises = productVariants.map(async (variant, index) => {
+          if (variant.image_url && insertedVariants[index]) {
+            const { error: variantImageError } = await supabase
+              .from('product_variant_images')
+              .insert({
+                variant_id: insertedVariants[index].id,
+                image_url: variant.image_url,
+                alt_text: variant.name,
+                sort_order: 0
+              });
+            
+            if (variantImageError) throw variantImageError;
+          }
+        });
+
+        await Promise.all(variantImagePromises);
       }
 
       return product;
@@ -280,6 +334,7 @@ export default function AdminProducts() {
     });
     setSelectedCategories([]);
     setProductImages([]);
+    setProductVariants([]);
   };
 
   // Image management functions
@@ -387,6 +442,111 @@ export default function AdminProducts() {
     }
   };
 
+  // Variant management functions
+  const addVariant = () => {
+    setProductVariants([...productVariants, {
+      name: '',
+      price: '',
+      image_url: '',
+      isUploading: false
+    }]);
+  };
+
+  const removeVariant = (index: number) => {
+    setProductVariants(productVariants.filter((_, i) => i !== index));
+  };
+
+  const updateVariant = (index: number, field: string, value: string) => {
+    const updatedVariants = [...productVariants];
+    updatedVariants[index] = { ...updatedVariants[index], [field]: value };
+    setProductVariants(updatedVariants);
+  };
+
+  // Variant file upload function
+  const uploadVariantFile = async (file: File, index: number) => {
+    try {
+      // Mark as uploading
+      const updatedVariants = [...productVariants];
+      updatedVariants[index] = { ...updatedVariants[index], isUploading: true };
+      setProductVariants(updatedVariants);
+
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `variant-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = fileName;
+
+      // Upload file to Supabase storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+
+      // Update variant with URL
+      const finalUpdatedVariants = [...productVariants];
+      finalUpdatedVariants[index] = {
+        ...finalUpdatedVariants[index],
+        image_url: urlData.publicUrl,
+        isUploading: false,
+        file: undefined
+      };
+      setProductVariants(finalUpdatedVariants);
+
+      toast({
+        title: "Success",
+        description: "Variant image uploaded successfully.",
+      });
+
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      
+      // Remove uploading state
+      const updatedVariants = [...productVariants];
+      updatedVariants[index] = { ...updatedVariants[index], isUploading: false };
+      setProductVariants(updatedVariants);
+
+      toast({
+        title: "Upload Error",
+        description: error.message || "Failed to upload variant image.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleVariantFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid File",
+          description: "Please select an image file.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File Too Large",
+          description: "Please select an image smaller than 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      uploadVariantFile(file, index);
+    }
+  };
+
   const handleEdit = async (product: Product) => {
     setEditingProduct(product);
     setFormData({
@@ -436,6 +596,34 @@ export default function AdminProducts() {
     } catch (error) {
       console.error('Error loading product images:', error);
       setProductImages([]);
+    }
+
+    // Load existing variants for this product
+    try {
+      const { data: productVariants, error } = await supabase
+        .from('product_variants')
+        .select(`
+          *,
+          product_variant_images (
+            image_url,
+            alt_text
+          )
+        `)
+        .eq('product_id', product.id)
+        .order('sort_order');
+      
+      if (error) throw error;
+      
+      setProductVariants(productVariants?.map(variant => ({
+        id: variant.id,
+        name: variant.name,
+        price: variant.price.toString(),
+        image_url: variant.product_variant_images?.[0]?.image_url || '',
+        isUploading: false
+      })) || []);
+    } catch (error) {
+      console.error('Error loading product variants:', error);
+      setProductVariants([]);
     }
     
     setIsDialogOpen(true);
@@ -750,6 +938,139 @@ export default function AdminProducts() {
                         className="mt-2"
                       >
                         Add First Image
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Variants Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label>Product Variants</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addVariant}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Variant
+                    </Button>
+                  </div>
+                  
+                  {productVariants.map((variant, index) => (
+                    <div key={index} className="border border-border rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">Variant {index + 1}</span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeVariant(index)}
+                          disabled={variant.isUploading}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Variant Name */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Variant Name</Label>
+                          <Input
+                            placeholder="e.g., 30ml, Large, Red"
+                            value={variant.name}
+                            onChange={(e) => updateVariant(index, 'name', e.target.value)}
+                            disabled={variant.isUploading}
+                          />
+                        </div>
+
+                        {/* Variant Price */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Price</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            value={variant.price}
+                            onChange={(e) => updateVariant(index, 'price', e.target.value)}
+                            disabled={variant.isUploading}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Variant Image */}
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Variant Image</Label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleVariantFileChange(e, index)}
+                            disabled={variant.isUploading}
+                            className="hidden"
+                            id={`variant-file-upload-${index}`}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => document.getElementById(`variant-file-upload-${index}`)?.click()}
+                            disabled={variant.isUploading}
+                            className="w-full"
+                          >
+                            {variant.isUploading ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                                Uploading...
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="h-4 w-4 mr-2" />
+                                Choose Variant Image
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                        
+                        {/* URL Input for variant */}
+                        <Input
+                          placeholder="Or enter image URL"
+                          value={variant.image_url}
+                          onChange={(e) => updateVariant(index, 'image_url', e.target.value)}
+                          disabled={variant.isUploading}
+                        />
+                      </div>
+                      
+                      {/* Variant Image Preview */}
+                      {variant.image_url && !variant.isUploading && (
+                        <div className="mt-3">
+                          <Label className="text-sm font-medium mb-2 block">Preview</Label>
+                          <img
+                            src={variant.image_url}
+                            alt={variant.name || `Variant ${index + 1}`}
+                            className="w-32 h-32 object-cover rounded border shadow-sm"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  
+                  {productVariants.length === 0 && (
+                    <div className="text-center py-6 border-2 border-dashed border-border rounded-lg">
+                      <Package className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                      <p className="text-muted-foreground text-sm">No variants added yet</p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addVariant}
+                        className="mt-2"
+                        size="sm"
+                      >
+                        Add First Variant
                       </Button>
                     </div>
                   )}
