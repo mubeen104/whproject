@@ -145,8 +145,16 @@ const ProductDetail = () => {
 
   const handleBuyNow = () => {
     // Add to cart and redirect to checkout
+    const productToAdd = selectedVariant ? {
+      productId: selectedVariant.id,
+      quantity
+    } : {
+      productId: product.id,
+      quantity
+    };
+    
     addToCart.mutate(
-      { productId: product.id, quantity },
+      productToAdd,
       {
         onSuccess: () => {
           navigate('/cart');
@@ -313,15 +321,15 @@ const ProductDetail = () => {
               <div className="flex space-x-4">
                 <Button
                   onClick={handleAddToCart}
-                  disabled={addToCart.isPending}
+                  disabled={addToCart.isPending || (getCurrentInventory() || 0) <= 0}
                   className="flex-1"
                   variant="outline"
                 >
-                  Add to Cart
+                  {(getCurrentInventory() || 0) > 0 ? 'Add to Cart' : 'Out of Stock'}
                 </Button>
                 <Button
                   onClick={handleBuyNow}
-                  disabled={addToCart.isPending}
+                  disabled={addToCart.isPending || (getCurrentInventory() || 0) <= 0}
                   className="flex-1"
                 >
                   Buy Now

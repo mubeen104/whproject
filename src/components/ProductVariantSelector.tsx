@@ -16,105 +16,51 @@ export const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
   onVariantChange,
   selectedVariant
 }) => {
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
-
-  // Get all unique option keys (e.g., 'size', 'color')
-  const optionKeys = Array.from(
-    new Set(
-      variants.flatMap(variant => 
-        Object.keys(variant.variant_options || {})
-      )
-    )
-  );
-
-  // Get available values for each option key
-  const getAvailableValues = (optionKey: string) => {
-    return Array.from(
-      new Set(
-        variants
-          .filter(variant => variant.variant_options[optionKey])
-          .map(variant => variant.variant_options[optionKey])
-      )
-    );
-  };
-
-  // Find matching variant based on selected options
-  const findMatchingVariant = (options: Record<string, string>) => {
-    return variants.find(variant => {
-      return Object.entries(options).every(([key, value]) => 
-        variant.variant_options[key] === value
-      );
-    });
-  };
-
-  // Handle option selection
-  const handleOptionChange = (optionKey: string, value: string) => {
-    const newOptions = { ...selectedOptions, [optionKey]: value };
-    setSelectedOptions(newOptions);
-
-    const matchingVariant = findMatchingVariant(newOptions);
-    if (matchingVariant) {
-      onVariantChange(matchingVariant);
-    }
-  };
-
-  // Initialize with first variant if no selection
+  // For simple variant selection, we'll just show a list of variant buttons
   useEffect(() => {
-    if (!selectedVariant && variants.length > 0) {
-      const firstVariant = variants[0];
-      setSelectedOptions(firstVariant.variant_options || {});
-      onVariantChange(firstVariant);
+    // Auto-select first variant if none selected and variants exist
+    if (!selectedVariant && variants && variants.length > 0) {
+      onVariantChange(variants[0]);
     }
   }, [variants, selectedVariant, onVariantChange]);
 
-  // Update selected options when selectedVariant changes externally
-  useEffect(() => {
-    if (selectedVariant) {
-      setSelectedOptions(selectedVariant.variant_options || {});
-    }
-  }, [selectedVariant]);
-
-  if (variants.length <= 1) {
+  if (!variants || variants.length <= 1) {
     return null; // Don't show selector if only one or no variants
   }
 
   return (
     <div className="space-y-4">
-      {optionKeys.map(optionKey => (
-        <div key={optionKey} className="space-y-2">
-          <Label className="text-sm font-medium capitalize">
-            {optionKey}
-          </Label>
-          <div className="flex flex-wrap gap-2">
-            {getAvailableValues(optionKey).map(value => {
-              const isSelected = selectedOptions[optionKey] === value;
-              const isAvailable = variants.some(variant => 
-                variant.variant_options[optionKey] === value &&
-                variant.inventory_quantity > 0
-              );
+      <Label className="text-sm font-medium">
+        Choose Variant
+      </Label>
+      
+      <div className="grid grid-cols-2 gap-2">
+        {variants.map((variant) => {
+          const isSelected = selectedVariant?.id === variant.id;
+          const isAvailable = (variant.inventory_quantity || 0) > 0;
 
-              return (
-                <Button
-                  key={value}
-                  variant={isSelected ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleOptionChange(optionKey, value)}
-                  disabled={!isAvailable}
-                  className={`
-                    ${isSelected ? 'bg-primary text-primary-foreground' : ''}
-                    ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
-                  `}
-                >
-                  {value}
-                  {!isAvailable && (
-                    <span className="ml-1 text-xs">(Out of stock)</span>
-                  )}
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+          return (
+            <Button
+              key={variant.id}
+              variant={isSelected ? "default" : "outline"}
+              size="sm"
+              onClick={() => onVariantChange(variant)}
+              disabled={!isAvailable}
+              className={`
+                flex flex-col items-start p-3 h-auto text-left
+                ${isSelected ? 'bg-primary text-primary-foreground' : ''}
+                ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
+              `}
+            >
+              <div className="font-medium text-sm">{variant.name}</div>
+              <div className="text-xs opacity-80">
+                Rs {variant.price.toFixed(2)}
+                {!isAvailable && ' (Out of stock)'}
+              </div>
+            </Button>
+          );
+        })}
+      </div>
 
       {selectedVariant && (
         <Card className="mt-4">
@@ -140,10 +86,10 @@ export const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
               </div>
               <div className="text-right">
                 <Badge 
-                  variant={selectedVariant.inventory_quantity > 0 ? "default" : "destructive"}
+                  variant={(selectedVariant.inventory_quantity || 0) > 0 ? "default" : "destructive"}
                 >
-                  {selectedVariant.inventory_quantity > 0 
-                    ? `${selectedVariant.inventory_quantity} in stock` 
+                  {(selectedVariant.inventory_quantity || 0) > 0 
+                    ? `${selectedVariant.inventory_quantity || 0} in stock` 
                     : 'Out of stock'
                   }
                 </Badge>
