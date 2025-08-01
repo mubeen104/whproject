@@ -34,6 +34,12 @@ interface Product {
   ingredients: string;
   usage_instructions: string;
   created_at: string;
+  product_images?: Array<{
+    id: string;
+    image_url: string;
+    alt_text: string;
+    sort_order: number;
+  }>;
 }
 
 interface ProductImage {
@@ -624,32 +630,6 @@ export default function AdminProducts() {
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-8">
-                      <div className="flex items-center space-x-3">
-                        <Switch
-                          id="is_active"
-                          checked={formData.is_active}
-                          onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-                        />
-                        <Label htmlFor="is_active">Active Product</Label>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Switch
-                          id="is_featured"
-                          checked={formData.is_featured}
-                          onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
-                        />
-                        <Label htmlFor="is_featured">Featured Product</Label>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Switch
-                          id="is_kits_deals"
-                          checked={formData.is_kits_deals}
-                          onCheckedChange={(checked) => setFormData({ ...formData, is_kits_deals: checked })}
-                        />
-                        <Label htmlFor="is_kits_deals">Kits & Deals</Label>
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
 
@@ -902,10 +882,10 @@ export default function AdminProducts() {
                         value={formData.features}
                         onChange={(e) => setFormData({ ...formData, features: e.target.value })}
                         rows={3}
-                        placeholder="List key features..."
+                        placeholder="Key features of the product..."
                       />
                     </div>
-
+                    
                     <div className="space-y-2">
                       <Label htmlFor="ingredients">Ingredients</Label>
                       <Textarea
@@ -913,10 +893,10 @@ export default function AdminProducts() {
                         value={formData.ingredients}
                         onChange={(e) => setFormData({ ...formData, ingredients: e.target.value })}
                         rows={3}
-                        placeholder="List ingredients..."
+                        placeholder="Product ingredients..."
                       />
                     </div>
-
+                    
                     <div className="space-y-2">
                       <Label htmlFor="usage_instructions">Usage Instructions</Label>
                       <Textarea
@@ -927,29 +907,125 @@ export default function AdminProducts() {
                         placeholder="How to use this product..."
                       />
                     </div>
-
-                    <div className="space-y-2">
-                      <Label>Categories</Label>
-                      <div className="space-y-2 max-h-32 overflow-y-auto border rounded-md p-3">
-                        {categories?.map((category) => (
-                          <div key={category.id} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`category-${category.id}`}
-                              checked={selectedCategories.includes(category.id)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  setSelectedCategories(prev => [...prev, category.id]);
-                                } else {
-                                  setSelectedCategories(prev => prev.filter(id => id !== category.id));
-                                }
-                              }}
-                            />
-                            <Label htmlFor={`category-${category.id}`} className="text-sm font-normal">
-                              {category.name}
-                            </Label>
-                          </div>
-                        ))}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="sku">SKU</Label>
+                        <Input
+                          id="sku"
+                          value={formData.sku}
+                          onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                          placeholder="Stock Keeping Unit"
+                        />
                       </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="inventory_quantity">Inventory Quantity</Label>
+                        <Input
+                          id="inventory_quantity"
+                          type="number"
+                          value={formData.inventory_quantity}
+                          onChange={(e) => setFormData({ ...formData, inventory_quantity: e.target.value })}
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Product Settings */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Product Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        id="is_active"
+                        checked={formData.is_active}
+                        onCheckedChange={(checked) => 
+                          setFormData({ ...formData, is_active: !!checked })
+                        }
+                      />
+                      <div className="space-y-1">
+                        <Label htmlFor="is_active" className="text-sm font-medium cursor-pointer">
+                          Active Product
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Make this product visible in your store
+                        </p>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        id="is_featured"
+                        checked={formData.is_featured}
+                        onCheckedChange={(checked) => 
+                          setFormData({ ...formData, is_featured: !!checked })
+                        }
+                      />
+                      <div className="space-y-1">
+                        <Label htmlFor="is_featured" className="text-sm font-medium cursor-pointer">
+                          Featured Product
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Show this product in the featured section
+                        </p>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        id="is_kits_deals"
+                        checked={formData.is_kits_deals}
+                        onCheckedChange={(checked) => 
+                          setFormData({ ...formData, is_kits_deals: !!checked })
+                        }
+                      />
+                      <div className="space-y-1">
+                        <Label htmlFor="is_kits_deals" className="text-sm font-medium cursor-pointer">
+                          Kits & Deals Product
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Add this product to the Kits & Deals section
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Categories */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Categories</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {categories?.map((category) => (
+                        <div key={category.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`category-${category.id}`}
+                            checked={selectedCategories.includes(category.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedCategories([...selectedCategories, category.id]);
+                              } else {
+                                setSelectedCategories(selectedCategories.filter(id => id !== category.id));
+                              }
+                            }}
+                          />
+                          <Label 
+                            htmlFor={`category-${category.id}`} 
+                            className="text-sm cursor-pointer"
+                          >
+                            {category.name}
+                          </Label>
+                        </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
@@ -1081,6 +1157,9 @@ export default function AdminProducts() {
                         </Badge>
                         {product.is_featured && (
                           <Badge variant="outline">Featured</Badge>
+                        )}
+                        {(product as any).is_kits_deals && (
+                          <Badge variant="outline">Kit & Deal</Badge>
                         )}
                       </div>
                     </TableCell>

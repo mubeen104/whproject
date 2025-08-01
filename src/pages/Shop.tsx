@@ -21,6 +21,7 @@ export default function Shop() {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get('category') || 'all');
   const [sortBy, setSortBy] = useState<string>('newest');
+  const [productType, setProductType] = useState<string>('all'); // New state for product type
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   // Update search term and category when URL changes
@@ -54,7 +55,11 @@ export default function Shop() {
     const matchesCategory = selectedCategory === 'all' || 
       product.product_categories?.some(pc => pc.categories.slug === selectedCategory);
     
-    return matchesSearch && matchesCategory;
+    const matchesType = productType === 'all' || 
+      (productType === 'kits-deals' && product.is_kits_deals) ||
+      (productType === 'single-items' && !product.is_kits_deals);
+    
+    return matchesSearch && matchesCategory && matchesType;
   });
 
   const sortedProducts = filteredProducts?.sort((a, b) => {
@@ -139,6 +144,20 @@ export default function Shop() {
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-4 lg:w-auto">
+                  <Select value={productType} onValueChange={setProductType}>
+                    <SelectTrigger className="w-full sm:w-56 h-14 border-2 rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
+                      <div className="flex items-center">
+                        <ShoppingCart className="h-5 w-5 mr-3 text-primary" />
+                        <SelectValue placeholder="Product Type" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-2">
+                      <SelectItem value="all">All Products</SelectItem>
+                      <SelectItem value="single-items">Single Items</SelectItem>
+                      <SelectItem value="kits-deals">Kits & Deals</SelectItem>
+                    </SelectContent>
+                  </Select>
+
                   <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                     <SelectTrigger className="w-full sm:w-56 h-14 border-2 rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
                       <div className="flex items-center">
@@ -165,7 +184,6 @@ export default function Shop() {
                       <SelectItem value="name">Name A-Z</SelectItem>
                       <SelectItem value="price-low">Price: Low to High</SelectItem>
                       <SelectItem value="price-high">Price: High to Low</SelectItem>
-                      <SelectItem value="kits-deals">Kits & Deals</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -246,6 +264,11 @@ export default function Shop() {
                             {product.is_featured && (
                               <Badge className="bg-primary/90 backdrop-blur-sm text-primary-foreground shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
                                 Featured
+                              </Badge>
+                            )}
+                            {product.is_kits_deals && (
+                              <Badge className="bg-accent/90 backdrop-blur-sm text-accent-foreground shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
+                                Kit & Deal
                               </Badge>
                             )}
                             {product.compare_price && product.compare_price > product.price && (
