@@ -455,12 +455,12 @@ export default function AdminProducts() {
     setEditingProduct(product);
     setFormData({
       name: product.name,
-      price: product.price.toString(),
+      price: product.price?.toString() || '',
       description: product.description || '',
       features: product.features || '',
       ingredients: product.ingredients || '',
       usage_instructions: product.usage_instructions || '',
-      inventory_quantity: product.inventory_quantity.toString(),
+      inventory_quantity: product.inventory_quantity?.toString() || '0',
       sku: product.sku || '',
       is_active: product.is_active,
       is_featured: product.is_featured,
