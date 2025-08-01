@@ -464,7 +464,7 @@ export default function AdminProducts() {
       sku: product.sku || '',
       is_active: product.is_active,
       is_featured: product.is_featured,
-      is_kits_deals: product.is_kits_deals || false
+      is_kits_deals: Boolean(product.is_kits_deals)
     });
     
     // Load existing data
