@@ -4,6 +4,13 @@ import { useCategories } from "@/hooks/useCategories";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Leaf, Coffee, Sparkles, Droplets, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 const Categories = () => {
   const {
     data: categories = [],
@@ -101,52 +108,66 @@ const Categories = () => {
           </p>
         </div>
 
-        {/* Enhanced Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-6 lg:px-8">
-          {categories.map((category, index) => <Card key={category.id} className="group cursor-pointer border border-border/50 bg-card/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:rotate-1 overflow-hidden animate-fade-in" style={{
-          animationDelay: `${index * 0.15}s`
-        }}>
-              <CardContent className="p-0">
-                {/* Enhanced Category Image */}
-                <div className="relative h-56 overflow-hidden">
-                  <img src={category.image_url || getImageForCategory(category.slug)} alt={category.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                  
-                  {/* Enhanced Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
-                  
-                  {/* Floating Icon Badge */}
-                  
-                  
-                  {/* Category Name Overlay */}
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-accent transition-colors duration-300">
-                      {category.name}
-                    </h3>
-                  </div>
-                </div>
+        {/* Enhanced Categories Carousel */}
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full max-w-7xl mx-auto"
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {categories.map((category, index) => (
+              <CarouselItem key={category.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+                <Card className="group cursor-pointer border border-border/50 bg-card/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:rotate-1 overflow-hidden animate-fade-in" style={{
+                  animationDelay: `${index * 0.15}s`
+                }}>
+                  <CardContent className="p-0">
+                    {/* Enhanced Category Image */}
+                    <div className="relative h-56 overflow-hidden">
+                      <img src={category.image_url || getImageForCategory(category.slug)} alt={category.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      
+                      {/* Enhanced Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
+                      
+                      {/* Floating Icon Badge */}
+                      
+                      
+                      {/* Category Name Overlay */}
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-accent transition-colors duration-300">
+                          {category.name}
+                        </h3>
+                      </div>
+                    </div>
 
-                {/* Enhanced Category Info */}
-                <div className="p-6 space-y-4">
-                  <p className="text-muted-foreground leading-relaxed line-clamp-3 group-hover:text-foreground transition-colors duration-300">
-                    {category.description}
-                  </p>
+                    {/* Enhanced Category Info */}
+                    <div className="p-6 space-y-4">
+                      <p className="text-muted-foreground leading-relaxed line-clamp-3 group-hover:text-foreground transition-colors duration-300">
+                        {category.description}
+                      </p>
 
-                  <Button variant="outline" className="w-full group border-2 border-primary/20 text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary hover:scale-105 transition-all duration-300 font-semibold" onClick={() => {
-                navigate(`/shop?category=${category.slug}`);
-                window.scrollTo({
-                  top: 0,
-                  behavior: 'smooth'
-                });
-              }}>
-                    <span className="group-hover:translate-x-1 transition-transform duration-300">
-                      Explore Collection
-                    </span>
-                    <span className="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>)}
-        </div>
+                      <Button variant="outline" className="w-full group border-2 border-primary/20 text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary hover:scale-105 transition-all duration-300 font-semibold" onClick={() => {
+                        navigate(`/shop?category=${category.slug}`);
+                        window.scrollTo({
+                          top: 0,
+                          behavior: 'smooth'
+                        });
+                      }}>
+                        <span className="group-hover:translate-x-1 transition-transform duration-300">
+                          Explore Collection
+                        </span>
+                        <span className="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="hidden md:flex -left-12 hover:bg-primary hover:text-primary-foreground" />
+          <CarouselNext className="hidden md:flex -right-12 hover:bg-primary hover:text-primary-foreground" />
+        </Carousel>
       </div>
     </section>;
 };

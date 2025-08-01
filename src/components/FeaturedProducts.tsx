@@ -3,6 +3,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Heart, ShoppingBag, Star, Eye, ShoppingCart } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { useFeaturedProducts } from "@/hooks/useProducts";
 import { useGuestCart } from "@/hooks/useGuestCart";
 import { useAuth } from "@/contexts/AuthContext";
@@ -125,152 +132,166 @@ const FeaturedProducts = () => {
           </p>
         </div>
 
-        {/* Modern Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-6 lg:px-8">
-          {products.map((product, index) => <div key={product.id} className="group relative animate-fade-in hover-scale" style={{
-          animationDelay: `${index * 0.1}s`
-        }}>
-              {/* Floating Card Container */}
-              <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-3xl p-1 shadow-lg group-hover:shadow-2xl transition-all duration-700 group-hover:border-primary/30">
-                {/* Gradient Border Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
-                
-                <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none">
-                  <CardContent className="p-0">
-                    {/* Product Image Container */}
-                    <div className="relative overflow-hidden rounded-t-3xl aspect-[4/3]">
-                      <img src={getMainImage(product)} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                      
-                      {/* Floating Badges */}
-                      <div className="absolute top-3 left-3 flex flex-col gap-2">
-                        {product.is_featured && <Badge className="bg-primary/90 backdrop-blur-sm text-primary-foreground shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
-                            Featured
-                          </Badge>}
-                        {product.compare_price && product.compare_price > product.price && <Badge className="bg-red-500/90 backdrop-blur-sm text-white shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
-                            Sale
-                          </Badge>}
-                      </div>
+        {/* Modern Products Carousel */}
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full max-w-7xl mx-auto"
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {products.map((product, index) => (
+              <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                <div className="group relative animate-fade-in hover-scale" style={{
+                  animationDelay: `${index * 0.1}s`
+                }}>
+                  {/* Floating Card Container */}
+                  <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-3xl p-1 shadow-lg group-hover:shadow-2xl transition-all duration-700 group-hover:border-primary/30">
+                    {/* Gradient Border Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+                    
+                    <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none">
+                      <CardContent className="p-0">
+                        {/* Product Image Container */}
+                        <div className="relative overflow-hidden rounded-t-3xl aspect-[4/3]">
+                          <img src={getMainImage(product)} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                          
+                          {/* Floating Badges */}
+                          <div className="absolute top-3 left-3 flex flex-col gap-2">
+                            {product.is_featured && <Badge className="bg-primary/90 backdrop-blur-sm text-primary-foreground shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
+                                Featured
+                              </Badge>}
+                            {product.compare_price && product.compare_price > product.price && <Badge className="bg-red-500/90 backdrop-blur-sm text-white shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
+                                Sale
+                              </Badge>}
+                          </div>
 
-                      {/* Out of Stock Overlay */}
-                      {product.inventory_quantity === 0 && <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center rounded-t-3xl">
-                          <Badge variant="secondary" className="text-base font-medium py-2 px-4 rounded-full shadow-lg">
-                            Out of Stock
-                          </Badge>
-                        </div>}
+                          {/* Out of Stock Overlay */}
+                          {product.inventory_quantity === 0 && <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center rounded-t-3xl">
+                              <Badge variant="secondary" className="text-base font-medium py-2 px-4 rounded-full shadow-lg">
+                                Out of Stock
+                              </Badge>
+                            </div>}
 
-                      {/* Quick Actions Overlay */}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center rounded-t-3xl">
-                        <div className="flex gap-3">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button size="sm" className="bg-white/95 text-foreground hover:bg-white rounded-full px-4 py-2 shadow-lg border-0" onClick={() => setSelectedProduct(product)}>
-                                <Eye className="h-4 w-4 mr-2" />
-                                Quick View
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
-                              <DialogHeader>
-                                <DialogTitle className="text-2xl">{product.name}</DialogTitle>
-                              </DialogHeader>
-                              {selectedProduct && <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                  <div className="space-y-4">
-                                    <img src={getMainImage(selectedProduct)} alt={selectedProduct.name} className="w-full h-96 object-cover rounded-2xl" />
-                                    {selectedProduct.product_images?.length > 1 && <div className="grid grid-cols-4 gap-3">
-                                        {selectedProduct.product_images.slice(1, 5).map((image: any) => <img key={image.id} src={image.image_url} alt={image.alt_text || selectedProduct.name} className="w-full h-20 object-cover rounded-xl border" />)}
-                                      </div>}
-                                  </div>
-                                  
-                                  <div className="space-y-6">
-                                    <div>
-                                      <div className="flex items-center gap-3 mb-3">
-                                         <span className="text-3xl font-bold text-foreground">
-                                           Rs {selectedProduct.price.toFixed(2)}
-                                         </span>
-                                         {selectedProduct.compare_price && selectedProduct.compare_price > selectedProduct.price && <span className="text-lg text-muted-foreground line-through">
-                                             Rs {selectedProduct.compare_price.toFixed(2)}
-                                           </span>}
+                          {/* Quick Actions Overlay */}
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center rounded-t-3xl">
+                            <div className="flex gap-3">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button size="sm" className="bg-white/95 text-foreground hover:bg-white rounded-full px-4 py-2 shadow-lg border-0" onClick={() => setSelectedProduct(product)}>
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    Quick View
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
+                                  <DialogHeader>
+                                    <DialogTitle className="text-2xl">{product.name}</DialogTitle>
+                                  </DialogHeader>
+                                  {selectedProduct && <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                      <div className="space-y-4">
+                                        <img src={getMainImage(selectedProduct)} alt={selectedProduct.name} className="w-full h-96 object-cover rounded-2xl" />
+                                        {selectedProduct.product_images?.length > 1 && <div className="grid grid-cols-4 gap-3">
+                                            {selectedProduct.product_images.slice(1, 5).map((image: any) => <img key={image.id} src={image.image_url} alt={image.alt_text || selectedProduct.name} className="w-full h-20 object-cover rounded-xl border" />)}
+                                          </div>}
                                       </div>
-                                      <div className="flex items-center text-sm text-muted-foreground mb-4">
-                                        <Star className="h-4 w-4 fill-current text-yellow-400 mr-1" />
-                                        4.5 (23 reviews)
-                                      </div>
-                                    </div>
+                                      
+                                      <div className="space-y-6">
+                                        <div>
+                                          <div className="flex items-center gap-3 mb-3">
+                                             <span className="text-3xl font-bold text-foreground">
+                                               Rs {selectedProduct.price.toFixed(2)}
+                                             </span>
+                                             {selectedProduct.compare_price && selectedProduct.compare_price > selectedProduct.price && <span className="text-lg text-muted-foreground line-through">
+                                                 Rs {selectedProduct.compare_price.toFixed(2)}
+                                               </span>}
+                                          </div>
+                                          <div className="flex items-center text-sm text-muted-foreground mb-4">
+                                            <Star className="h-4 w-4 fill-current text-yellow-400 mr-1" />
+                                            4.5 (23 reviews)
+                                          </div>
+                                        </div>
 
-                                    <div>
-                                      <h4 className="font-semibold mb-3 text-lg">Description</h4>
-                                      <p className="text-muted-foreground leading-relaxed">
-                                        {selectedProduct.description || selectedProduct.short_description}
-                                      </p>
-                                    </div>
+                                        <div>
+                                          <h4 className="font-semibold mb-3 text-lg">Description</h4>
+                                          <p className="text-muted-foreground leading-relaxed">
+                                            {selectedProduct.description || selectedProduct.short_description}
+                                          </p>
+                                        </div>
 
-                                    <div className="space-y-3">
-                                      <div className="flex justify-between text-sm">
-                                        <span>SKU:</span>
-                                        <span className="font-medium">{selectedProduct.sku || 'N/A'}</span>
-                                      </div>
-                                      <div className="flex justify-between text-sm">
-                                        <span>Availability:</span>
-                                        <span className={selectedProduct.inventory_quantity > 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
-                                          {selectedProduct.inventory_quantity > 0 ? `${selectedProduct.inventory_quantity} in stock` : 'Out of stock'}
-                                        </span>
-                                      </div>
-                                    </div>
+                                        <div className="space-y-3">
+                                          <div className="flex justify-between text-sm">
+                                            <span>SKU:</span>
+                                            <span className="font-medium">{selectedProduct.sku || 'N/A'}</span>
+                                          </div>
+                                          <div className="flex justify-between text-sm">
+                                            <span>Availability:</span>
+                                            <span className={selectedProduct.inventory_quantity > 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                                              {selectedProduct.inventory_quantity > 0 ? `${selectedProduct.inventory_quantity} in stock` : 'Out of stock'}
+                                            </span>
+                                          </div>
+                                        </div>
 
-                                    <Button onClick={() => handleAddToCart(selectedProduct)} disabled={cartLoading || selectedProduct.inventory_quantity === 0} className="w-full rounded-full py-6 text-base font-medium" size="lg">
-                                      <ShoppingCart className="h-5 w-5 mr-2" />
-                                      {selectedProduct.inventory_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
-                                    </Button>
-                                  </div>
-                                </div>}
-                            </DialogContent>
-                          </Dialog>
+                                        <Button onClick={() => handleAddToCart(selectedProduct)} disabled={cartLoading || selectedProduct.inventory_quantity === 0} className="w-full rounded-full py-6 text-base font-medium" size="lg">
+                                          <ShoppingCart className="h-5 w-5 mr-2" />
+                                          {selectedProduct.inventory_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                                        </Button>
+                                      </div>
+                                    </div>}
+                                </DialogContent>
+                              </Dialog>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
 
-                    {/* Product Info */}
-                    <div className="p-6">
-                      <div className="mb-4">
-                        <h3 className="font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300 mb-2">
-                          {product.name}
-                        </h3>
-                        {product.short_description && <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                            {product.short_description}
-                          </p>}
-                      </div>
+                        {/* Product Info */}
+                        <div className="p-6">
+                          <div className="mb-4">
+                            <h3 className="font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300 mb-2">
+                              {product.name}
+                            </h3>
+                            {product.short_description && <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                                {product.short_description}
+                              </p>}
+                          </div>
 
-                      {/* Rating */}
-                      
+                          {/* Rating */}
+                          
 
-                      {/* Price */}
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-xl text-foreground">
-                            Rs {product.price.toFixed(2)}
-                          </span>
-                          {product.compare_price && product.compare_price > product.price && <span className="text-sm text-muted-foreground line-through">
-                              Rs {product.compare_price.toFixed(2)}
-                            </span>}
+                          {/* Price */}
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-xl text-foreground">
+                                Rs {product.price.toFixed(2)}
+                              </span>
+                              {product.compare_price && product.compare_price > product.price && <span className="text-sm text-muted-foreground line-through">
+                                  Rs {product.compare_price.toFixed(2)}
+                                </span>}
+                            </div>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-3">
+                            <Button onClick={() => handleAddToCart(product)} disabled={cartLoading || product.inventory_quantity === 0} className="flex-1 rounded-full font-medium" variant="outline">
+                              <ShoppingCart className="h-4 w-4 mr-2" />
+                              {product.inventory_quantity === 0 ? 'Out of Stock' : 'Add'}
+                            </Button>
+                            
+                            <Button onClick={() => navigate(`/product/${product.id}`)} className="flex-1 rounded-full font-medium">
+                              View Details
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex gap-3">
-                        <Button onClick={() => handleAddToCart(product)} disabled={cartLoading || product.inventory_quantity === 0} className="flex-1 rounded-full font-medium" variant="outline">
-                          <ShoppingCart className="h-4 w-4 mr-2" />
-                          {product.inventory_quantity === 0 ? 'Out of Stock' : 'Add'}
-                        </Button>
-                        
-                        <Button onClick={() => navigate(`/product/${product.id}`)} className="flex-1 rounded-full font-medium">
-                          View Details
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>)}
-        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="hidden md:flex -left-12 hover:bg-primary hover:text-primary-foreground" />
+          <CarouselNext className="hidden md:flex -right-12 hover:bg-primary hover:text-primary-foreground" />
+        </Carousel>
 
         {/* Modern View All Button */}
         <div className="text-center mt-16">
