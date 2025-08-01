@@ -80,7 +80,7 @@ const FeaturedProducts = () => {
                 <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-3xl p-1 shadow-lg">
                   <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none">
                     <CardContent className="p-0">
-                      <Skeleton className="w-full aspect-[4/3] rounded-t-3xl" />
+                      <Skeleton className="w-full aspect-square rounded-t-3xl" />
                       <div className="p-6 space-y-4">
                         <Skeleton className="h-5 w-3/4" />
                         <Skeleton className="h-4 w-full" />
@@ -154,8 +154,8 @@ const FeaturedProducts = () => {
                     <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none">
                       <CardContent className="p-0">
                         {/* Product Image Container */}
-                        <div className="relative overflow-hidden rounded-t-3xl aspect-[4/3]">
-                          <img src={getMainImage(product)} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                         <div className="relative overflow-hidden rounded-t-3xl aspect-square">
+                           <img src={getMainImage(product)} alt={product.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" />
                           
                           {/* Floating Badges */}
                           <div className="absolute top-3 left-3 flex flex-col gap-2">
@@ -190,9 +190,9 @@ const FeaturedProducts = () => {
                                   </DialogHeader>
                                   {selectedProduct && <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                       <div className="space-y-4">
-                                        <img src={getMainImage(selectedProduct)} alt={selectedProduct.name} className="w-full h-96 object-cover rounded-2xl" />
+                                        <img src={getMainImage(selectedProduct)} alt={selectedProduct.name} className="w-full aspect-square object-contain rounded-2xl" />
                                         {selectedProduct.product_images?.length > 1 && <div className="grid grid-cols-4 gap-3">
-                                            {selectedProduct.product_images.slice(1, 5).map((image: any) => <img key={image.id} src={image.image_url} alt={image.alt_text || selectedProduct.name} className="w-full h-20 object-cover rounded-xl border" />)}
+                                            {selectedProduct.product_images.slice(1, 5).map((image: any) => <img key={image.id} src={image.image_url} alt={image.alt_text || selectedProduct.name} className="w-full aspect-square object-contain rounded-xl border" />)}
                                           </div>}
                                       </div>
                                       

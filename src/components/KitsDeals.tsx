@@ -52,8 +52,8 @@ const KitsDeals = () => {
           {kitsDealsProducts.map(product => <Card key={product.id} className="group hover:shadow-lg transition-shadow duration-300 overflow-hidden">
               <CardContent className="p-0">
                 <Link to={`/products/${product.slug}`}>
-                  <div className="relative h-64 overflow-hidden">
-                    {product.product_images?.[0] && <img src={product.product_images[0].image_url} alt={product.product_images[0].alt_text || product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
+                   <div className="relative aspect-square overflow-hidden">
+                     {product.product_images?.[0] && <img src={product.product_images[0].image_url} alt={product.product_images[0].alt_text || product.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />}
                     <div className="absolute top-4 left-4">
                       
                     </div>

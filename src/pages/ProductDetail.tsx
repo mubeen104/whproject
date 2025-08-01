@@ -199,11 +199,11 @@ const ProductDetail = () => {
           {/* Product Images */}
           <div className="space-y-4">
             <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-              <img
-                src={getMainImage()}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
+               <img
+                 src={getMainImage()}
+                 alt={product.name}
+                 className="w-full h-full object-contain"
+               />
             </div>
             {getCurrentImages().length > 1 && (
               <div className="flex space-x-2 overflow-x-auto">
@@ -215,11 +215,11 @@ const ProductDetail = () => {
                         selectedImage === index ? 'border-primary' : 'border-border'
                       }`}
                     >
-                      <img
-                        src={image.image_url}
-                        alt={image.alt_text || product.name}
-                        className="w-full h-full object-cover"
-                      />
+                       <img
+                         src={image.image_url}
+                         alt={image.alt_text || product.name}
+                         className="w-full h-full object-contain"
+                       />
                     </button>
                   ))}
               </div>
