@@ -28,6 +28,7 @@ interface Product {
   inventory_quantity: number;
   is_active: boolean;
   is_featured: boolean;
+  is_kits_deals?: boolean;
   sku: string;
   features: string;
   ingredients: string;
@@ -74,7 +75,8 @@ export default function AdminProducts() {
     inventory_quantity: '',
     sku: '',
     is_active: true,
-    is_featured: false
+    is_featured: false,
+    is_kits_deals: false
   });
 
   const { toast } = useToast();
@@ -254,7 +256,8 @@ export default function AdminProducts() {
       inventory_quantity: '',
       sku: '',
       is_active: true,
-      is_featured: false
+      is_featured: false,
+      is_kits_deals: false
     });
     setSelectedCategories([]);
     setProductImages([]);
@@ -454,7 +457,8 @@ export default function AdminProducts() {
       inventory_quantity: product.inventory_quantity.toString(),
       sku: product.sku || '',
       is_active: product.is_active,
-      is_featured: product.is_featured
+      is_featured: product.is_featured,
+      is_kits_deals: product.is_kits_deals || false
     });
     
     // Load existing data
@@ -503,7 +507,8 @@ export default function AdminProducts() {
       inventory_quantity: parseInt(formData.inventory_quantity),
       sku: formData.sku,
       is_active: formData.is_active,
-      is_featured: formData.is_featured
+      is_featured: formData.is_featured,
+      is_kits_deals: formData.is_kits_deals
     };
 
     productMutation.mutate(productData);
@@ -635,6 +640,14 @@ export default function AdminProducts() {
                           onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
                         />
                         <Label htmlFor="is_featured">Featured Product</Label>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Switch
+                          id="is_kits_deals"
+                          checked={formData.is_kits_deals}
+                          onCheckedChange={(checked) => setFormData({ ...formData, is_kits_deals: checked })}
+                        />
+                        <Label htmlFor="is_kits_deals">Kits & Deals</Label>
                       </div>
                     </div>
                   </CardContent>

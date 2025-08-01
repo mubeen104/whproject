@@ -27,8 +27,14 @@ export default function Shop() {
   useEffect(() => {
     const urlSearch = searchParams.get('search') || '';
     const urlCategory = searchParams.get('category') || 'all';
+    const urlSection = searchParams.get('section');
     setSearchTerm(urlSearch);
     setSelectedCategory(urlCategory);
+    
+    // Handle special sections
+    if (urlSection === 'kits-deals') {
+      setSortBy('kits-deals');
+    }
   }, [searchParams]);
 
   const { data: products, isLoading: productsLoading } = useProducts();
@@ -59,6 +65,8 @@ export default function Shop() {
         return b.price - a.price;
       case 'name':
         return a.name.localeCompare(b.name);
+      case 'kits-deals':
+        return (b.is_kits_deals ? 1 : 0) - (a.is_kits_deals ? 1 : 0);
       case 'newest':
       default:
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -157,6 +165,7 @@ export default function Shop() {
                       <SelectItem value="name">Name A-Z</SelectItem>
                       <SelectItem value="price-low">Price: Low to High</SelectItem>
                       <SelectItem value="price-high">Price: High to Low</SelectItem>
+                      <SelectItem value="kits-deals">Kits & Deals</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

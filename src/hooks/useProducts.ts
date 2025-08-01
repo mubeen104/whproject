@@ -12,6 +12,7 @@ export interface Product {
   sku: string;
   inventory_quantity: number;
   is_featured: boolean;
+  is_kits_deals?: boolean;
   tags: string[];
   features: string;
   ingredients: string;
