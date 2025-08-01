@@ -9,7 +9,9 @@ const KitsDeals = () => {
     data: products,
     isLoading
   } = useFeaturedProducts();
-  const { currency } = useStoreSettings();
+  const {
+    currency
+  } = useStoreSettings();
 
   // Filter for kits & deals products
   const kitsDealsProducts = products?.filter(product => product.is_kits_deals) || [];
@@ -53,9 +55,7 @@ const KitsDeals = () => {
                   <div className="relative h-64 overflow-hidden">
                     {product.product_images?.[0] && <img src={product.product_images[0].image_url} alt={product.product_images[0].alt_text || product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
                     <div className="absolute top-4 left-4">
-                      <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                        Deal
-                      </Badge>
+                      
                     </div>
                     {product.compare_price && product.compare_price > product.price && <div className="absolute top-4 right-4">
                         <Badge variant="destructive">
