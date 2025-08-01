@@ -12,42 +12,49 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-
 const FeaturedProducts = () => {
-  const { data: products = [], isLoading } = useFeaturedProducts();
-  const { addToCart, isLoading: cartLoading } = useGuestCart();
-  const { user } = useAuth();
-  const { currency } = useStoreSettings();
+  const {
+    data: products = [],
+    isLoading
+  } = useFeaturedProducts();
+  const {
+    addToCart,
+    isLoading: cartLoading
+  } = useGuestCart();
+  const {
+    user
+  } = useAuth();
+  const {
+    currency
+  } = useStoreSettings();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const navigate = useNavigate();
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const handleAddToCart = async (product: any) => {
     try {
       await addToCart(product.id, 1);
       toast({
         title: "Added to cart",
-        description: `${product.name} has been added to your cart.`,
+        description: `${product.name} has been added to your cart.`
       });
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to add item to cart. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   const getMainImage = (product: any) => {
     if (product.product_images?.length > 0) {
       return product.product_images.sort((a: any, b: any) => a.sort_order - b.sort_order)[0].image_url;
     }
     return '/placeholder.svg';
   };
-
   if (isLoading) {
-    return (
-      <section className="py-20 bg-gradient-to-br from-background via-background to-muted/20 relative overflow-hidden">
+    return <section className="py-20 bg-gradient-to-br from-background via-background to-muted/20 relative overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center justify-center p-2 bg-primary/10 rounded-full mb-6">
@@ -57,8 +64,9 @@ const FeaturedProducts = () => {
             <Skeleton className="h-6 w-96 mx-auto rounded-lg" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="group relative">
+            {Array.from({
+            length: 4
+          }).map((_, index) => <div key={index} className="group relative">
                 <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-3xl p-1 shadow-lg">
                   <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none">
                     <CardContent className="p-0">
@@ -68,9 +76,7 @@ const FeaturedProducts = () => {
                         <Skeleton className="h-4 w-full" />
                         <Skeleton className="h-4 w-2/3" />
                         <div className="flex gap-1 mb-3">
-                          {[...Array(5)].map((_, i) => (
-                            <Skeleton key={i} className="h-4 w-4 rounded-full" />
-                          ))}
+                          {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-4 w-4 rounded-full" />)}
                         </div>
                         <Skeleton className="h-6 w-24" />
                         <div className="flex gap-3">
@@ -81,20 +87,20 @@ const FeaturedProducts = () => {
                     </CardContent>
                   </Card>
                 </div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
-      </section>
-    );
+      </section>;
   }
-
-  return (
-    <section className="py-20 bg-gradient-to-br from-background via-background to-muted/20 relative overflow-hidden">
+  return <section className="py-20 bg-gradient-to-br from-background via-background to-muted/20 relative overflow-hidden">
       {/* Modern Floating Elements */}
       <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-40 right-20 w-48 h-48 bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-      <div className="absolute top-1/2 left-1/4 w-20 h-20 bg-secondary/10 rounded-full blur-2xl animate-float" style={{ animationDelay: '4s' }} />
+      <div className="absolute bottom-40 right-20 w-48 h-48 bg-accent/5 rounded-full blur-3xl animate-float" style={{
+      animationDelay: '2s'
+    }} />
+      <div className="absolute top-1/2 left-1/4 w-20 h-20 bg-secondary/10 rounded-full blur-2xl animate-float" style={{
+      animationDelay: '4s'
+    }} />
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Modern Section Header */}
@@ -118,12 +124,9 @@ const FeaturedProducts = () => {
 
         {/* Modern Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-6 lg:px-8">
-          {products.map((product, index) => (
-            <div
-              key={product.id}
-              className="group relative animate-fade-in hover-scale"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
+          {products.map((product, index) => <div key={product.id} className="group relative animate-fade-in hover-scale" style={{
+          animationDelay: `${index * 0.1}s`
+        }}>
               {/* Floating Card Container */}
               <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-3xl p-1 shadow-lg group-hover:shadow-2xl transition-all duration-700 group-hover:border-primary/30">
                 {/* Gradient Border Effect */}
@@ -133,45 +136,31 @@ const FeaturedProducts = () => {
                   <CardContent className="p-0">
                     {/* Product Image Container */}
                     <div className="relative overflow-hidden rounded-t-3xl aspect-[4/3]">
-                      <img
-                        src={getMainImage(product)}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
+                      <img src={getMainImage(product)} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       
                       {/* Floating Badges */}
                       <div className="absolute top-3 left-3 flex flex-col gap-2">
-                        {product.is_featured && (
-                          <Badge className="bg-primary/90 backdrop-blur-sm text-primary-foreground shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
+                        {product.is_featured && <Badge className="bg-primary/90 backdrop-blur-sm text-primary-foreground shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
                             Featured
-                          </Badge>
-                        )}
-                        {product.compare_price && product.compare_price > product.price && (
-                          <Badge className="bg-red-500/90 backdrop-blur-sm text-white shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
+                          </Badge>}
+                        {product.compare_price && product.compare_price > product.price && <Badge className="bg-red-500/90 backdrop-blur-sm text-white shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
                             Sale
-                          </Badge>
-                        )}
+                          </Badge>}
                       </div>
 
                       {/* Out of Stock Overlay */}
-                      {product.inventory_quantity === 0 && (
-                        <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center rounded-t-3xl">
+                      {product.inventory_quantity === 0 && <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center rounded-t-3xl">
                           <Badge variant="secondary" className="text-base font-medium py-2 px-4 rounded-full shadow-lg">
                             Out of Stock
                           </Badge>
-                        </div>
-                      )}
+                        </div>}
 
                       {/* Quick Actions Overlay */}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center rounded-t-3xl">
                         <div className="flex gap-3">
                           <Dialog>
                             <DialogTrigger asChild>
-                              <Button
-                                size="sm"
-                                className="bg-white/95 text-foreground hover:bg-white rounded-full px-4 py-2 shadow-lg border-0"
-                                onClick={() => setSelectedProduct(product)}
-                              >
+                              <Button size="sm" className="bg-white/95 text-foreground hover:bg-white rounded-full px-4 py-2 shadow-lg border-0" onClick={() => setSelectedProduct(product)}>
                                 <Eye className="h-4 w-4 mr-2" />
                                 Quick View
                               </Button>
@@ -180,26 +169,12 @@ const FeaturedProducts = () => {
                               <DialogHeader>
                                 <DialogTitle className="text-2xl">{product.name}</DialogTitle>
                               </DialogHeader>
-                              {selectedProduct && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              {selectedProduct && <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                   <div className="space-y-4">
-                                    <img
-                                      src={getMainImage(selectedProduct)}
-                                      alt={selectedProduct.name}
-                                      className="w-full h-96 object-cover rounded-2xl"
-                                    />
-                                    {selectedProduct.product_images?.length > 1 && (
-                                      <div className="grid grid-cols-4 gap-3">
-                                        {selectedProduct.product_images.slice(1, 5).map((image: any) => (
-                                          <img
-                                            key={image.id}
-                                            src={image.image_url}
-                                            alt={image.alt_text || selectedProduct.name}
-                                            className="w-full h-20 object-cover rounded-xl border"
-                                          />
-                                        ))}
-                                      </div>
-                                    )}
+                                    <img src={getMainImage(selectedProduct)} alt={selectedProduct.name} className="w-full h-96 object-cover rounded-2xl" />
+                                    {selectedProduct.product_images?.length > 1 && <div className="grid grid-cols-4 gap-3">
+                                        {selectedProduct.product_images.slice(1, 5).map((image: any) => <img key={image.id} src={image.image_url} alt={image.alt_text || selectedProduct.name} className="w-full h-20 object-cover rounded-xl border" />)}
+                                      </div>}
                                   </div>
                                   
                                   <div className="space-y-6">
@@ -208,11 +183,9 @@ const FeaturedProducts = () => {
                                          <span className="text-3xl font-bold text-foreground">
                                            Rs {selectedProduct.price.toFixed(2)}
                                          </span>
-                                         {selectedProduct.compare_price && selectedProduct.compare_price > selectedProduct.price && (
-                                           <span className="text-lg text-muted-foreground line-through">
+                                         {selectedProduct.compare_price && selectedProduct.compare_price > selectedProduct.price && <span className="text-lg text-muted-foreground line-through">
                                              Rs {selectedProduct.compare_price.toFixed(2)}
-                                           </span>
-                                         )}
+                                           </span>}
                                       </div>
                                       <div className="flex items-center text-sm text-muted-foreground mb-4">
                                         <Star className="h-4 w-4 fill-current text-yellow-400 mr-1" />
@@ -235,26 +208,17 @@ const FeaturedProducts = () => {
                                       <div className="flex justify-between text-sm">
                                         <span>Availability:</span>
                                         <span className={selectedProduct.inventory_quantity > 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
-                                          {selectedProduct.inventory_quantity > 0 
-                                            ? `${selectedProduct.inventory_quantity} in stock`
-                                            : 'Out of stock'
-                                          }
+                                          {selectedProduct.inventory_quantity > 0 ? `${selectedProduct.inventory_quantity} in stock` : 'Out of stock'}
                                         </span>
                                       </div>
                                     </div>
 
-                                    <Button
-                                      onClick={() => handleAddToCart(selectedProduct)}
-                                      disabled={cartLoading || selectedProduct.inventory_quantity === 0}
-                                      className="w-full rounded-full py-6 text-base font-medium"
-                                      size="lg"
-                                    >
+                                    <Button onClick={() => handleAddToCart(selectedProduct)} disabled={cartLoading || selectedProduct.inventory_quantity === 0} className="w-full rounded-full py-6 text-base font-medium" size="lg">
                                       <ShoppingCart className="h-5 w-5 mr-2" />
                                       {selectedProduct.inventory_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
                                     </Button>
                                   </div>
-                                </div>
-                              )}
+                                </div>}
                             </DialogContent>
                           </Dialog>
                         </div>
@@ -267,23 +231,13 @@ const FeaturedProducts = () => {
                         <h3 className="font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300 mb-2">
                           {product.name}
                         </h3>
-                        {product.short_description && (
-                          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                        {product.short_description && <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                             {product.short_description}
-                          </p>
-                        )}
+                          </p>}
                       </div>
 
                       {/* Rating */}
-                      <div className="flex items-center gap-1 mb-4">
-                        {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className={`h-4 w-4 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground/30'}`} 
-                          />
-                        ))}
-                        <span className="text-xs text-muted-foreground ml-2">(4.5)</span>
-                      </div>
+                      
 
                       {/* Price */}
                       <div className="flex items-center justify-between mb-6">
@@ -291,30 +245,20 @@ const FeaturedProducts = () => {
                           <span className="font-bold text-xl text-foreground">
                             Rs {product.price.toFixed(2)}
                           </span>
-                          {product.compare_price && product.compare_price > product.price && (
-                            <span className="text-sm text-muted-foreground line-through">
+                          {product.compare_price && product.compare_price > product.price && <span className="text-sm text-muted-foreground line-through">
                               Rs {product.compare_price.toFixed(2)}
-                            </span>
-                          )}
+                            </span>}
                         </div>
                       </div>
 
                       {/* Action Buttons */}
                       <div className="flex gap-3">
-                        <Button
-                          onClick={() => handleAddToCart(product)}
-                          disabled={cartLoading || product.inventory_quantity === 0}
-                          className="flex-1 rounded-full font-medium"
-                          variant="outline"
-                        >
+                        <Button onClick={() => handleAddToCart(product)} disabled={cartLoading || product.inventory_quantity === 0} className="flex-1 rounded-full font-medium" variant="outline">
                           <ShoppingCart className="h-4 w-4 mr-2" />
                           {product.inventory_quantity === 0 ? 'Out of Stock' : 'Add'}
                         </Button>
                         
-                        <Button
-                          onClick={() => navigate(`/product/${product.id}`)}
-                          className="flex-1 rounded-full font-medium"
-                        >
+                        <Button onClick={() => navigate(`/product/${product.id}`)} className="flex-1 rounded-full font-medium">
                           View Details
                         </Button>
                       </div>
@@ -322,17 +266,12 @@ const FeaturedProducts = () => {
                   </CardContent>
                 </Card>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
 
         {/* Modern View All Button */}
         <div className="text-center mt-16">
-          <Button 
-            size="lg" 
-            onClick={() => navigate('/shop')}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-6 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300 border-0"
-          >
+          <Button size="lg" onClick={() => navigate('/shop')} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-6 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300 border-0">
             Explore All Products
             <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -340,8 +279,6 @@ const FeaturedProducts = () => {
           </Button>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default FeaturedProducts;
