@@ -1,14 +1,15 @@
 import { useFeaturedProducts } from "@/hooks/useProducts";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { RupeeIcon } from "./icons/RupeeIcon";
 const KitsDeals = () => {
   const {
     data: products,
     isLoading
   } = useFeaturedProducts();
+  const { currency } = useStoreSettings();
 
   // Filter for kits & deals products
   const kitsDealsProducts = products?.filter(product => product.is_kits_deals) || [];
@@ -76,11 +77,11 @@ const KitsDeals = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="flex items-center text-lg font-bold text-foreground">
-                        <RupeeIcon className="w-4 h-4" />
+                        <span className="mr-1">{currency}</span>
                         {product.price.toFixed(2)}
                       </div>
                       {product.compare_price && product.compare_price > product.price && <div className="flex items-center text-sm text-muted-foreground line-through">
-                          <RupeeIcon className="w-3 h-3" />
+                          <span className="mr-1">{currency}</span>
                           {product.compare_price.toFixed(2)}
                         </div>}
                     </div>
