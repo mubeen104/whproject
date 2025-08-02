@@ -53,25 +53,26 @@ const HeroSlider = () => {
   }
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
-      <Carousel 
-        setApi={setApi} 
-        className="w-full h-full"
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-      >
-        <CarouselContent className="h-full">
-          {slides.map((slide, index) => (
-            <CarouselItem key={slide.id} className="h-full">
-              <div className="relative h-full w-full group">
-                {/* Full screen image */}
-                <img 
-                  src={slide.image_url} 
-                  alt={slide.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+    <section className="relative w-full overflow-hidden">
+      <div className="w-full aspect-video">
+        <Carousel 
+          setApi={setApi} 
+          className="w-full h-full"
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+        >
+          <CarouselContent className="h-full">
+            {slides.map((slide, index) => (
+              <CarouselItem key={slide.id} className="h-full">
+                <div className="relative h-full w-full group">
+                  {/* 16:9 aspect ratio image without cropping */}
+                  <img 
+                    src={slide.image_url} 
+                    alt={slide.title}
+                    className="w-full h-full object-contain bg-gradient-to-br from-muted/20 to-background transition-transform duration-700 group-hover:scale-105"
+                  />
                 
                 {/* Subtle gradient overlay for better contrast on indicators */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
@@ -125,6 +126,7 @@ const HeroSlider = () => {
           ))}
         </div>
       </Carousel>
+      </div>
 
       {/* Floating animated elements */}
       <div className="absolute top-1/4 right-20 w-6 h-6 bg-white/20 rounded-full animate-ping" />
