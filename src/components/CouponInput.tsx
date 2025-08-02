@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { X, Check } from 'lucide-react';
 import { useValidateCoupon } from '@/hooks/useCoupons';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface CouponInputProps {
   onCouponApply: (coupon: any) => void;
@@ -30,7 +30,7 @@ const CouponInput = ({ onCouponApply, onCouponRemove, appliedCoupon, subtotal }:
 
       // Check minimum amount requirement
       if (coupon.minimum_amount && subtotal < coupon.minimum_amount) {
-        throw new Error(`Minimum order amount of $${coupon.minimum_amount} required`);
+        throw new Error(`Minimum order amount of PKR ${coupon.minimum_amount} required`);
       }
 
       onCouponApply(coupon);
@@ -81,10 +81,10 @@ const CouponInput = ({ onCouponApply, onCouponRemove, appliedCoupon, subtotal }:
               <p className="text-sm text-muted-foreground mt-1">
                 {appliedCoupon.type === 'percentage' 
                   ? `${appliedCoupon.value}% off`
-                  : `$${appliedCoupon.value} off`
-                } - Saved ${appliedCoupon.type === 'percentage' 
-                  ? `$${calculateDiscount(appliedCoupon, subtotal).toFixed(2)}`
-                  : `$${Math.min(appliedCoupon.value, subtotal).toFixed(2)}`
+                  : `PKR ${appliedCoupon.value} off`
+                } - Saved PKR {appliedCoupon.type === 'percentage' 
+                  ? `${calculateDiscount(appliedCoupon, subtotal).toFixed(2)}`
+                  : `${Math.min(appliedCoupon.value, subtotal).toFixed(2)}`
                 }
               </p>
             </div>
