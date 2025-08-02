@@ -106,9 +106,6 @@ const HeroSlider = () => {
           ))}
         </CarouselContent>
 
-        {/* Navigation Arrows - Modern glass design */}
-        <CarouselPrevious className="left-8 w-12 h-12 bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20 hover:scale-110 transition-all duration-300" />
-        <CarouselNext className="right-8 w-12 h-12 bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20 hover:scale-110 transition-all duration-300" />
 
         {/* Modern slide indicators */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3">
