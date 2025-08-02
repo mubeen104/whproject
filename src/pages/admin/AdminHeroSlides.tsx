@@ -199,7 +199,10 @@ const AdminHeroSlides = () => {
                   name="image_url"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Slide Image (4:3 aspect ratio recommended)</FormLabel>
+                      <FormLabel>Slide Image</FormLabel>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Recommended dimensions: <strong>1408x768 pixels</strong> (16:9 aspect ratio) for optimal display across all devices
+                      </p>
                       <FormControl>
                         <ImageUpload
                           currentImage={field.value}
@@ -368,11 +371,11 @@ const AdminHeroSlides = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Image Preview */}
-              <AspectRatio ratio={4/3} className="bg-muted rounded-lg overflow-hidden">
+              <AspectRatio ratio={16/9} className="bg-muted rounded-lg overflow-hidden">
                 <img
                   src={slide.image_url}
                   alt={slide.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-contain bg-gradient-to-br from-muted/20 to-background"
                   onError={(e) => {
                     e.currentTarget.src = "/placeholder.svg";
                   }}
@@ -391,7 +394,7 @@ const AdminHeroSlides = () => {
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div className="flex items-center space-x-1">
                     <ImageIcon className="h-3 w-3" />
-                    <span>4:3 Image</span>
+                    <span>16:9 Image</span>
                   </div>
                   {slide.link_url && (
                     <div className="flex items-center space-x-1">

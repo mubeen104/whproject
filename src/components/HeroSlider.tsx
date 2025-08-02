@@ -54,7 +54,7 @@ const HeroSlider = () => {
 
   return (
     <section className="relative w-full overflow-hidden">
-      <div className="w-full aspect-video">
+      <div className="w-full aspect-[16/9] max-w-full">
         <Carousel 
           setApi={setApi} 
           className="w-full h-full"
@@ -67,11 +67,11 @@ const HeroSlider = () => {
             {slides.map((slide, index) => (
               <CarouselItem key={slide.id} className="h-full">
                 <div className="relative h-full w-full group">
-                  {/* 16:9 aspect ratio image without cropping */}
+                  {/* 16:9 aspect ratio image (1408x768) without cropping */}
                   <img 
                     src={slide.image_url} 
                     alt={slide.title}
-                    className="w-full h-full object-contain bg-gradient-to-br from-muted/20 to-background transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full object-contain bg-gradient-to-br from-muted/20 to-background"
                   />
                 
                 {/* Subtle gradient overlay for better contrast on indicators */}
