@@ -100,57 +100,7 @@ const Footer = () => {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top Section - Company Info */}
-        <div className="py-16 border-b border-border/30">
-          <div className="grid lg:grid-cols-3 gap-12 items-center">
-            
-            {/* Brand Section */}
-            
-
-            {/* Newsletter Section - Middle */}
-            <div className="lg:col-span-2 bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl p-8 border border-border/30 animate-fade-in">
-              <div className="text-center space-y-6">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-center space-x-2 mb-2">
-                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                      <Mail className="w-4 h-4 text-primary" />
-                    </div>
-                    <h3 className="text-2xl md:text-3xl font-bold text-foreground">
-                      Join Our Wellness 
-                      <span className="text-primary"> Community</span>
-                    </h3>
-                  </div>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Get exclusive herbal wellness tips, early access to new products, and special member discounts delivered to your inbox.
-                  </p>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                  <Input type="email" placeholder="Your email address" value={email} onChange={e => setEmail(e.target.value)} className="flex-1 h-11 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300" />
-                  <Button className="h-11 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    Subscribe
-                  </Button>
-                </div>
-
-                {/* Trust Badges */}
-                <div className="flex justify-center items-center space-x-6 text-xs text-muted-foreground pt-2">
-                  <span className="flex items-center">
-                    <ShieldCheck className="w-3 h-3 text-green-500 mr-1" />
-                    Secure & Private
-                  </span>
-                  <span className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-1 animate-pulse" />
-                    Weekly Tips
-                  </span>
-                  <span className="flex items-center">
-                    <span className="w-2 h-2 bg-purple-500 rounded-full mr-1 animate-pulse" />
-                    Exclusive Offers
-                  </span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
+        
 
         {/* Middle Section - Links & Newsletter */}
         <div className="py-12 border-b border-border/30">
@@ -176,8 +126,8 @@ const Footer = () => {
 
             {/* Newsletter Section - Middle */}
             <div className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl p-6 border border-border/30 animate-fade-in" style={{
-              animationDelay: '0.1s'
-            }}>
+            animationDelay: '0.1s'
+          }}>
               <div className="text-center space-y-4">
                 <div className="space-y-2">
                   <div className="flex items-center justify-center space-x-2 mb-2">
@@ -195,13 +145,7 @@ const Footer = () => {
                 </div>
                 
                 <div className="flex flex-col gap-2">
-                  <Input 
-                    type="email" 
-                    placeholder="Your email address" 
-                    value={email} 
-                    onChange={e => setEmail(e.target.value)} 
-                    className="h-10 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300" 
-                  />
+                  <Input type="email" placeholder="Your email address" value={email} onChange={e => setEmail(e.target.value)} className="h-10 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300" />
                   <Button className="h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                     Subscribe
                   </Button>
@@ -223,8 +167,8 @@ const Footer = () => {
 
             {/* Legal Links - Right */}
             <div className="space-y-6 animate-fade-in" style={{
-              animationDelay: '0.2s'
-            }}>
+            animationDelay: '0.2s'
+          }}>
               <h3 className="text-lg font-bold text-foreground flex items-center">
                 <div className="w-6 h-0.5 bg-gradient-to-r from-accent to-transparent mr-3" />
                 Legal
@@ -254,10 +198,10 @@ const Footer = () => {
             </h3>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
               {certifications.map((cert, index) => {
-                const IconComponent = cert.icon;
-                return <div key={cert.label} className={`group ${cert.bgColor} border ${cert.borderColor} rounded-xl p-3 hover:shadow-lg hover:scale-105 transition-all duration-300 animate-fade-in cursor-pointer`} style={{
-                  animationDelay: `${0.1 + index * 0.05}s`
-                }}>
+              const IconComponent = cert.icon;
+              return <div key={cert.label} className={`group ${cert.bgColor} border ${cert.borderColor} rounded-xl p-3 hover:shadow-lg hover:scale-105 transition-all duration-300 animate-fade-in cursor-pointer`} style={{
+                animationDelay: `${0.1 + index * 0.05}s`
+              }}>
                   <div className="flex flex-col items-center text-center space-y-2">
                     <div className={`${cert.color} group-hover:scale-110 transition-transform duration-300`}>
                       <IconComponent className="w-6 h-6" />
@@ -267,7 +211,7 @@ const Footer = () => {
                     </span>
                   </div>
                 </div>;
-              })}
+            })}
             </div>
           </div>
         </div>
