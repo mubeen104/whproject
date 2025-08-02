@@ -118,7 +118,7 @@ const Categories = () => {
         >
           <CarouselContent className="-ml-2 md:-ml-4">
             {categories.map((category, index) => (
-              <CarouselItem key={category.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+              <CarouselItem key={category.id} className="pl-2 md:pl-4 basis-1/2 sm:basis-1/2 lg:basis-1/3">
                 <Card className="group cursor-pointer border border-border/50 bg-card/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:rotate-1 overflow-hidden animate-fade-in" style={{
                   animationDelay: `${index * 0.15}s`
                 }}>

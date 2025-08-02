@@ -129,22 +129,12 @@ export default function Shop() {
       
       <main className="flex-1">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
-          {/* Enhanced Filters and Search */}
+          {/* Enhanced Filters */}
           <Card className="mb-8 sm:mb-10 md:mb-12 border-2 shadow-xl bg-card backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:border-primary/20">
             <CardContent className="p-3 sm:p-6 md:p-8">
               <div className="flex gap-2 sm:gap-4 md:gap-6 overflow-x-auto">
-                <div className="flex-1 min-w-[140px] relative group">
-                  <Search className="absolute left-2 sm:left-3 md:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 group-focus-within:text-primary group-focus-within:scale-110 transition-all duration-300" />
-                  <Input
-                    placeholder="Search..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-8 sm:pl-10 md:pl-12 h-10 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg border-2 focus:border-primary focus:shadow-lg rounded-lg sm:rounded-xl transition-all duration-300 bg-background hover:bg-muted/20"
-                  />
-                </div>
-                
                 <Select value={productType} onValueChange={setProductType}>
-                  <SelectTrigger className="min-w-[140px] h-10 sm:h-12 md:h-14 border-2 rounded-lg sm:rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
+                  <SelectTrigger className="min-w-[120px] w-full sm:w-auto h-10 sm:h-12 md:h-14 border-2 rounded-lg sm:rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
                     <div className="flex items-center">
                       <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1 sm:mr-2 md:mr-3 text-primary" />
                       <SelectValue placeholder="Type" />
@@ -158,7 +148,7 @@ export default function Shop() {
                 </Select>
 
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="min-w-[140px] h-10 sm:h-12 md:h-14 border-2 rounded-lg sm:rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
+                  <SelectTrigger className="min-w-[120px] w-full sm:w-auto h-10 sm:h-12 md:h-14 border-2 rounded-lg sm:rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
                     <div className="flex items-center">
                       <Filter className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1 sm:mr-2 md:mr-3 text-primary" />
                       <SelectValue placeholder="Category" />
@@ -175,7 +165,7 @@ export default function Shop() {
                 </Select>
 
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="min-w-[120px] h-10 sm:h-12 md:h-14 border-2 rounded-lg sm:rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
+                  <SelectTrigger className="min-w-[120px] w-full sm:w-auto h-10 sm:h-12 md:h-14 border-2 rounded-lg sm:rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
                     <SelectValue placeholder="Sort" />
                   </SelectTrigger>
                   <SelectContent className="rounded-lg sm:rounded-xl border-2">
