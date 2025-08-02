@@ -131,27 +131,27 @@ export default function Shop() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
           {/* Enhanced Filters and Search */}
           <Card className="mb-8 sm:mb-10 md:mb-12 border-2 shadow-xl bg-card backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:border-primary/20">
-            <CardContent className="p-4 sm:p-6 md:p-8">
-              <div className="flex flex-col gap-4 sm:gap-6">
-                <div className="flex-1 relative group">
-                  <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 sm:h-5 sm:w-5 group-focus-within:text-primary group-focus-within:scale-110 transition-all duration-300" />
+            <CardContent className="p-3 sm:p-6 md:p-8">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 md:gap-6">
+                <div className="flex-1 relative group min-w-0">
+                  <Search className="absolute left-2 sm:left-3 md:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 group-focus-within:text-primary group-focus-within:scale-110 transition-all duration-300" />
                   <Input
-                    placeholder="Search for natural products..."
+                    placeholder="Search products..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 sm:pl-12 h-12 sm:h-14 text-base sm:text-lg border-2 focus:border-primary focus:shadow-lg rounded-xl transition-all duration-300 bg-background hover:bg-muted/20"
+                    className="pl-8 sm:pl-10 md:pl-12 h-10 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg border-2 focus:border-primary focus:shadow-lg rounded-lg sm:rounded-xl transition-all duration-300 bg-background hover:bg-muted/20"
                   />
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                <div className="flex gap-2 sm:gap-3 md:gap-4 overflow-x-auto sm:overflow-visible">
                   <Select value={productType} onValueChange={setProductType}>
-                    <SelectTrigger className="w-full h-12 sm:h-14 border-2 rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
+                    <SelectTrigger className="min-w-[140px] h-10 sm:h-12 md:h-14 border-2 rounded-lg sm:rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
                       <div className="flex items-center">
-                        <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary" />
-                        <SelectValue placeholder="Product Type" />
+                        <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1 sm:mr-2 md:mr-3 text-primary" />
+                        <SelectValue placeholder="Type" />
                       </div>
                     </SelectTrigger>
-                    <SelectContent className="rounded-xl border-2">
+                    <SelectContent className="rounded-lg sm:rounded-xl border-2">
                       <SelectItem value="all">All Products</SelectItem>
                       <SelectItem value="single-items">Single Items</SelectItem>
                       <SelectItem value="kits-deals">Kits & Deals</SelectItem>
@@ -159,13 +159,13 @@ export default function Shop() {
                   </Select>
 
                   <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="w-full h-12 sm:h-14 border-2 rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
+                    <SelectTrigger className="min-w-[140px] h-10 sm:h-12 md:h-14 border-2 rounded-lg sm:rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
                       <div className="flex items-center">
-                        <Filter className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary" />
-                        <SelectValue placeholder="All Categories" />
+                        <Filter className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1 sm:mr-2 md:mr-3 text-primary" />
+                        <SelectValue placeholder="Category" />
                       </div>
                     </SelectTrigger>
-                    <SelectContent className="rounded-xl border-2">
+                    <SelectContent className="rounded-lg sm:rounded-xl border-2">
                       <SelectItem value="all">All Categories</SelectItem>
                       {categories?.map((category) => (
                         <SelectItem key={category.id} value={category.slug}>
@@ -176,10 +176,10 @@ export default function Shop() {
                   </Select>
 
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-full sm:col-span-2 lg:col-span-1 h-12 sm:h-14 border-2 rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
-                      <SelectValue placeholder="Sort by" />
+                    <SelectTrigger className="min-w-[120px] h-10 sm:h-12 md:h-14 border-2 rounded-lg sm:rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300">
+                      <SelectValue placeholder="Sort" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-xl border-2">
+                    <SelectContent className="rounded-lg sm:rounded-xl border-2">
                       <SelectItem value="newest">Newest First</SelectItem>
                       <SelectItem value="name">Name A-Z</SelectItem>
                       <SelectItem value="price-low">Price: Low to High</SelectItem>
