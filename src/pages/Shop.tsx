@@ -375,9 +375,9 @@ export default function Shop() {
                         </div>
 
                         {/* Product Info */}
-                        <div className="p-4 sm:p-6">
-                          <div className="mb-3 sm:mb-4">
-                            <h3 className="font-semibold text-base sm:text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300 mb-2">
+                        <div className="p-2 sm:p-4 lg:p-6">
+                          <div className="mb-2 sm:mb-3">
+                            <h3 className="font-semibold text-sm sm:text-base lg:text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300 mb-1 sm:mb-2">
                               {product.name}
                             </h3>
                             {product.short_description && (
@@ -388,24 +388,24 @@ export default function Shop() {
                           </div>
 
                           {/* Rating */}
-                          <div className="flex items-center gap-1 mb-3 sm:mb-4">
+                          <div className="flex items-center gap-0.5 sm:gap-1 mb-2 sm:mb-3">
                             {[...Array(5)].map((_, i) => (
                               <Star 
                                 key={i} 
-                                className={`h-3 w-3 sm:h-4 sm:w-4 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground/30'}`} 
+                                className={`h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-4 lg:w-4 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground/30'}`} 
                               />
                             ))}
-                            <span className="text-xs text-muted-foreground ml-1 sm:ml-2">(4.5)</span>
+                            <span className="text-xs text-muted-foreground ml-1">(4.5)</span>
                           </div>
 
                           {/* Price */}
-                          <div className="flex items-center justify-between mb-4 sm:mb-6">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                              <span className="font-bold text-lg sm:text-xl text-foreground">
+                          <div className="flex items-center justify-between mb-2 sm:mb-4">
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-bold text-sm sm:text-lg text-foreground">
                                 {currency} {product.price.toFixed(2)}
                               </span>
                               {product.compare_price && product.compare_price > product.price && (
-                                <span className="text-xs sm:text-sm text-muted-foreground line-through">
+                                <span className="text-xs text-muted-foreground line-through">
                                   {currency} {product.compare_price.toFixed(2)}
                                 </span>
                               )}
@@ -413,11 +413,11 @@ export default function Shop() {
                           </div>
 
                           {/* Action Buttons */}
-                          <div className="flex gap-2 sm:gap-3">
+                          <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
                             <Button
                               onClick={() => handleAddToCart(product)}
                               disabled={cartLoading || product.inventory_quantity === 0}
-                              className="flex-1 rounded-full font-medium text-xs sm:text-sm py-2 sm:py-2.5"
+                              className="flex-1 rounded-full font-medium text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3"
                               variant="outline"
                             >
                               <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />

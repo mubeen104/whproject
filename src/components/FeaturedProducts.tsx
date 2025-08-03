@@ -245,39 +245,48 @@ const FeaturedProducts = () => {
                         </div>
 
                         {/* Product Info */}
-                        <div className="p-6">
-                          <div className="mb-4">
-                            <h3 className="font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300 mb-2">
+                        <div className="p-2 sm:p-4 lg:p-6">
+                          <div className="mb-2 sm:mb-3 lg:mb-4">
+                            <h3 className="font-semibold text-sm sm:text-base lg:text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300 mb-1 sm:mb-2">
                               {product.name}
                             </h3>
-                            {product.short_description && <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                            {product.short_description && <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                                 {product.short_description}
                               </p>}
                           </div>
 
                           {/* Rating */}
-                          
+                          <div className="flex items-center gap-0.5 sm:gap-1 mb-2 sm:mb-3">
+                            {[...Array(5)].map((_, i) => (
+                              <Star 
+                                key={i} 
+                                className={`h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-4 lg:w-4 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground/30'}`} 
+                              />
+                            ))}
+                            <span className="text-xs text-muted-foreground ml-1">(4.5)</span>
+                          </div>
 
                           {/* Price */}
-                          <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold text-xl text-foreground">
+                          <div className="flex items-center justify-between mb-2 sm:mb-4 lg:mb-6">
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-bold text-sm sm:text-lg lg:text-xl text-foreground">
                                 {currency} {product.price.toFixed(2)}
                               </span>
-                              {product.compare_price && product.compare_price > product.price && <span className="text-sm text-muted-foreground line-through">
+                              {product.compare_price && product.compare_price > product.price && <span className="text-xs sm:text-sm text-muted-foreground line-through">
                                   {currency} {product.compare_price.toFixed(2)}
                                 </span>}
                             </div>
                           </div>
 
                           {/* Action Buttons */}
-                          <div className="flex gap-3">
-                            <Button onClick={() => handleAddToCart(product)} disabled={cartLoading || product.inventory_quantity === 0} className="flex-1 rounded-full font-medium" variant="outline">
-                              <ShoppingCart className="h-4 w-4 mr-2" />
-                              {product.inventory_quantity === 0 ? 'Out of Stock' : 'Add'}
+                          <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 lg:gap-3">
+                            <Button onClick={() => handleAddToCart(product)} disabled={cartLoading || product.inventory_quantity === 0} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3" variant="outline">
+                              <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                              <span className="hidden sm:inline">{product.inventory_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}</span>
+                              <span className="sm:hidden">Add</span>
                             </Button>
                             
-                            <Button onClick={() => navigate(`/product/${product.id}`)} className="flex-1 rounded-full font-medium">
+                            <Button onClick={() => navigate(`/product/${product.id}`)} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
                               View Details
                             </Button>
                           </div>

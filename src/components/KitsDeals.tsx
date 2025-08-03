@@ -65,30 +65,33 @@ const KitsDeals = () => {
                   </div>
                 </Link>
                 
-                <div className="p-6">
+                <div className="p-2 sm:p-4 lg:p-6">
                   <Link to={`/products/${product.slug}`}>
-                    
+                    <h3 className="font-semibold text-sm sm:text-base lg:text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300 mb-1 sm:mb-2">
+                      {product.name}
+                    </h3>
                   </Link>
                   
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-4 line-clamp-2">
                     {product.short_description}
                   </p>
                   
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center text-lg font-bold text-foreground">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="flex flex-col gap-0.5">
+                      <div className="flex items-center text-sm sm:text-lg font-bold text-foreground">
                         <span className="mr-1">{currency}</span>
                         {product.price.toFixed(2)}
                       </div>
-                      {product.compare_price && product.compare_price > product.price && <div className="flex items-center text-sm text-muted-foreground line-through">
+                      {product.compare_price && product.compare_price > product.price && <div className="flex items-center text-xs sm:text-sm text-muted-foreground line-through">
                           <span className="mr-1">{currency}</span>
                           {product.compare_price.toFixed(2)}
                         </div>}
                     </div>
                     
-                    <Button size="sm" asChild>
+                    <Button size="sm" asChild className="text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3 rounded-full">
                       <Link to={`/products/${product.slug}`}>
-                        View Deal
+                        <span className="hidden sm:inline">View Deal</span>
+                        <span className="sm:hidden">View</span>
                       </Link>
                     </Button>
                   </div>

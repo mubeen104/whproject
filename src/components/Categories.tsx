@@ -124,7 +124,7 @@ const Categories = () => {
                 }}>
                   <CardContent className="p-0">
                     {/* Enhanced Category Image */}
-                    <div className="relative h-56 overflow-hidden">
+                    <div className="relative h-40 sm:h-48 lg:h-56 overflow-hidden">
                       <img src={category.image_url || getImageForCategory(category.slug)} alt={category.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                       
                       {/* Enhanced Gradient Overlay */}
@@ -134,20 +134,20 @@ const Categories = () => {
                       
                       
                       {/* Category Name Overlay */}
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-accent transition-colors duration-300">
+                      <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4">
+                        <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-1 sm:mb-2 group-hover:text-accent transition-colors duration-300">
                           {category.name}
                         </h3>
                       </div>
                     </div>
 
                     {/* Enhanced Category Info */}
-                    <div className="p-6 space-y-4">
-                      <p className="text-muted-foreground leading-relaxed line-clamp-3 group-hover:text-foreground transition-colors duration-300">
+                    <div className="p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3 lg:space-y-4">
+                      <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed line-clamp-2 sm:line-clamp-3 group-hover:text-foreground transition-colors duration-300">
                         {category.description}
                       </p>
 
-                      <Button variant="outline" className="w-full group border-2 border-primary/20 text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary hover:scale-105 transition-all duration-300 font-semibold" onClick={() => {
+                      <Button variant="outline" className="w-full group border-2 border-primary/20 text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary hover:scale-105 transition-all duration-300 font-semibold text-xs sm:text-sm py-2 sm:py-2.5" onClick={() => {
                         navigate(`/shop?category=${category.slug}`);
                         window.scrollTo({
                           top: 0,
@@ -155,9 +155,10 @@ const Categories = () => {
                         });
                       }}>
                         <span className="group-hover:translate-x-1 transition-transform duration-300">
-                          Explore Collection
+                          <span className="hidden sm:inline">Explore Collection</span>
+                          <span className="sm:hidden">Explore</span>
                         </span>
-                        <span className="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                        <span className="ml-1 sm:ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
                       </Button>
                     </div>
                   </CardContent>
