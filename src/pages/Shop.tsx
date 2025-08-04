@@ -204,21 +204,21 @@ export default function Shop() {
           {/* Products Grid */}
           {productsLoading ? <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
               {[...Array(8)].map((_, i) => <div key={i} className="group relative">
-                  <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-2xl sm:rounded-3xl p-1 shadow-lg">
-                    <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-2xl sm:rounded-3xl overflow-hidden shadow-none">
+                  <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-3xl p-1 shadow-lg">
+                    <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none">
                       <CardContent className="p-0">
-                        <Skeleton className="w-full aspect-[4/3] rounded-t-2xl sm:rounded-t-3xl" />
-                        <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                          <Skeleton className="h-4 sm:h-5 w-3/4" />
-                          <Skeleton className="h-3 sm:h-4 w-full" />
-                          <Skeleton className="h-3 sm:h-4 w-2/3" />
+                        <Skeleton className="w-full aspect-square rounded-t-3xl" />
+                        <div className="p-6 space-y-4">
+                          <Skeleton className="h-5 w-3/4" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-2/3" />
                           <div className="flex gap-1 mb-3">
-                            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-3 w-3 sm:h-4 sm:w-4 rounded-full" />)}
+                            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-4 w-4 rounded-full" />)}
                           </div>
-                          <Skeleton className="h-5 sm:h-6 w-20 sm:w-24" />
-                          <div className="flex gap-2 sm:gap-3">
-                            <Skeleton className="h-8 sm:h-10 flex-1 rounded-full" />
-                            <Skeleton className="h-8 sm:h-10 flex-1 rounded-full" />
+                          <Skeleton className="h-6 w-24" />
+                          <div className="flex gap-3">
+                            <Skeleton className="h-10 flex-1 rounded-full" />
+                            <Skeleton className="h-10 flex-1 rounded-full" />
                           </div>
                         </div>
                       </CardContent>
@@ -240,59 +240,59 @@ export default function Shop() {
             animationDelay: `${index * 0.1}s`
           }}>
                   {/* Floating Card Container */}
-                  <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-2xl sm:rounded-3xl p-1 shadow-lg group-hover:shadow-2xl transition-all duration-700 group-hover:border-primary/30">
+                  <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-3xl p-1 shadow-lg group-hover:shadow-2xl transition-all duration-700 group-hover:border-primary/30">
                     {/* Gradient Border Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-2xl sm:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
                     
-                    <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-2xl sm:rounded-3xl overflow-hidden shadow-none">
+                    <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none">
                       <CardContent className="p-0">
                         {/* Product Image Container */}
-                        <div className="relative overflow-hidden rounded-t-2xl sm:rounded-t-3xl aspect-[4/3]">
-                          <img src={getMainImage(product)} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                         <div className="relative overflow-hidden rounded-t-3xl aspect-square">
+                           <img src={getMainImage(product)} alt={product.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" />
                           
                           {/* Floating Badges */}
-                          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-2">
-                            {product.is_featured && <Badge className="bg-primary/90 backdrop-blur-sm text-primary-foreground shadow-lg border-0 rounded-full px-2 py-1 sm:px-3 text-xs font-medium">
+                          <div className="absolute top-3 left-3 flex flex-col gap-2">
+                            {product.is_featured && <Badge className="bg-primary/90 backdrop-blur-sm text-primary-foreground shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
                                 Featured
                               </Badge>}
-                            {product.is_kits_deals && <Badge className="bg-accent/90 backdrop-blur-sm text-accent-foreground shadow-lg border-0 rounded-full px-2 py-1 sm:px-3 text-xs font-medium">
+                            {product.is_kits_deals && <Badge className="bg-accent/90 backdrop-blur-sm text-accent-foreground shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
                                 Kit & Deal
                               </Badge>}
-                            {product.compare_price && product.compare_price > product.price && <Badge className="bg-red-500/90 backdrop-blur-sm text-white shadow-lg border-0 rounded-full px-2 py-1 sm:px-3 text-xs font-medium">
+                            {product.compare_price && product.compare_price > product.price && <Badge className="bg-red-500/90 backdrop-blur-sm text-white shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
                                 Sale
                               </Badge>}
                           </div>
 
                           {/* Out of Stock Overlay */}
-                          {product.inventory_quantity === 0 && <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center rounded-t-2xl sm:rounded-t-3xl">
-                              <Badge variant="secondary" className="text-sm sm:text-base font-medium py-1.5 px-3 sm:py-2 sm:px-4 rounded-full shadow-lg">
+                          {product.inventory_quantity === 0 && <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center rounded-t-3xl">
+                              <Badge variant="secondary" className="text-base font-medium py-2 px-4 rounded-full shadow-lg">
                                 Out of Stock
                               </Badge>
                             </div>}
 
                           {/* Quick Actions Overlay */}
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center rounded-t-2xl sm:rounded-t-3xl">
-                            <div className="flex gap-2 sm:gap-3">
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center rounded-t-3xl">
+                            <div className="flex gap-3">
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <Button size="sm" className="bg-white/95 text-foreground hover:bg-white rounded-full px-3 py-1.5 sm:px-4 sm:py-2 shadow-lg border-0 text-xs sm:text-sm" onClick={() => setSelectedProduct(product)}>
-                                    <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                                  <Button size="sm" className="bg-white/95 text-foreground hover:bg-white rounded-full px-4 py-2 shadow-lg border-0" onClick={() => setSelectedProduct(product)}>
+                                    <Eye className="h-4 w-4 mr-2" />
                                     Quick View
                                   </Button>
                                 </DialogTrigger>
-                                <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl sm:rounded-2xl m-2 sm:m-4">
-                                  <DialogHeader className="px-1 sm:px-0">
-                                    <DialogTitle className="text-lg sm:text-xl md:text-2xl pr-8">{product.name}</DialogTitle>
+                                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
+                                  <DialogHeader>
+                                    <DialogTitle className="text-2xl">{product.name}</DialogTitle>
                                   </DialogHeader>
-                                  {selectedProduct && <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-                                      <div className="space-y-3 sm:space-y-4">
-                                        <img src={getMainImage(selectedProduct)} alt={selectedProduct.name} className="w-full h-64 sm:h-80 md:h-96 object-cover rounded-xl sm:rounded-2xl" />
-                                        {selectedProduct.product_images?.length > 1 && <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
-                                            {selectedProduct.product_images.slice(1, 5).map((image: any) => <img key={image.id} src={image.image_url} alt={image.alt_text || selectedProduct.name} className="w-full h-16 sm:h-20 object-cover rounded-lg sm:rounded-xl border" />)}
+                                  {selectedProduct && <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                      <div className="space-y-4">
+                                        <img src={getMainImage(selectedProduct)} alt={selectedProduct.name} className="w-full aspect-square object-contain rounded-2xl" />
+                                        {selectedProduct.product_images?.length > 1 && <div className="grid grid-cols-4 gap-3">
+                                            {selectedProduct.product_images.slice(1, 5).map((image: any) => <img key={image.id} src={image.image_url} alt={image.alt_text || selectedProduct.name} className="w-full aspect-square object-contain rounded-xl border" />)}
                                           </div>}
                                       </div>
                                       
-                                      <div className="space-y-4 sm:space-y-6">
+                                      <div className="space-y-6">
                                         <div>
                                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
                                              <span className="text-2xl sm:text-3xl font-bold text-foreground">
