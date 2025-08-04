@@ -109,7 +109,7 @@ const Footer = () => {
             {/* Quick Links - Left */}
             <div className="lg:col-span-1 space-y-4 sm:space-y-6 animate-fade-in flex flex-col items-center text-center">
               <h3 className="text-base sm:text-lg font-bold text-foreground flex items-center">
-                
+                <div className="w-4 sm:w-6 h-0.5 bg-gradient-to-r from-primary to-transparent mr-2 sm:mr-3" />
                 Quick Links
               </h3>
               <ul className="space-y-2 sm:space-y-3">
@@ -145,7 +145,13 @@ const Footer = () => {
                 </div>
                 
                 <div className="flex flex-col gap-2 max-w-sm mx-auto">
-                  <Input type="email" placeholder="Your email address" value={email} onChange={e => setEmail(e.target.value)} className="h-9 sm:h-10 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 text-sm" />
+                  <Input 
+                    type="email" 
+                    placeholder="Your email address" 
+                    value={email} 
+                    onChange={e => setEmail(e.target.value)} 
+                    className="h-9 sm:h-10 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 text-sm" 
+                  />
                   <Button className="h-9 sm:h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-sm">
                     Subscribe
                   </Button>
@@ -170,7 +176,7 @@ const Footer = () => {
             animationDelay: '0.2s'
           }}>
               <h3 className="text-base sm:text-lg font-bold text-foreground flex items-center">
-                
+                <div className="w-4 sm:w-6 h-0.5 bg-gradient-to-r from-accent to-transparent mr-2 sm:mr-3" />
                 Legal
               </h3>
               <ul className="space-y-2 sm:space-y-3">
@@ -253,7 +259,11 @@ const Footer = () => {
       </div>
 
       {/* Back to Top Button - Responsive */}
-      <button onClick={scrollToTop} className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 p-3 sm:p-4 bg-gradient-to-br from-primary to-accent text-primary-foreground rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 z-50 animate-bounce" aria-label="Back to top">
+      <button 
+        onClick={scrollToTop} 
+        className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 p-3 sm:p-4 bg-gradient-to-br from-primary to-accent text-primary-foreground rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 z-50 animate-bounce" 
+        aria-label="Back to top"
+      >
         <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5" />
       </button>
     </footer>;
