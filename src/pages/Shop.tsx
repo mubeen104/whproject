@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ShoppingCart, Eye, Search, Filter, Star } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ShoppingCart, Eye, Search, Filter, Star, ChevronDown } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
 import { useCategories } from '@/hooks/useCategories';
 import { useGuestCart } from '@/hooks/useGuestCart';
@@ -22,6 +23,7 @@ export default function Shop() {
   const [sortBy, setSortBy] = useState<string>('newest');
   const [productType, setProductType] = useState<string>('all'); // New state for product type
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   // Update search term and category when URL changes
   useEffect(() => {
@@ -120,85 +122,130 @@ export default function Shop() {
               </div>
             </div>
 
-            {/* Filter Pills */}
-            <Card className="border-2 shadow-xl bg-card/95 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-              <CardContent className="p-4 sm:p-6">
-                <div className="space-y-4">
-                  {/* Filter Header */}
-                  <div className="flex items-center gap-3">
-                    <Filter className="h-5 w-5 text-primary" />
-                    <span className="font-semibold text-foreground">Filters</span>
+            {/* Collapsible Filter Pills */}
+            <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+              <Card className="border-2 shadow-xl bg-card/95 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="space-y-4">
+                    {/* Filter Header with Toggle */}
+                    <CollapsibleTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        className="w-full flex items-center justify-between p-0 h-auto hover:bg-transparent group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Filter className="h-5 w-5 text-primary" />
+                          <span className="font-semibold text-foreground">Filters</span>
+                          {(productType !== 'all' || selectedCategory !== 'all' || searchTerm) && (
+                            <Badge variant="secondary" className="ml-2 h-5 px-2 text-xs">
+                              {[
+                                productType !== 'all' ? 1 : 0,
+                                selectedCategory !== 'all' ? 1 : 0,
+                                searchTerm ? 1 : 0
+                              ].reduce((a, b) => a + b, 0)}
+                            </Badge>
+                          )}
+                        </div>
+                        <ChevronDown 
+                          className={`h-5 w-5 text-muted-foreground transition-transform duration-300 ${
+                            isFiltersOpen ? 'rotate-180' : ''
+                          }`} 
+                        />
+                      </Button>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent className="space-y-4 animate-accordion-down data-[state=closed]:animate-accordion-up">
+                      {/* Filter Pills Layout */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {/* Product Type Filter */}
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-foreground">Product Type</label>
+                          <Select value={productType} onValueChange={setProductType}>
+                            <SelectTrigger className="h-11 border-2 rounded-xl hover:border-primary/50 transition-all duration-300 bg-background/50">
+                              <div className="flex items-center">
+                                <ShoppingCart className="h-4 w-4 mr-2 text-primary" />
+                                <SelectValue placeholder="Select type" />
+                              </div>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-2">
+                              <SelectItem value="all">All Products</SelectItem>
+                              <SelectItem value="single-items">Single Items</SelectItem>
+                              <SelectItem value="kits-deals">Kits & Deals</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Category Filter */}
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-foreground">Category</label>
+                          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                            <SelectTrigger className="h-11 border-2 rounded-xl hover:border-primary/50 transition-all duration-300 bg-background/50">
+                              <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-2">
+                              <SelectItem value="all">All Categories</SelectItem>
+                              {categories?.map(category => <SelectItem key={category.id} value={category.slug}>
+                                  {category.name}
+                                </SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Sort Filter */}
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-foreground">Sort By</label>
+                          <Select value={sortBy} onValueChange={setSortBy}>
+                            <SelectTrigger className="h-11 border-2 rounded-xl hover:border-primary/50 transition-all duration-300 bg-background/50">
+                              <SelectValue placeholder="Sort options" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-2">
+                              <SelectItem value="newest">Newest First</SelectItem>
+                              <SelectItem value="name">Name A-Z</SelectItem>
+                              <SelectItem value="price-low">Price: Low to High</SelectItem>
+                              <SelectItem value="price-high">Price: High to Low</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Active Filters Display */}
+                      {(productType !== 'all' || selectedCategory !== 'all' || searchTerm) && (
+                        <div className="flex flex-wrap gap-2 pt-4 border-t border-border/50">
+                          <span className="text-sm text-muted-foreground">Active filters:</span>
+                          {productType !== 'all' && (
+                            <Badge 
+                              variant="secondary" 
+                              className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors duration-200" 
+                              onClick={() => setProductType('all')}
+                            >
+                              {productType === 'kits-deals' ? 'Kits & Deals' : 'Single Items'} ✕
+                            </Badge>
+                          )}
+                          {selectedCategory !== 'all' && (
+                            <Badge 
+                              variant="secondary" 
+                              className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors duration-200" 
+                              onClick={() => setSelectedCategory('all')}
+                            >
+                              {categories?.find(c => c.slug === selectedCategory)?.name} ✕
+                            </Badge>
+                          )}
+                          {searchTerm && (
+                            <Badge 
+                              variant="secondary" 
+                              className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors duration-200" 
+                              onClick={() => setSearchTerm('')}
+                            >
+                              "{searchTerm}" ✕
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                    </CollapsibleContent>
                   </div>
-                  
-                  {/* Filter Pills Layout */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {/* Product Type Filter */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground">Product Type</label>
-                      <Select value={productType} onValueChange={setProductType}>
-                        <SelectTrigger className="h-11 border-2 rounded-xl hover:border-primary/50 transition-all duration-300 bg-background/50">
-                          <div className="flex items-center">
-                            <ShoppingCart className="h-4 w-4 mr-2 text-primary" />
-                            <SelectValue placeholder="Select type" />
-                          </div>
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-2">
-                          <SelectItem value="all">All Products</SelectItem>
-                          <SelectItem value="single-items">Single Items</SelectItem>
-                          <SelectItem value="kits-deals">Kits & Deals</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Category Filter */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground">Category</label>
-                      <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                        <SelectTrigger className="h-11 border-2 rounded-xl hover:border-primary/50 transition-all duration-300 bg-background/50">
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-2">
-                          <SelectItem value="all">All Categories</SelectItem>
-                          {categories?.map(category => <SelectItem key={category.id} value={category.slug}>
-                              {category.name}
-                            </SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Sort Filter */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground">Sort By</label>
-                      <Select value={sortBy} onValueChange={setSortBy}>
-                        <SelectTrigger className="h-11 border-2 rounded-xl hover:border-primary/50 transition-all duration-300 bg-background/50">
-                          <SelectValue placeholder="Sort options" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-2">
-                          <SelectItem value="newest">Newest First</SelectItem>
-                          <SelectItem value="name">Name A-Z</SelectItem>
-                          <SelectItem value="price-low">Price: Low to High</SelectItem>
-                          <SelectItem value="price-high">Price: High to Low</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {/* Active Filters Display */}
-                  {(productType !== 'all' || selectedCategory !== 'all' || searchTerm) && <div className="flex flex-wrap gap-2 pt-4 border-t border-border/50">
-                      <span className="text-sm text-muted-foreground">Active filters:</span>
-                      {productType !== 'all' && <Badge variant="secondary" className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors duration-200" onClick={() => setProductType('all')}>
-                          {productType === 'kits-deals' ? 'Kits & Deals' : 'Single Items'} ✕
-                        </Badge>}
-                      {selectedCategory !== 'all' && <Badge variant="secondary" className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors duration-200" onClick={() => setSelectedCategory('all')}>
-                          {categories?.find(c => c.slug === selectedCategory)?.name} ✕
-                        </Badge>}
-                      {searchTerm && <Badge variant="secondary" className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors duration-200" onClick={() => setSearchTerm('')}>
-                          "{searchTerm}" ✕
-                        </Badge>}
-                    </div>}
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Collapsible>
           </div>
 
           {/* Products Grid */}
