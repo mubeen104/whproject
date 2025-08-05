@@ -13,12 +13,14 @@ import { useCategories } from '@/hooks/useCategories';
 import { useGuestCart } from '@/hooks/useGuestCart';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { AddToCartModal } from '@/components/AddToCartModal';
 
 const ShopSection = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('newest');
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [addToCartProduct, setAddToCartProduct] = useState<any>(null);
   const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
 
   const { data: products, isLoading: productsLoading } = useProducts();
@@ -69,20 +71,12 @@ const ShopSection = () => {
     }
   });
 
-  const handleAddToCart = async (product: any) => {
-    try {
-      await addToCart(product.id, 1);
-      toast({
-        title: "Added to cart",
-        description: `${product.name} has been added to your cart.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add item to cart. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const handleAddToCartRequest = (product: any) => {
+    setAddToCartProduct(product);
+  };
+
+  const handleAddToCart = async (productId: string, quantity: number, variantId?: string) => {
+    await addToCart(productId, quantity, variantId);
   };
 
   const getMainImage = (product: any) => {
@@ -258,19 +252,14 @@ const ShopSection = () => {
                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
                          />
                         
-                        {/* Floating Badges */}
-                        <div className="absolute top-3 left-3 flex flex-col gap-2">
-                          {product.is_featured && (
-                            <Badge className="bg-primary/90 backdrop-blur-sm text-primary-foreground shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
-                              Featured
-                            </Badge>
-                          )}
-                          {product.compare_price && product.compare_price > product.price && (
-                            <Badge className="bg-red-500/90 backdrop-blur-sm text-white shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
-                              Sale
-                            </Badge>
-                          )}
-                        </div>
+                         {/* Sale Badge Only */}
+                         {product.compare_price && product.compare_price > product.price && (
+                           <div className="absolute top-3 left-3">
+                             <Badge className="bg-red-500/90 backdrop-blur-sm text-white shadow-lg border-0 rounded-full px-3 py-1 text-xs font-medium">
+                               Sale
+                             </Badge>
+                           </div>
+                         )}
 
                         {/* Out of Stock Overlay */}
                         {product.inventory_quantity === 0 && (
@@ -362,15 +351,15 @@ const ShopSection = () => {
                                         </div>
                                       </div>
 
-                                      <Button
-                                        onClick={() => handleAddToCart(selectedProduct)}
-                                        disabled={cartLoading || selectedProduct.inventory_quantity === 0}
-                                        className="w-full rounded-full py-6 text-base font-medium"
-                                        size="lg"
-                                      >
-                                        <ShoppingCart className="h-5 w-5 mr-2" />
-                                        {selectedProduct.inventory_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
-                                      </Button>
+                                       <Button
+                                         onClick={() => handleAddToCartRequest(selectedProduct)}
+                                         disabled={cartLoading || selectedProduct.inventory_quantity === 0}
+                                         className="w-full rounded-full py-6 text-base font-medium"
+                                         size="lg"
+                                       >
+                                         <ShoppingCart className="h-5 w-5 mr-2" />
+                                         {selectedProduct.inventory_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                                       </Button>
                                     </div>
                                   </div>
                                 )}
@@ -420,15 +409,15 @@ const ShopSection = () => {
 
                         {/* Action Buttons */}
                         <div className="flex gap-3">
-                          <Button
-                            onClick={() => handleAddToCart(product)}
-                            disabled={cartLoading || product.inventory_quantity === 0}
-                            className="flex-1 rounded-full font-medium"
-                            variant="outline"
-                          >
-                            <ShoppingCart className="h-4 w-4 mr-2" />
-                            {product.inventory_quantity === 0 ? 'Out of Stock' : 'Add'}
-                          </Button>
+                           <Button
+                             onClick={() => handleAddToCartRequest(product)}
+                             disabled={cartLoading || product.inventory_quantity === 0}
+                             className="flex-1 rounded-full font-medium"
+                             variant="outline"
+                           >
+                             <ShoppingCart className="h-4 w-4 mr-2" />
+                             {product.inventory_quantity === 0 ? 'Out of Stock' : 'Add'}
+                           </Button>
                           
                           <Button
                             onClick={() => navigate(`/product/${product.id}`)}
@@ -471,6 +460,17 @@ const ShopSection = () => {
           </div>
         )}
       </div>
+
+      {/* Add to Cart Modal */}
+      {addToCartProduct && (
+        <AddToCartModal
+          product={addToCartProduct}
+          isOpen={!!addToCartProduct}
+          onClose={() => setAddToCartProduct(null)}
+          onAddToCart={handleAddToCart}
+          isLoading={cartLoading}
+        />
+      )}
     </section>
   );
 };

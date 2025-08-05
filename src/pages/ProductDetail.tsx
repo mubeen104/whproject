@@ -15,6 +15,7 @@ import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useToast } from '@/hooks/use-toast';
 import { Product } from '@/hooks/useProducts';
 import { ReviewForm } from '@/components/reviews/ReviewForm';
+import { ProductImageZoom } from '@/components/ProductImageZoom';
 import { Minus, Plus, Star, Truck, Shield, RotateCcw } from 'lucide-react';
 
 const useProduct = (productId: string) => {
@@ -198,13 +199,11 @@ const ProductDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-               <img
-                 src={getMainImage()}
-                 alt={product.name}
-                 className="w-full h-full object-contain"
-               />
-            </div>
+            <ProductImageZoom
+              src={getMainImage()}
+              alt={product.name}
+              className="aspect-square rounded-lg bg-muted"
+            />
             {getCurrentImages().length > 1 && (
               <div className="flex space-x-2 overflow-x-auto">
                 {getCurrentImages().map((image, index) => (
