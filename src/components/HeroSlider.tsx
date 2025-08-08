@@ -8,16 +8,16 @@ import {
   type CarouselApi 
 } from "@/components/ui/carousel";
 import { useHeroSlides } from "@/hooks/useHeroSlides";
-import { useUISettings } from "@/hooks/useStoreSettings";
+
 
 const HeroSlider = () => {
   const { data: slides, isLoading } = useHeroSlides();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
-  const { carouselScrollSpeed, animationDuration, enableSmoothScrolling } = useUISettings();
+  
 
-  // Use configurable speed, with slide-specific override as fallback
-  const autoScrollSpeed = carouselScrollSpeed || slides?.[0]?.auto_scroll_speed || 5000;
+  // Use slide-specific speed or default
+  const autoScrollSpeed = slides?.[0]?.auto_scroll_speed || 5000;
 
   useEffect(() => {
     if (!api) return;
@@ -99,7 +99,6 @@ const HeroSlider = () => {
           opts={{
             align: "start",
             loop: true,
-            duration: enableSmoothScrolling ? animationDuration : 0,
             skipSnaps: false,
             dragFree: false
           }}
@@ -115,9 +114,9 @@ const HeroSlider = () => {
                     loading={index === 0 ? "eager" : "lazy"}
                     decoding="async"
                     className="w-full h-full object-cover sm:object-contain md:object-cover bg-gradient-to-br from-muted/20 to-background group-hover:scale-[1.02]"
-                    style={{
-                      transition: `transform ${animationDuration}ms cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease-in-out`
-                    }}
+                      style={{
+                        transition: `transform 500ms cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease-in-out`
+                      }}
                     onLoad={(e) => {
                       // Add smooth transition when image loads
                       e.currentTarget.style.opacity = '1';
@@ -175,7 +174,7 @@ const HeroSlider = () => {
                   : 'w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white/50 hover:bg-white/80 rounded-full hover:scale-125'
               }`}
               style={{
-                transition: `all ${animationDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
+                transition: `all 500ms cubic-bezier(0.4, 0, 0.2, 1)`
               }}
               aria-label={`Go to slide ${index + 1}`}
             />

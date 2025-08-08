@@ -58,6 +58,21 @@ export const useCreateProductVariant = () => {
 
   return useMutation({
     mutationFn: async (variant: Omit<ProductVariant, 'id' | 'created_at' | 'updated_at' | 'product_variant_images'>) => {
+      // Prevent duplicate variants by name for the same product (case-insensitive)
+      const { data: existing, error: checkError } = await supabase
+        .from('product_variants')
+        .select('id')
+        .eq('product_id', variant.product_id)
+        .ilike('name', variant.name);
+
+      if (checkError) {
+        throw checkError;
+      }
+
+      if (existing && existing.length > 0) {
+        throw new Error('A variant with this name already exists for this product.');
+      }
+
       const { data, error } = await supabase
         .from('product_variants')
         .insert(variant)

@@ -199,9 +199,24 @@ export default function AdminProducts() {
     }
 
     if (productVariants.length > 0) {
-      const variantData = productVariants.map((variant, index) => ({
+      // Deduplicate variants by name/price/qty and drop invalid ones
+      const seen = new Set<string>();
+      const cleanedVariants = productVariants.filter(v => {
+        const name = (v.name || '').trim();
+        if (!name) return false;
+        const price = parseFloat(v.price || '0') || 0;
+        const qty = parseInt(v.inventory_quantity || '0') || 0;
+        const key = `${name.toLowerCase()}|${price}|${qty}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+      if (cleanedVariants.length === 0) return;
+
+      const variantData = cleanedVariants.map((variant, index) => ({
         product_id: productId,
-        name: variant.name,
+        name: variant.name.trim(),
         price: parseFloat(variant.price),
         inventory_quantity: parseInt(variant.inventory_quantity) || 0,
         variant_options: {},
@@ -217,8 +232,8 @@ export default function AdminProducts() {
       if (error) throw error;
 
       // Handle variant images
-      for (let i = 0; i < productVariants.length; i++) {
-        const variant = productVariants[i];
+      for (let i = 0; i < cleanedVariants.length; i++) {
+        const variant = cleanedVariants[i];
         if (variant.image_url && insertedVariants[i]) {
           await supabase.from('product_variant_images').insert({
             variant_id: insertedVariants[i].id,
