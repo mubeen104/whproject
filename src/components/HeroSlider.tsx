@@ -130,29 +130,37 @@ const HeroSlider = () => {
                 {/* Subtle gradient overlay for better contrast on indicators */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                 
-                {/* Optional overlay for text if link exists */}
+                {/* Professional overlay with gradient backdrop */}
                 {slide.link_url && (
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center p-4 sm:p-6 md:p-8">
-                    <div className="text-center text-white animate-fade-in max-w-full">
-                      <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 text-shadow-lg px-2">
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 ease-out flex items-center justify-center p-4 sm:p-6 md:p-8">
+                    <div className="text-center text-white transform translate-y-4 group-hover:translate-y-0 transition-all duration-700 ease-out max-w-full">
+                      <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 text-shadow-lg px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">
                         {slide.title}
                       </h2>
                       {slide.subtitle && (
-                        <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-4 sm:mb-5 md:mb-6 max-w-xs sm:max-w-lg md:max-w-2xl mx-auto text-shadow px-2">
+                        <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-4 sm:mb-5 md:mb-6 max-w-xs sm:max-w-lg md:max-w-2xl mx-auto text-shadow px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-300">
                           {slide.subtitle}
                         </p>
                       )}
-                      <a
-                        href={slide.link_url}
-                        className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 bg-primary hover:bg-primary-hover text-primary-foreground rounded-full font-semibold transition-all duration-300 hover:scale-105 shadow-elevated text-sm sm:text-base"
-                      >
-                        <span className="truncate max-w-[120px] sm:max-w-none">
-                          {slide.link_text || 'Shop Now'}
-                        </span>
-                        <svg className="ml-1 sm:ml-2 w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </a>
+                      <div className="opacity-0 group-hover:opacity-100 transition-all duration-500 delay-400 transform scale-95 group-hover:scale-100">
+                        <a
+                          href={slide.link_url}
+                          className="relative inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground rounded-full font-semibold transition-all duration-500 hover:scale-110 hover:shadow-2xl shadow-lg text-sm sm:text-base overflow-hidden group/button"
+                        >
+                          {/* Animated background shine effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/button:translate-x-full transition-transform duration-1000 ease-out" />
+                          
+                          {/* Button glow effect */}
+                          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-primary/90 opacity-0 group-hover/button:opacity-100 transition-opacity duration-300 blur-sm" />
+                          
+                          <span className="relative z-10 truncate max-w-[120px] sm:max-w-none">
+                            {slide.link_text || 'Shop Now'}
+                          </span>
+                          <svg className="relative z-10 ml-1 sm:ml-2 w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 transform group-hover/button:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 )}
