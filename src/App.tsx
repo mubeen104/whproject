@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Contact from "./pages/Contact";
@@ -42,6 +43,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <WhatsAppButton />
           <Routes>
             <Route path="/" element={<Index />} />
