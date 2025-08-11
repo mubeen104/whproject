@@ -44,12 +44,36 @@ export default function AdminDashboard() {
     queryKey: ['admin-dashboard-stats', timeFilter],
     queryFn: async () => {
       const startDate = getDateRange(timeFilter);
-      const dateFilter = startDate ? `created_at.gte.${startDate.toISOString()}` : null;
+      
+      // Get previous period for trend calculation
+      const getPreviousPeriodDate = (filter: string) => {
+        const now = new Date();
+        const ranges: { [key: string]: Date | null } = {
+          'hour': new Date(now.getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
+          'day': new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+          'week': new Date(now.getTime() - 2 * 7 * 24 * 60 * 60 * 1000), // 2 weeks ago
+          'month': new Date(now.getTime() - 2 * 30 * 24 * 60 * 60 * 1000), // 2 months ago
+          'year': new Date(now.getFullYear() - 1, 0, 1), // Last year
+          'all': null // No comparison for all time
+        };
+        return ranges[filter] || null;
+      };
 
-      let productsQuery = supabase.from('products').select('*', { count: 'exact', head: true });
-      let ordersQuery = supabase.from('orders').select('*', { count: 'exact', head: true });
-      let usersQuery = supabase.from('profiles').select('*', { count: 'exact', head: true });
-      let revenueQuery = supabase.from('orders').select('total_amount').eq('payment_status', 'completed');
+      const previousPeriodDate = getPreviousPeriodDate(timeFilter);
+
+      // Current period queries
+      let currentProductsQuery = supabase.from('products').select('*', { count: 'exact', head: true });
+      let currentOrdersQuery = supabase.from('orders').select('*', { count: 'exact', head: true });
+      let currentUsersQuery = supabase.from('profiles').select('*', { count: 'exact', head: true });
+      let currentRevenueQuery = supabase.from('orders').select('total_amount').eq('payment_status', 'completed');
+      
+      // Previous period queries for trends
+      let previousProductsQuery = supabase.from('products').select('*', { count: 'exact', head: true });
+      let previousOrdersQuery = supabase.from('orders').select('*', { count: 'exact', head: true });
+      let previousUsersQuery = supabase.from('profiles').select('*', { count: 'exact', head: true });
+      let previousRevenueQuery = supabase.from('orders').select('total_amount').eq('payment_status', 'completed');
+      
+      // Recent orders query
       let recentOrdersQuery = supabase.from('orders')
         .select(`
           id,
@@ -62,37 +86,98 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false })
         .limit(5);
 
-      // Apply date filters when not "all time"
-      if (dateFilter) {
-        productsQuery = productsQuery.gte('created_at', startDate!.toISOString());
-        ordersQuery = ordersQuery.gte('created_at', startDate!.toISOString());
-        usersQuery = usersQuery.gte('created_at', startDate!.toISOString());
-        revenueQuery = revenueQuery.gte('created_at', startDate!.toISOString());
-        recentOrdersQuery = recentOrdersQuery.gte('created_at', startDate!.toISOString());
+      // Apply date filters for current period
+      if (startDate) {
+        currentProductsQuery = currentProductsQuery.gte('created_at', startDate.toISOString());
+        currentOrdersQuery = currentOrdersQuery.gte('created_at', startDate.toISOString());
+        currentUsersQuery = currentUsersQuery.gte('created_at', startDate.toISOString());
+        currentRevenueQuery = currentRevenueQuery.gte('created_at', startDate.toISOString());
+        recentOrdersQuery = recentOrdersQuery.gte('created_at', startDate.toISOString());
       }
 
-      const [
-        { count: productsCount },
-        { count: ordersCount },
-        { count: usersCount },
-        { data: revenueData },
-        { data: recentOrders }
-      ] = await Promise.all([
-        productsQuery,
-        ordersQuery,
-        usersQuery,
-        revenueQuery,
-        recentOrdersQuery
-      ]);
+      // Apply date filters for previous period
+      if (previousPeriodDate && startDate) {
+        previousProductsQuery = previousProductsQuery
+          .gte('created_at', previousPeriodDate.toISOString())
+          .lt('created_at', startDate.toISOString());
+        previousOrdersQuery = previousOrdersQuery
+          .gte('created_at', previousPeriodDate.toISOString())
+          .lt('created_at', startDate.toISOString());
+        previousUsersQuery = previousUsersQuery
+          .gte('created_at', previousPeriodDate.toISOString())
+          .lt('created_at', startDate.toISOString());
+        previousRevenueQuery = previousRevenueQuery
+          .gte('created_at', previousPeriodDate.toISOString())
+          .lt('created_at', startDate.toISOString());
+      }
 
-      const totalRevenue = revenueData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
+      const queries = [
+        currentProductsQuery,
+        currentOrdersQuery,
+        currentUsersQuery,
+        currentRevenueQuery,
+        recentOrdersQuery
+      ];
+
+      // Add previous period queries only if we have a previous period
+      if (previousPeriodDate && startDate) {
+        queries.push(
+          previousProductsQuery,
+          previousOrdersQuery,
+          previousUsersQuery,
+          previousRevenueQuery
+        );
+      }
+
+      const results = await Promise.all(queries);
+
+      const [
+        { count: currentProductsCount },
+        { count: currentOrdersCount },
+        { count: currentUsersCount },
+        { data: currentRevenueData },
+        { data: recentOrders }
+      ] = results;
+
+      let previousProductsCount = 0;
+      let previousOrdersCount = 0;
+      let previousUsersCount = 0;
+      let previousRevenue = 0;
+
+      if (previousPeriodDate && startDate && results.length > 5) {
+        const [
+          { count: prevProductsCount },
+          { count: prevOrdersCount },
+          { count: prevUsersCount },
+          { data: prevRevenueData }
+        ] = results.slice(5);
+
+        previousProductsCount = prevProductsCount || 0;
+        previousOrdersCount = prevOrdersCount || 0;
+        previousUsersCount = prevUsersCount || 0;
+        previousRevenue = prevRevenueData?.reduce((sum: number, order: any) => sum + Number(order.total_amount), 0) || 0;
+      }
+
+      const currentRevenue = currentRevenueData?.reduce((sum: number, order: any) => sum + Number(order.total_amount), 0) || 0;
+
+      // Calculate trends
+      const calculateTrend = (current: number, previous: number) => {
+        if (previous === 0) return current > 0 ? 100 : 0;
+        return Math.round(((current - previous) / previous) * 100);
+      };
 
       return {
-        products: productsCount || 0,
-        orders: ordersCount || 0,
-        users: usersCount || 0,
-        revenue: totalRevenue,
-        recentOrders: recentOrders || []
+        products: currentProductsCount || 0,
+        orders: currentOrdersCount || 0,
+        users: currentUsersCount || 0,
+        revenue: currentRevenue,
+        recentOrders: recentOrders || [],
+        trends: {
+          products: calculateTrend(currentProductsCount || 0, previousProductsCount),
+          orders: calculateTrend(currentOrdersCount || 0, previousOrdersCount),
+          users: calculateTrend(currentUsersCount || 0, previousUsersCount),
+          revenue: calculateTrend(currentRevenue, previousRevenue)
+        }
       };
     }
   });
@@ -131,13 +216,18 @@ export default function AdminDashboard() {
     );
   }
 
+  const formatTrend = (trend: number) => {
+    const sign = trend >= 0 ? '+' : '';
+    return `${sign}${trend}%`;
+  };
+
   const statCards = [
     {
       title: 'Total Products',
       value: stats?.products || 0,
       icon: Package,
-      trend: '+12%',
-      trendUp: true,
+      trend: formatTrend(stats?.trends?.products || 0),
+      trendUp: (stats?.trends?.products || 0) >= 0,
       description: 'Products in inventory',
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
@@ -146,8 +236,8 @@ export default function AdminDashboard() {
       title: 'Total Orders',
       value: stats?.orders || 0,
       icon: ShoppingCart,
-      trend: '+8%',
-      trendUp: true,
+      trend: formatTrend(stats?.trends?.orders || 0),
+      trendUp: (stats?.trends?.orders || 0) >= 0,
       description: 'All time orders',
       color: 'text-green-600',
       bgColor: 'bg-green-50',
@@ -156,18 +246,18 @@ export default function AdminDashboard() {
       title: 'Total Users',
       value: stats?.users || 0,
       icon: Users,
-      trend: '+5%',
-      trendUp: true,
+      trend: formatTrend(stats?.trends?.users || 0),
+      trendUp: (stats?.trends?.users || 0) >= 0,
       description: 'Registered users',
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
     },
     {
       title: 'Total Revenue',
-      value: `$${(stats?.revenue || 0).toFixed(2)}`,
+      value: `${currency} ${(stats?.revenue || 0).toFixed(2)}`,
       icon: DollarSign,
-      trend: '+15%',
-      trendUp: true,
+      trend: formatTrend(stats?.trends?.revenue || 0),
+      trendUp: (stats?.trends?.revenue || 0) >= 0,
       description: 'Total revenue',
       color: 'text-emerald-600',
       bgColor: 'bg-emerald-50',
