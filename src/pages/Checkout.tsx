@@ -130,7 +130,6 @@ const Checkout = () => {
       address.addressLine1 &&
       address.city &&
       address.state &&
-      address.postalCode &&
       address.phone
     );
   };
@@ -436,12 +435,11 @@ const Checkout = () => {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="shipping-postal">Postal Code *</Label>
+                        <Label htmlFor="shipping-postal">Postal Code (Optional)</Label>
                         <Input
                           id="shipping-postal"
                           value={shippingAddress.postalCode}
                           onChange={(e) => handleShippingAddressChange("postalCode", e.target.value)}
-                          required
                         />
                       </div>
                     </div>
@@ -558,12 +556,11 @@ const Checkout = () => {
                               />
                             </div>
                             <div>
-                              <Label htmlFor="billing-postal">Postal Code *</Label>
+                              <Label htmlFor="billing-postal">Postal Code (Optional)</Label>
                               <Input
                                 id="billing-postal"
                                 value={billingAddress.postalCode}
                                 onChange={(e) => handleBillingAddressChange("postalCode", e.target.value)}
-                                required
                               />
                             </div>
                           </div>
