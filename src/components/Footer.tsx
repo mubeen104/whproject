@@ -73,8 +73,8 @@ const Footer = () => {
     href: "/cookie-policy"
   }];
   const quickLinks = [{
-    name: "About Us",
-    href: "/about"
+    name: "Blog",
+    href: "/blog"
   }, {
     name: "Shop",
     href: "/shop"
