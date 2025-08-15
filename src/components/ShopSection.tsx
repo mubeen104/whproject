@@ -76,7 +76,14 @@ const ShopSection = () => {
   };
 
   const handleAddToCart = async (productId: string, quantity: number, variantId?: string) => {
-    await addToCart(productId, quantity, variantId);
+    try {
+      console.log('ShopSection - handleAddToCart called:', { productId, quantity, variantId });
+      await addToCart(productId, quantity, variantId);
+      console.log('ShopSection - addToCart completed successfully');
+    } catch (error) {
+      console.error('ShopSection - Error in handleAddToCart:', error);
+      throw error;
+    }
   };
 
   const getMainImage = (product: any) => {

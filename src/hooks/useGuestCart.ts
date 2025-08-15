@@ -91,6 +91,8 @@ export const useGuestCart = () => {
   const addToGuestCart = useCallback(async (productId: string, quantity: number = 1, variantId?: string) => {
     setIsLoading(true);
     try {
+      console.log('Adding to guest cart:', { productId, quantity, variantId, user });
+      
       // Fetch product details
       const { data: product, error } = await supabase
         .from('products')
@@ -108,7 +110,12 @@ export const useGuestCart = () => {
         .eq('id', productId)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching product:', error);
+        throw error;
+      }
+      
+      console.log('Product fetched successfully:', product);
 
       setGuestCartItems(prevItems => {
         const existingItemIndex = prevItems.findIndex(item => 
@@ -136,6 +143,7 @@ export const useGuestCart = () => {
         }
 
         saveToLocalStorage(newItems);
+        console.log('Updated guest cart items:', newItems);
         return newItems;
       });
     } catch (error) {
@@ -144,7 +152,7 @@ export const useGuestCart = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [saveToLocalStorage]);
+  }, [saveToLocalStorage, user]);
 
   const updateGuestQuantity = useCallback((itemId: string, quantity: number) => {
     setGuestCartItems(prevItems => {
@@ -193,7 +201,10 @@ export const useGuestCart = () => {
   }, [user, guestCartItems, authCart.addToCart, clearGuestCart]);
 
   // Return appropriate cart based on auth state
+  console.log('useGuestCart - Auth state:', { user: !!user, isLoading });
+  
   if (user) {
+    console.log('useGuestCart - Using authenticated cart');
     return {
       cartItems: authCart.cartItems || [],
       cartCount: authCart.cartCount,
@@ -211,11 +222,15 @@ export const useGuestCart = () => {
   }
 
   // Guest cart
+  console.log('useGuestCart - Using guest cart, items:', guestCartItems.length);
+  
   const guestCartCount = guestCartItems.reduce((total, item) => total + item.quantity, 0);
   const guestCartTotal = guestCartItems.reduce((total, item) => {
     const price = item.product?.price || 0;
     return total + (price * item.quantity);
   }, 0);
+
+  console.log('useGuestCart - Guest cart totals:', { guestCartCount, guestCartTotal });
 
   return {
     cartItems: guestCartItems,
