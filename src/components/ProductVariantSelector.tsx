@@ -65,47 +65,6 @@ export const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
         })}
       </div>
 
-      {selectedVariant && (
-        <Card className="mt-4">
-          <CardContent className="p-4">
-            <div className="flex justify-between items-start">
-              <div>
-                <h4 className="font-medium">{selectedVariant.name}</h4>
-                {selectedVariant.description && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {selectedVariant.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-lg font-bold">
-                    {currency} {selectedVariant.price.toFixed(2)}
-                  </span>
-                  {selectedVariant.compare_price && selectedVariant.compare_price > selectedVariant.price && (
-                    <span className="text-sm text-muted-foreground line-through">
-                      {currency} {selectedVariant.compare_price.toFixed(2)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="text-right">
-                <Badge 
-                  variant={(selectedVariant.inventory_quantity || 0) > 0 ? "default" : "destructive"}
-                >
-                  {(selectedVariant.inventory_quantity || 0) > 0 
-                    ? `${selectedVariant.inventory_quantity || 0} in stock` 
-                    : 'Out of stock'
-                  }
-                </Badge>
-                {selectedVariant.sku && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    SKU: {selectedVariant.sku}
-                  </p>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };
