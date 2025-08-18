@@ -22,10 +22,13 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-primary">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-foreground"></div>
-          <p className="text-primary-foreground text-sm">Loading admin panel...</p>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-primary/20 via-background to-secondary/20">
+        <div className="flex flex-col items-center space-y-6 p-8 rounded-2xl bg-card/80 backdrop-blur-md shadow-elevated">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary"></div>
+          <div className="text-center space-y-2">
+            <p className="text-lg font-semibold text-foreground">Loading Admin Panel</p>
+            <p className="text-sm text-muted-foreground">Preparing your dashboard...</p>
+          </div>
         </div>
       </div>
     );
@@ -36,43 +39,45 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
   }
 
   return (
-    <div className="h-screen flex w-full bg-background">
+    <div className="h-screen flex w-full bg-gradient-to-br from-background via-muted/20 to-secondary/10">
       <AdminSidebar />
       <div className="flex-1 flex flex-col h-full">
-        {/* Modern Admin Header */}
-        <header className="h-16 flex items-center justify-between px-4 lg:px-6 bg-background border-b border-border/50 backdrop-blur-sm shrink-0">
-          <div className="flex items-center space-x-2 lg:space-x-4">
-            <div className="hidden lg:flex items-center space-x-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        {/* Ultra Modern Admin Header */}
+        <header className="h-16 flex items-center justify-between px-4 lg:px-6 bg-card/50 backdrop-blur-xl border-b border-border/30 shrink-0 shadow-sm">
+          <div className="flex items-center space-x-3 lg:space-x-6">
+            <div className="hidden lg:flex items-center space-x-3">
+              <div className="relative group">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 transition-colors group-focus-within:text-primary" />
                 <Input
                   placeholder="Search admin panel..."
-                  className="pl-10 w-48 xl:w-64 bg-muted/50 border-border/50 focus:bg-background"
+                  className="pl-10 w-56 xl:w-72 bg-muted/30 border-border/50 focus:bg-background/80 focus:border-primary/50 transition-all duration-300 rounded-xl"
                 />
               </div>
             </div>
             <div className="lg:hidden">
-              <h2 className="text-lg font-semibold text-foreground">Admin Panel</h2>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Admin Panel
+              </h2>
             </div>
           </div>
           
-          <div className="flex items-center space-x-2 lg:space-x-4">
+          <div className="flex items-center space-x-3 lg:space-x-4">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative hover:bg-muted">
-                  <Bell className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="relative hover:bg-primary/10 hover:scale-105 transition-all duration-200 rounded-xl">
+                  <Bell className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-gradient-to-r from-destructive to-red-600 text-destructive-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse shadow-sm">
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-80 md:w-96 p-0" align="end">
-                <div className="flex items-center justify-between p-4 border-b">
-                  <h4 className="font-semibold">Notifications</h4>
+              <PopoverContent className="w-80 md:w-96 p-0 border-border/50 shadow-elevated rounded-xl backdrop-blur-xl bg-card/95" align="end">
+                <div className="flex items-center justify-between p-4 border-b border-border/30 bg-gradient-to-r from-primary/5 to-accent/5">
+                  <h4 className="font-semibold text-foreground">Notifications</h4>
                   {unreadCount > 0 && (
-                    <Button variant="ghost" size="sm" onClick={markAllAsRead}>
+                    <Button variant="ghost" size="sm" onClick={markAllAsRead} className="hover:bg-primary/10 text-primary">
                       Mark all read
                     </Button>
                   )}
@@ -133,22 +138,23 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 lg:h-9 lg:w-9 rounded-full">
-                  <Avatar className="h-8 w-8 lg:h-9 lg:w-9">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                <Button variant="ghost" className="relative h-10 w-10 rounded-xl hover:bg-primary/10 hover:scale-105 transition-all duration-200 group">
+                  <Avatar className="h-8 w-8 group-hover:h-9 group-hover:w-9 transition-all duration-200">
+                    <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-sm font-semibold">
                       {user.email?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 z-50 bg-background border border-border">
-                <DropdownMenuItem>
-                  <User className="h-4 w-4 mr-2" />
-                  Profile
+              <DropdownMenuContent align="end" className="w-56 z-50 bg-card/95 backdrop-blur-xl border border-border/50 shadow-elevated rounded-xl">
+                <DropdownMenuItem className="hover:bg-primary/10 rounded-lg mx-1 my-1">
+                  <User className="h-4 w-4 mr-3 text-primary" />
+                  <span className="font-medium">Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={signOut}>
-                  Sign Out
+                <DropdownMenuSeparator className="bg-border/50" />
+                <DropdownMenuItem onClick={signOut} className="hover:bg-destructive/10 text-destructive rounded-lg mx-1 my-1">
+                  <Package className="h-4 w-4 mr-3" />
+                  <span className="font-medium">Sign Out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -156,8 +162,10 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         </header>
         
         {/* Content Area */}
-        <main className="flex-1 p-4 lg:p-6 xl:p-8 overflow-auto bg-muted/30">
-          {children}
+        <main className="flex-1 p-4 lg:p-6 xl:p-8 overflow-auto bg-gradient-to-br from-background/50 via-muted/20 to-secondary/10 animate-fade-in">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>
