@@ -13,13 +13,27 @@ import { toast } from 'sonner';
 const PLATFORM_ICONS = {
   google_ads: '🔍',
   meta_pixel: '📘', 
-  tiktok_pixel: '🎵'
+  tiktok_pixel: '🎵',
+  linkedin_insight: '💼',
+  twitter_pixel: '🐦',
+  pinterest_tag: '📌',
+  snapchat_pixel: '👻',
+  microsoft_advertising: '🅱️',
+  reddit_pixel: '🤖',
+  quora_pixel: '❓'
 };
 
 const PLATFORM_COLORS = {
   google_ads: 'bg-blue-500',
   meta_pixel: 'bg-blue-600',
-  tiktok_pixel: 'bg-black'
+  tiktok_pixel: 'bg-black',
+  linkedin_insight: 'bg-blue-700',
+  twitter_pixel: 'bg-sky-500',
+  pinterest_tag: 'bg-red-600',
+  snapchat_pixel: 'bg-yellow-400',
+  microsoft_advertising: 'bg-green-600',
+  reddit_pixel: 'bg-orange-500',
+  quora_pixel: 'bg-red-700'
 };
 
 export default function AdminPixels() {
@@ -82,7 +96,7 @@ export default function AdminPixels() {
           <CardHeader>
             <CardTitle>Active Pixels</CardTitle>
             <CardDescription>
-              Configure tracking pixels for Google Ads, Meta (Facebook), and TikTok
+              Configure tracking pixels for major advertising platforms including Google Ads, Meta, TikTok, LinkedIn, Twitter, Pinterest, Snapchat, Microsoft, Reddit, and Quora
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -176,7 +190,7 @@ export default function AdminPixels() {
             <CardTitle>Platform Guidelines</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div className="p-4 border rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">🔍</span>
@@ -213,6 +227,97 @@ export default function AdminPixels() {
                 </p>
                 <p className="text-xs mt-1 text-muted-foreground">
                   Format: 20 character code
+                </p>
+              </div>
+
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">💼</span>
+                  <h4 className="font-medium">LinkedIn Insight</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Find your partner ID in LinkedIn Campaign Manager → Account Assets → Insight Tag
+                </p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  Format: 6-8 digit number
+                </p>
+              </div>
+
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🐦</span>
+                  <h4 className="font-medium">Twitter/X Pixel</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Find your pixel ID in Twitter Ads Manager → Tools → Conversion tracking
+                </p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  Format: 5-10 character code
+                </p>
+              </div>
+
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">📌</span>
+                  <h4 className="font-medium">Pinterest Tag</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Find your tag ID in Pinterest Business → Ads → Conversions
+                </p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  Format: 13 digit number
+                </p>
+              </div>
+
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">👻</span>
+                  <h4 className="font-medium">Snapchat Pixel</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Find your pixel ID in Snapchat Ads Manager → Assets → Pixel
+                </p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  Format: 36 character UUID
+                </p>
+              </div>
+
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🅱️</span>
+                  <h4 className="font-medium">Microsoft Advertising</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Find your UET tag ID in Microsoft Advertising → Conversion Tracking → UET tags
+                </p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  Format: 8-9 digit number
+                </p>
+              </div>
+
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🤖</span>
+                  <h4 className="font-medium">Reddit Pixel</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Find your pixel ID in Reddit Ads Manager → Library → Pixels
+                </p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  Format: t2_xxxxxxxx
+                </p>
+              </div>
+
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">❓</span>
+                  <h4 className="font-medium">Quora Pixel</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Find your pixel ID in Quora Ads Manager → Tools → Quora Pixel
+                </p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  Format: 32 character hex string
                 </p>
               </div>
             </div>

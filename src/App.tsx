@@ -9,6 +9,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { PixelTracker, trackPageView } from "@/components/PixelTracker";
+import { PixelDebugger } from "@/components/PixelDebugger";
 import { useEffect } from "react";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
@@ -54,6 +55,7 @@ const App = () => (
             <ScrollToTop />
             <PixelTracker />
             <PageViewTracker />
+            <PixelDebugger />
           <WhatsAppButton />
           <Routes>
             <Route path="/" element={<Index />} />

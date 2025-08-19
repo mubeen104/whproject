@@ -35,7 +35,14 @@ export const PixelForm = ({ pixel, trigger }: PixelFormProps) => {
       const formats = {
         google_ads: 'AW-1234567890',
         meta_pixel: '123456789012345',
-        tiktok_pixel: 'ABC123XYZ789DEF12345'
+        tiktok_pixel: 'ABC123XYZ789DEF12345',
+        linkedin_insight: '12345678',
+        twitter_pixel: 'abcd1234',
+        pinterest_tag: '1234567890123',
+        snapchat_pixel: '12345678-1234-1234-1234-123456789012',
+        microsoft_advertising: '12345678',
+        reddit_pixel: 't2_abcd1234',
+        quora_pixel: 'abcdef1234567890abcdef1234567890'
       };
       toast.error(`Invalid pixel ID format. Expected format: ${formats[platform as keyof typeof formats]}`);
       return;
@@ -126,6 +133,13 @@ export const PixelForm = ({ pixel, trigger }: PixelFormProps) => {
                 platform === 'google_ads' ? 'AW-1234567890' :
                 platform === 'meta_pixel' ? '123456789012345' :
                 platform === 'tiktok_pixel' ? 'ABC123XYZ789DEF12345' :
+                platform === 'linkedin_insight' ? '12345678' :
+                platform === 'twitter_pixel' ? 'abcd1234' :
+                platform === 'pinterest_tag' ? '1234567890123' :
+                platform === 'snapchat_pixel' ? '12345678-1234-1234-1234-123456789012' :
+                platform === 'microsoft_advertising' ? '12345678' :
+                platform === 'reddit_pixel' ? 't2_abcd1234' :
+                platform === 'quora_pixel' ? 'abcdef1234567890abcdef1234567890' :
                 'Enter pixel ID'
               }
             />
@@ -134,6 +148,13 @@ export const PixelForm = ({ pixel, trigger }: PixelFormProps) => {
                 {platform === 'google_ads' && 'Format: AW-1234567890 (10-11 digits after AW-)'}
                 {platform === 'meta_pixel' && 'Format: 15-16 digit number'}
                 {platform === 'tiktok_pixel' && 'Format: 20 character alphanumeric code'}
+                {platform === 'linkedin_insight' && 'Format: 6-8 digit number'}
+                {platform === 'twitter_pixel' && 'Format: 5-10 character alphanumeric code'}
+                {platform === 'pinterest_tag' && 'Format: 13 digit number'}
+                {platform === 'snapchat_pixel' && 'Format: 36 character UUID (with dashes)'}
+                {platform === 'microsoft_advertising' && 'Format: 8-9 digit number'}
+                {platform === 'reddit_pixel' && 'Format: t2_ followed by 6-8 characters'}
+                {platform === 'quora_pixel' && 'Format: 32 character hexadecimal string'}
               </p>
             )}
           </div>

@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 export interface AdvertisingPixel {
   id: string;
-  platform: 'google_ads' | 'meta_pixel' | 'tiktok_pixel';
+  platform: 'google_ads' | 'meta_pixel' | 'tiktok_pixel' | 'linkedin_insight' | 'twitter_pixel' | 'pinterest_tag' | 'snapchat_pixel' | 'microsoft_advertising' | 'reddit_pixel' | 'quora_pixel';
   pixel_id: string;
   is_enabled: boolean;
   created_at: string;
@@ -14,14 +14,28 @@ export interface AdvertisingPixel {
 export const PLATFORM_OPTIONS = [
   { value: 'google_ads', label: 'Google Ads' },
   { value: 'meta_pixel', label: 'Meta (Facebook) Pixel' },
-  { value: 'tiktok_pixel', label: 'TikTok Pixel' }
+  { value: 'tiktok_pixel', label: 'TikTok Pixel' },
+  { value: 'linkedin_insight', label: 'LinkedIn Insight Tag' },
+  { value: 'twitter_pixel', label: 'Twitter/X Pixel' },
+  { value: 'pinterest_tag', label: 'Pinterest Tag' },
+  { value: 'snapchat_pixel', label: 'Snapchat Pixel' },
+  { value: 'microsoft_advertising', label: 'Microsoft Advertising' },
+  { value: 'reddit_pixel', label: 'Reddit Pixel' },
+  { value: 'quora_pixel', label: 'Quora Pixel' }
 ] as const;
 
 // Pixel ID validation patterns
 export const PIXEL_ID_PATTERNS = {
   google_ads: /^AW-\d{10,11}$/,
   meta_pixel: /^\d{15,16}$/,
-  tiktok_pixel: /^[A-Z0-9]{20}$/
+  tiktok_pixel: /^[A-Z0-9]{20}$/,
+  linkedin_insight: /^\d{6,8}$/,
+  twitter_pixel: /^[a-z0-9]{5,10}$/,
+  pinterest_tag: /^\d{13}$/,
+  snapchat_pixel: /^[a-z0-9-]{36}$/,
+  microsoft_advertising: /^\d{8,9}$/,
+  reddit_pixel: /^t2_[a-zA-Z0-9]{6,8}$/,
+  quora_pixel: /^[a-f0-9]{32}$/
 };
 
 export const validatePixelId = (platform: string, pixelId: string): boolean => {
