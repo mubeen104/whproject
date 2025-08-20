@@ -133,7 +133,6 @@
     text-shadow: var(--text-shadow-lg);
   }
 
-  /* Enhanced animation classes */
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
@@ -146,138 +145,12 @@
     animation: float-slow 5s ease-in-out infinite 2s;
   }
 
-  .animate-bounce-subtle {
-    animation: bounce-subtle 2s ease-in-out infinite;
-  }
-
-  .animate-pulse-slow {
-    animation: pulse-slow 3s ease-in-out infinite;
-  }
-
   .animate-slide-in {
     animation: slide-in 0.5s ease-out;
   }
 
-  .animate-slide-down {
-    animation: slide-down 0.6s ease-out;
-  }
-
   .animate-glow {
     animation: glow 2s ease-in-out infinite alternate;
-  }
-
-  .animate-gradient {
-    background-size: 200% 200%;
-    animation: gradient 3s ease infinite;
-  }
-
-  .animate-bounce-in {
-    animation: bounce-in 0.6s ease-out;
-  }
-
-  .animate-wiggle {
-    animation: wiggle 0.8s ease-in-out;
-  }
-
-  .animate-shimmer {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .animate-shimmer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    animation: shimmer 1.5s infinite;
-  }
-
-  .animate-pulse-ring {
-    position: relative;
-  }
-
-  .animate-pulse-ring::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    border: 2px solid hsl(var(--primary));
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    animation: pulse-ring 1.5s infinite;
-  }
-
-  .animate-spin-slow {
-    animation: spin-slow 3s linear infinite;
-  }
-
-  /* Enhanced hover effects */
-  .hover-lift {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .hover-lift:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  }
-
-  .hover-scale {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .hover-scale:hover {
-    transform: scale(1.05);
-  }
-
-  .hover-rotate {
-    transition: transform 0.3s ease;
-  }
-
-  .hover-rotate:hover {
-    transform: rotate(5deg);
-  }
-
-  .hover-glow {
-    transition: all 0.3s ease;
-  }
-
-  .hover-glow:hover {
-    box-shadow: 0 0 30px hsl(var(--primary) / 0.4);
-    transform: translateY(-2px);
-  }
-
-  .hover-tilt {
-    transition: transform 0.3s ease;
-  }
-
-  .hover-tilt:hover {
-    transform: perspective(1000px) rotateY(10deg) rotateX(5deg);
-  }
-
-  .hover-float {
-    transition: all 0.3s ease;
-  }
-
-  .hover-float:hover {
-    transform: translateY(-5px);
-    animation: float 2s ease-in-out infinite;
-  }
-
-  .hover-pulse {
-    transition: all 0.3s ease;
-  }
-
-  .hover-pulse:hover {
-    animation: pulse 1s ease-in-out infinite;
-  }
-
-  .hover-shimmer:hover .shimmer-effect {
-    animation: shimmer 0.8s ease-in-out;
   }
 
   .glass-effect {
@@ -293,7 +166,6 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   }
 
-  /* Enhanced keyframes */
   @keyframes float {
     0%, 100% {
       transform: translateY(0px);
@@ -321,27 +193,6 @@
     }
   }
 
-  @keyframes bounce-subtle {
-    0%, 20%, 50%, 80%, 100% {
-      transform: translateY(0);
-    }
-    40% {
-      transform: translateY(-5px);
-    }
-    60% {
-      transform: translateY(-3px);
-    }
-  }
-
-  @keyframes pulse-slow {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.7;
-    }
-  }
-
   @keyframes slide-in {
     from {
       opacity: 0;
@@ -353,105 +204,12 @@
     }
   }
 
-  @keyframes slide-down {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
   @keyframes glow {
     from {
-      box-shadow: 0 0 5px hsl(var(--primary) / 0.2);
+      box-shadow: 0 0 5px rgba(var(--primary), 0.2);
     }
     to {
-      box-shadow: 0 0 20px hsl(var(--primary) / 0.4);
-    }
-  }
-
-  @keyframes gradient {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
-  @keyframes bounce-in {
-    0% {
-      transform: scale(0.3);
-      opacity: 0;
-    }
-    50% {
-      transform: scale(1.05);
-    }
-    70% {
-      transform: scale(0.9);
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-
-  @keyframes wiggle {
-    0%, 7% {
-      transform: rotateZ(0);
-    }
-    15% {
-      transform: rotateZ(-15deg);
-    }
-    20% {
-      transform: rotateZ(10deg);
-    }
-    25% {
-      transform: rotateZ(-10deg);
-    }
-    30% {
-      transform: rotateZ(6deg);
-    }
-    35% {
-      transform: rotateZ(-4deg);
-    }
-    40%, 100% {
-      transform: rotateZ(0);
-    }
-  }
-
-  @keyframes shimmer {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
-  }
-
-  @keyframes pulse-ring {
-    0% {
-      transform: scale(0.33);
-      opacity: 1;
-    }
-    80%, 100% {
-      transform: scale(2.33);
-      opacity: 0;
-    }
-  }
-
-  @keyframes spin-slow {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
+      box-shadow: 0 0 20px rgba(var(--primary), 0.4);
     }
   }
 }
