@@ -377,7 +377,7 @@ const AdminHeroSlides = () => {
                   alt={slide.title}
                   className="w-full h-full object-contain bg-gradient-to-br from-muted/20 to-background"
                   onError={(e) => {
-                    e.currentTarget.src = "/placeholder.svg";
+                    e.currentTarget.src = "/logo.png";
                   }}
                 />
               </AspectRatio>

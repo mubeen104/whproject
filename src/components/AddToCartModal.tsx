@@ -65,7 +65,7 @@ export const AddToCartModal: React.FC<AddToCartModalProps> = ({
       return product.product_images.sort((a, b) => a.sort_order - b.sort_order)[0].image_url;
     }
     
-    return '/placeholder.svg';
+    return '/logo.png';
   };
 
   const handleAddToCart = async () => {

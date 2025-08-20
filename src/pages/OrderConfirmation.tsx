@@ -96,7 +96,7 @@ const OrderConfirmation = () => {
     if (product?.product_images && product.product_images.length > 0) {
       return product.product_images.sort((a: any, b: any) => a.sort_order - b.sort_order)[0]?.image_url;
     }
-    return "/placeholder.svg";
+    return "/logo.png";
   };
 
   const getStatusColor = (status: string) => {

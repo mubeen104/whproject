@@ -45,7 +45,7 @@ const BlogSEO = ({ post, isListPage = false }: BlogSEOProps) => {
               "name": "New Era Herbals",
               "logo": {
                 "@type": "ImageObject",
-                "url": "/favicon.ico"
+                "url": "/logo.png"
               }
             }
           })}
@@ -72,7 +72,7 @@ const BlogSEO = ({ post, isListPage = false }: BlogSEOProps) => {
       "name": "New Era Herbals",
       "logo": {
         "@type": "ImageObject",
-        "url": "/favicon.ico"
+        "url": "/logo.png"
       }
     },
     "mainEntityOfPage": {

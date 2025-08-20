@@ -59,7 +59,7 @@ const FeaturedProducts = () => {
     if (product.product_images?.length > 0) {
       return product.product_images.sort((a: any, b: any) => a.sort_order - b.sort_order)[0].image_url;
     }
-    return '/placeholder.svg';
+    return '/logo.png';
   };
   if (isLoading) {
     return <section className="py-20 bg-gradient-to-br from-background via-background to-muted/20 relative overflow-hidden">

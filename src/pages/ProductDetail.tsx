@@ -161,7 +161,7 @@ const ProductDetail = () => {
       const sortedImages = [...product.product_images].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
       return sortedImages[selectedImage]?.image_url || sortedImages[0]?.image_url;
     }
-    return '/placeholder.svg';
+    return '/logo.png';
   };
   const getCurrentImages = () => {
     if (selectedVariant?.product_variant_images && selectedVariant.product_variant_images.length > 0) {

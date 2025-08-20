@@ -121,7 +121,7 @@ const Cart = () => {
     if (images && images.length > 0) {
       return images.sort((a: any, b: any) => a.sort_order - b.sort_order)[0]?.image_url;
     }
-    return "/placeholder.svg";
+    return "/logo.png";
   };
   if (isLoading) {
     return <>
