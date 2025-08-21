@@ -48,6 +48,7 @@ const Checkout = () => {
   const { taxRate, shippingRate, freeShippingThreshold, currency } = useStoreSettings();
   const { toast } = useToast();
   const { user } = useAuth();
+  const { trackPurchase } = useEnhancedTracking();
   
   const isGuestCheckout = searchParams.get('guest') === 'true' || isGuest;
 
