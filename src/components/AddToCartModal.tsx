@@ -7,7 +7,7 @@ import { ProductVariantSelector } from '@/components/ProductVariantSelector';
 import { useProductVariants, ProductVariant } from '@/hooks/useProductVariants';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useToast } from '@/hooks/use-toast';
-import { trackAddToCart } from './PixelTracker';
+import { useEnhancedTracking } from '@/hooks/useEnhancedTracking';
 
 interface Product {
   id: string;
@@ -43,6 +43,7 @@ export const AddToCartModal: React.FC<AddToCartModalProps> = ({
   const { data: variants } = useProductVariants(product.id);
   const { currency } = useStoreSettings();
   const { toast } = useToast();
+  const { trackAddToCart } = useEnhancedTracking();
 
   // Reset state when modal opens
   useEffect(() => {
@@ -76,8 +77,10 @@ export const AddToCartModal: React.FC<AddToCartModalProps> = ({
       trackAddToCart({
         product_id: product.id,
         product_name: product.name,
-        value: getCurrentPrice() * quantity,
-        currency: currency
+        price: getCurrentPrice(),
+        currency: currency,
+        quantity: quantity,
+        category: 'Herbal Products'
       });
       
       const displayName = selectedVariant ? 

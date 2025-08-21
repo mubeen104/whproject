@@ -8,8 +8,10 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollToTop from "@/components/ScrollToTop";
-import { PixelTracker, trackPageView } from "@/components/PixelTracker";
+import { EnhancedPixelTracker } from "@/components/EnhancedPixelTracker";
 import { PixelDebugger } from "@/components/PixelDebugger";
+import { MetadataManager } from "@/components/MetadataManager";
+import { useEnhancedTracking } from "@/hooks/useEnhancedTracking";
 import { useEffect } from "react";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
@@ -53,7 +55,15 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
-            <PixelTracker />
+            <EnhancedPixelTracker />
+            <MetadataManager 
+              siteInfo={{
+                name: 'New Era Herbals',
+                currency: 'PKR',
+                language: 'en-US',
+                country: 'PK'
+              }}
+            />
             <PageViewTracker />
             <PixelDebugger />
           <WhatsAppButton />
@@ -97,15 +107,23 @@ const App = () => (
   </QueryClientProvider>
 );
 
-// Component to track page views on route changes
+// Enhanced component to track page views on route changes
 const PageViewTracker = () => {
   const location = useLocation();
+  const { trackPageView } = useEnhancedTracking();
   
   useEffect(() => {
-    trackPageView({
-      page_path: location.pathname
-    });
-  }, [location]);
+    // Wait for DOM to be ready and pixels to be loaded
+    const timer = setTimeout(() => {
+      trackPageView({
+        page_path: location.pathname,
+        page_search: location.search,
+        page_hash: location.hash
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [location, trackPageView]);
   
   return null;
 };
