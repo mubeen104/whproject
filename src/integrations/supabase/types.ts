@@ -983,63 +983,6 @@ export type Database = {
         }
         Relationships: []
       }
-      website_analytics: {
-        Row: {
-          browser_name: string | null
-          city: string | null
-          country: string | null
-          created_at: string
-          device_type: string | null
-          id: string
-          is_unique_visitor: boolean | null
-          os_name: string | null
-          page_title: string | null
-          page_url: string
-          referrer_domain: string | null
-          referrer_url: string | null
-          session_id: string | null
-          user_agent: string | null
-          visit_duration: number | null
-          visitor_ip: string | null
-        }
-        Insert: {
-          browser_name?: string | null
-          city?: string | null
-          country?: string | null
-          created_at?: string
-          device_type?: string | null
-          id?: string
-          is_unique_visitor?: boolean | null
-          os_name?: string | null
-          page_title?: string | null
-          page_url: string
-          referrer_domain?: string | null
-          referrer_url?: string | null
-          session_id?: string | null
-          user_agent?: string | null
-          visit_duration?: number | null
-          visitor_ip?: string | null
-        }
-        Update: {
-          browser_name?: string | null
-          city?: string | null
-          country?: string | null
-          created_at?: string
-          device_type?: string | null
-          id?: string
-          is_unique_visitor?: boolean | null
-          os_name?: string | null
-          page_title?: string | null
-          page_url?: string
-          referrer_domain?: string | null
-          referrer_url?: string | null
-          session_id?: string | null
-          user_agent?: string | null
-          visit_duration?: number | null
-          visitor_ip?: string | null
-        }
-        Relationships: []
-      }
       wishlists: {
         Row: {
           created_at: string
@@ -1071,18 +1014,7 @@ export type Database = {
       }
     }
     Views: {
-      analytics_summary: {
-        Row: {
-          avg_duration: number | null
-          date: string | null
-          desktop_visits: number | null
-          mobile_visits: number | null
-          tablet_visits: number | null
-          total_visits: number | null
-          unique_visitors: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       ensure_user_has_role: {
@@ -1110,10 +1042,6 @@ export type Database = {
       }
       remove_admin_role: {
         Args: { _email: string }
-        Returns: undefined
-      }
-      update_visit_duration: {
-        Args: { p_duration: number; p_session_id: string }
         Returns: undefined
       }
     }

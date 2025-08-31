@@ -1,89 +1,210 @@
-import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { 
-  Users, 
-  Eye, 
-  Monitor, 
-  Smartphone, 
-  Tablet, 
-  Globe, 
-  TrendingUp,
-  CalendarIcon,
-  MousePointer,
-  Clock,
-  ExternalLink
-} from 'lucide-react';
-import { format, subDays } from 'date-fns';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { BarChart3, TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Package, Activity, CalendarIcon } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
+import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { 
-  useAnalyticsSummary,
-  useTrafficByDevice,
-  useTopPages,
-  useReferrerSources,
-  useWebsiteAnalytics
-} from '@/hooks/useWebsiteAnalytics';
+import { useStoreSettings } from '@/hooks/useStoreSettings';
 
-const AdminAnalytics = () => {
-  const [dateRange, setDateRange] = useState({
+export default function AdminAnalytics() {
+  const { currency } = useStoreSettings();
+  
+  // State for date filtering
+  const [dateRange, setDateRange] = useState<{
+    from: Date;
+    to: Date;
+  }>({
     from: subDays(new Date(), 30),
-    to: new Date(),
+    to: new Date()
   });
-  const [selectedDays, setSelectedDays] = useState(30);
+  
+  const [timeFilter, setTimeFilter] = useState<string>('30d');
 
-  const { data: analyticsSummary = [], isLoading: summaryLoading } = useAnalyticsSummary(selectedDays);
-  const { data: deviceData = [], isLoading: deviceLoading } = useTrafficByDevice(selectedDays);
-  const { data: topPages = [], isLoading: pagesLoading } = useTopPages(selectedDays);
-  const { data: referrerSources = [], isLoading: referrerLoading } = useReferrerSources(selectedDays);
-  const { data: analyticsData = [], isLoading: dataLoading } = useWebsiteAnalytics(dateRange);
-
-  // Calculate summary stats
-  const totalVisits = analyticsSummary.reduce((sum, day) => sum + (day.total_visits || 0), 0);
-  const totalUniqueVisitors = analyticsSummary.reduce((sum, day) => sum + (day.unique_visitors || 0), 0);
-  const avgVisitDuration = analyticsSummary.reduce((sum, day) => sum + (day.avg_duration || 0), 0) / analyticsSummary.length;
-
-  const quickFilters = [
-    { label: 'Last 7 days', days: 7 },
-    { label: 'Last 30 days', days: 30 },
-    { label: 'Last 90 days', days: 90 },
-  ];
-
-  const getDeviceIcon = (device: string) => {
-    switch (device.toLowerCase()) {
-      case 'mobile': return <Smartphone className="w-4 h-4" />;
-      case 'tablet': return <Tablet className="w-4 h-4" />;
-      case 'desktop': return <Monitor className="w-4 h-4" />;
-      default: return <Monitor className="w-4 h-4" />;
+  // Handle quick filter changes
+  const handleQuickFilter = (period: string) => {
+    setTimeFilter(period);
+    const now = new Date();
+    let from: Date;
+    
+    switch (period) {
+      case '7d':
+        from = subDays(now, 7);
+        break;
+      case '30d':
+        from = subDays(now, 30);
+        break;
+      case '90d':
+        from = subDays(now, 90);
+        break;
+      case '1y':
+        from = subDays(now, 365);
+        break;
+      default:
+        from = subDays(now, 30);
     }
+    
+    setDateRange({ from, to: now });
   };
 
-  const getDeviceColor = (device: string) => {
-    switch (device.toLowerCase()) {
-      case 'mobile': return 'bg-blue-500';
-      case 'tablet': return 'bg-green-500';
-      case 'desktop': return 'bg-purple-500';
-      default: return 'bg-gray-500';
+  // Fetch analytics data with time filtering
+  const { data: analytics, isLoading } = useQuery({
+    queryKey: ['admin-analytics', dateRange],
+    queryFn: async () => {
+      const fromDate = startOfDay(dateRange.from).toISOString();
+      const toDate = endOfDay(dateRange.to).toISOString();
+      
+      const [
+        { data: revenueData },
+        { data: ordersByStatus },
+        { data: topProducts },
+        { data: recentActivity },
+        { count: totalOrdersCount }
+      ] = await Promise.all([
+        // Revenue data with time filter - get all orders regardless of payment status
+        supabase
+          .from('orders')
+          .select('total_amount, created_at, status')
+          .gte('created_at', fromDate)
+          .lte('created_at', toDate),
+        
+        // Orders by status with time filter
+        supabase
+          .from('orders')
+          .select('status, created_at, user_id')
+          .gte('created_at', fromDate)
+          .lte('created_at', toDate),
+        
+        // Top selling products with time filter
+        supabase
+          .from('order_items')
+          .select(`
+            quantity,
+            products(name, price),
+            orders!inner(created_at)
+          `)
+          .gte('orders.created_at', fromDate)
+          .lte('orders.created_at', toDate),
+        
+        // Recent activity with time filter - simplified query
+        supabase
+          .from('orders')
+          .select(`
+            id,
+            order_number,
+            total_amount,
+            status,
+            created_at,
+            user_id
+          `)
+          .gte('created_at', fromDate)
+          .lte('created_at', toDate)
+          .order('created_at', { ascending: false })
+          .limit(10),
+
+        // Total orders count with time filter
+        supabase
+          .from('orders')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', fromDate)
+          .lte('created_at', toDate),
+
+        // Get user data for customer count (we'll calculate this from ordersByStatus)
+        Promise.resolve({ data: [] })
+      ]);
+
+      // Process revenue by time period - include all orders with completed status
+      const periodRevenue = revenueData
+        ?.filter((order: any) => order.status === 'completed')
+        ?.reduce((acc: any, order: any) => {
+          const date = new Date(order.created_at);
+          let key: string;
+          
+          // Determine grouping based on date range
+          const daysDiff = Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (daysDiff <= 7) {
+            key = format(date, 'MMM dd');
+          } else if (daysDiff <= 90) {
+            const weekStart = new Date(date);
+            weekStart.setDate(date.getDate() - date.getDay());
+            key = format(weekStart, 'MMM dd');
+          } else {
+            key = format(date, 'MMM yyyy');
+          }
+          
+          acc[key] = (acc[key] || 0) + Number(order.total_amount);
+          return acc;
+        }, {}) || {};
+
+      // Process orders by status
+      const statusCounts = ordersByStatus?.reduce((acc: any, order: any) => {
+        acc[order.status] = (acc[order.status] || 0) + 1;
+        return acc;
+      }, {}) || {};
+
+      // Process top products
+      const productSales = topProducts?.reduce((acc: any, item: any) => {
+        const productName = item.products?.name || 'Unknown Product';
+        const productPrice = item.products?.price || 0;
+        if (!acc[productName]) {
+          acc[productName] = { quantity: 0, revenue: 0 };
+        }
+        acc[productName].quantity += item.quantity;
+        acc[productName].revenue += item.quantity * Number(productPrice);
+        return acc;
+      }, {}) || {};
+
+      const topSellingProducts = Object.entries(productSales)
+        .sort(([,a]: [string, any], [,b]: [string, any]) => b.quantity - a.quantity)
+        .slice(0, 5)
+        .map(([name, data]: [string, any]) => ({ 
+          name, 
+          quantity: data.quantity,
+          revenue: data.revenue 
+        }));
+
+      // Calculate total revenue
+      const totalRevenue = Object.values(periodRevenue).reduce((acc: number, val: any) => acc + val, 0);
+
+      // Calculate unique customers from orders data
+      const uniqueCustomers = new Set(
+        ordersByStatus
+          ?.map((order: any) => order.user_id)
+          .filter((userId: any) => userId != null) || []
+      ).size;
+
+      return {
+        periodRevenue,
+        statusCounts,
+        topSellingProducts,
+        recentActivity: recentActivity || [],
+        totalRevenue,
+        totalOrders: totalOrdersCount || 0,
+        totalCustomers: uniqueCustomers
+      };
     }
-  };
+  });
 
-  const formatDuration = (seconds: number) => {
-    if (!seconds) return '0s';
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    return minutes > 0 ? `${minutes}m ${remainingSeconds}s` : `${remainingSeconds}s`;
-  };
-
-  if (summaryLoading || deviceLoading || pagesLoading || referrerLoading) {
+  if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
+      <div className="space-y-8 animate-fade-in">
+        <div className="animate-pulse">
+          <div className="h-10 bg-muted rounded-lg w-1/3 mb-3"></div>
+          <div className="h-5 bg-muted rounded w-1/2"></div>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="border-border/50">
               <CardContent className="p-6">
-                <div className="h-20 bg-muted rounded"></div>
+                <div className="animate-pulse space-y-4">
+                  <div className="h-4 bg-muted rounded w-1/2"></div>
+                  <div className="h-20 bg-muted rounded"></div>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -93,198 +214,293 @@ const AdminAnalytics = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-8 animate-fade-in">
+      {/* Header Section with Time Filters */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Website Analytics</h1>
-          <p className="text-muted-foreground">Monitor your website traffic and user behavior</p>
+          <h1 className="text-4xl font-bold text-foreground">Analytics</h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Insights and performance metrics for your business
+          </p>
         </div>
         
-        <div className="flex flex-wrap gap-2">
-          {quickFilters.map((filter) => (
-            <Button
-              key={filter.days}
-              variant={selectedDays === filter.days ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedDays(filter.days)}
-            >
-              {filter.label}
-            </Button>
-          ))}
+        {/* Time Filter Controls */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          {/* Quick Filters */}
+          <div className="flex gap-2">
+            {['7d', '30d', '90d', '1y'].map((period) => (
+              <Button
+                key={period}
+                variant={timeFilter === period ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleQuickFilter(period)}
+                className="text-xs"
+              >
+                {period === '7d' && 'Last 7 days'}
+                {period === '30d' && 'Last 30 days'}
+                {period === '90d' && 'Last 90 days'}
+                {period === '1y' && 'Last year'}
+              </Button>
+            ))}
+          </div>
+          
+          {/* Custom Date Range */}
+          <div className="flex gap-2 items-center">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-[300px] justify-start text-left font-normal",
+                    !dateRange && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateRange?.from ? (
+                    dateRange.to ? (
+                      <>
+                        {format(dateRange.from, "LLL dd, y")} -{" "}
+                        {format(dateRange.to, "LLL dd, y")}
+                      </>
+                    ) : (
+                      format(dateRange.from, "LLL dd, y")
+                    )
+                  ) : (
+                    <span>Pick a date range</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={dateRange?.from}
+                  selected={dateRange}
+                  onSelect={(range) => {
+                    if (range?.from && range?.to) {
+                      setDateRange({ from: range.from, to: range.to });
+                      setTimeFilter('custom');
+                    }
+                  }}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="hover:shadow-lg transition-shadow">
+      {/* Overview Cards */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="border-border/50 hover:shadow-medium transition-all duration-200">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Visits</p>
-                <p className="text-2xl font-bold text-foreground">{totalVisits.toLocaleString()}</p>
-              </div>
-              <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full">
-                <Eye className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Unique Visitors</p>
-                <p className="text-2xl font-bold text-foreground">{totalUniqueVisitors.toLocaleString()}</p>
-              </div>
-              <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-full">
-                <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Avg. Visit Duration</p>
-                <p className="text-2xl font-bold text-foreground">{formatDuration(avgVisitDuration)}</p>
-              </div>
-              <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-full">
-                <Clock className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Bounce Rate</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {totalVisits > 0 ? Math.round(((totalVisits - totalUniqueVisitors) / totalVisits) * 100) : 0}%
+                <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
+                <p className="text-2xl font-bold">
+                  {currency} {(analytics?.totalRevenue as number)?.toFixed(2) || '0.00'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {format(dateRange.from, 'MMM dd')} - {format(dateRange.to, 'MMM dd')}
                 </p>
               </div>
-              <div className="p-3 bg-orange-100 dark:bg-orange-900/20 rounded-full">
-                <TrendingUp className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+              <div className="p-3 bg-green-100 rounded-lg">
+                <DollarSign className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 hover:shadow-medium transition-all duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
+                <p className="text-2xl font-bold">{analytics?.totalOrders || 0}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {format(dateRange.from, 'MMM dd')} - {format(dateRange.to, 'MMM dd')}
+                </p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <ShoppingCart className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 hover:shadow-medium transition-all duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Customers</p>
+                <p className="text-2xl font-bold">{analytics?.totalCustomers || 0}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Unique customers
+                </p>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Users className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 hover:shadow-medium transition-all duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Avg. Order Value</p>
+                <p className="text-2xl font-bold">
+                  {currency} {(analytics?.totalOrders as number) > 0 ? ((analytics.totalRevenue as number) / (analytics.totalOrders as number)).toFixed(2) : '0.00'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Per order
+                </p>
+              </div>
+              <div className="p-3 bg-orange-100 rounded-lg">
+                <TrendingUp className="h-6 w-6 text-orange-600" />
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Charts and Data */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Device Types */}
-        <Card>
+      {/* Detailed Analytics */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Period Revenue */}
+        <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Monitor className="w-5 h-5" />
-              Device Types
+            <CardTitle className="flex items-center text-xl">
+              <DollarSign className="h-6 w-6 mr-3 text-primary" />
+              Revenue Over Time
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4 max-h-80 overflow-y-auto">
+              {Object.entries(analytics?.periodRevenue || {})
+                .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+                .map(([period, revenue]: [string, any]) => (
+                <div key={period} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                  <span className="text-sm font-medium">{period}</span>
+                  <span className="font-bold text-lg">{currency} {Number(revenue).toFixed(2)}</span>
+                </div>
+              ))}
+              {Object.keys(analytics?.periodRevenue || {}).length === 0 && (
+                <div className="text-center py-8">
+                  <DollarSign className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No revenue data for selected period</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Order Status Distribution */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center text-xl">
+              <ShoppingCart className="h-6 w-6 mr-3 text-primary" />
+              Order Status
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {deviceData.map((device, index) => (
-                <div key={device.device} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {getDeviceIcon(device.device)}
-                    <span className="font-medium capitalize">{device.device}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className={cn("w-3 h-3 rounded-full", getDeviceColor(device.device))}></div>
-                      <span className="text-sm text-muted-foreground">{device.percentage}%</span>
-                    </div>
-                    <Badge variant="secondary">{device.count}</Badge>
-                  </div>
+              {Object.entries(analytics?.statusCounts || {}).map(([status, count]: [string, any]) => (
+                <div key={status} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                  <span className="text-sm font-medium capitalize">{status}</span>
+                  <span className="font-bold text-lg">{count}</span>
                 </div>
               ))}
+              {Object.keys(analytics?.statusCounts || {}).length === 0 && (
+                <div className="text-center py-8">
+                  <ShoppingCart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No orders for selected period</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Top Pages */}
-        <Card>
+        {/* Top Selling Products */}
+        <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MousePointer className="w-5 h-5" />
-              Top Pages
+            <CardTitle className="flex items-center text-xl">
+              <Package className="h-6 w-6 mr-3 text-primary" />
+              Top Products
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {topPages.slice(0, 5).map((page, index) => (
-                <div key={page.url} className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{page.title}</p>
-                    <p className="text-sm text-muted-foreground truncate">{page.url}</p>
-                  </div>
-                  <Badge variant="outline">{page.visits} visits</Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Referrer Sources */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ExternalLink className="w-5 h-5" />
-              Traffic Sources
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {referrerSources.slice(0, 5).map((source, index) => (
-                <div key={source.source} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Globe className="w-4 h-4 text-muted-foreground" />
-                    <span className="font-medium">{source.source}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">{source.percentage}%</span>
-                    <Badge variant="secondary">{source.visits}</Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {analyticsData.slice(0, 5).map((activity, index) => (
-                <div key={activity.id} className="flex items-center justify-between py-2 border-b last:border-b-0">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{activity.page_title || activity.page_url}</p>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      {getDeviceIcon(activity.device_type || 'desktop')}
-                      <span>{activity.device_type}</span>
-                      <span>•</span>
-                      <span>{activity.country || 'Unknown'}</span>
+            <div className="space-y-4">
+              {analytics?.topSellingProducts?.map((product: any, index: number) => (
+                <div key={index} className="p-3 bg-muted/30 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center text-xs font-bold text-primary">
+                        {index + 1}
+                      </div>
+                      <span className="text-sm font-medium truncate">{product.name}</span>
                     </div>
+                    <span className="font-bold text-lg">{product.quantity}</span>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {format(new Date(activity.created_at), 'MMM dd, HH:mm')}
+                  <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
+                    <span>Revenue:</span>
+                    <span className="font-semibold">{currency} {product.revenue.toFixed(2)}</span>
                   </div>
                 </div>
               ))}
+              {(!analytics?.topSellingProducts || analytics.topSellingProducts.length === 0) && (
+                <div className="text-center py-8">
+                  <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No sales data for selected period</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Activity */}
+      <Card className="border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center text-xl">
+            <BarChart3 className="h-6 w-6 mr-3 text-primary" />
+            Recent Activity
+            <span className="ml-2 text-sm font-normal text-muted-foreground">
+              ({format(dateRange.from, 'MMM dd')} - {format(dateRange.to, 'MMM dd')})
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {analytics?.recentActivity?.map((order: any) => (
+              <div key={order.id} className="flex items-center justify-between p-4 border border-border/50 rounded-lg hover:bg-muted/30 transition-colors">
+                <div className="space-y-1">
+                  <p className="font-semibold text-foreground">{order.order_number}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Order #{order.id.slice(0, 8)}...
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(order.created_at).toLocaleString()}
+                  </p>
+                </div>
+                <div className="text-right space-y-1">
+                  <p className="font-bold text-lg">{currency} {Number(order.total_amount).toFixed(2)}</p>
+                  <p className="text-sm text-muted-foreground capitalize px-2 py-1 bg-muted rounded">
+                    {order.status}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {(!analytics?.recentActivity || analytics.recentActivity.length === 0) && (
+              <div className="text-center py-12">
+                <Activity className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">No recent activity</h3>
+                <p className="text-muted-foreground">No orders found for the selected time period.</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
-};
-
-export default AdminAnalytics;
+}
