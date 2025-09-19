@@ -145,7 +145,8 @@ export const useDeleteProductVariant = () => {
         throw error;
       }
     },
-    onSuccess: (_, id) => {
+    onSuccess: () => {
+      // Invalidate all product-variants queries to ensure cache consistency
       queryClient.invalidateQueries({ queryKey: ['product-variants'] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },

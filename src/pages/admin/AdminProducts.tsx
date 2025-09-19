@@ -143,9 +143,9 @@ export default function AdminProducts() {
 
       return product;
     },
-    onSuccess: () => {
+    onSuccess: (product) => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
-      queryClient.invalidateQueries({ queryKey: ['product-variants'] });
+      queryClient.invalidateQueries({ queryKey: ['product-variants', product.id] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
       setIsDialogOpen(false);
       setEditingProduct(null);
