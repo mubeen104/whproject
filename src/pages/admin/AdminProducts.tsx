@@ -145,6 +145,8 @@ export default function AdminProducts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      queryClient.invalidateQueries({ queryKey: ['product-variants'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       setIsDialogOpen(false);
       setEditingProduct(null);
       resetForm();
@@ -196,6 +198,7 @@ export default function AdminProducts() {
   };
 
   const handleProductVariants = async (productId: string) => {
+    // Delete existing variants first
     if (editingProduct) {
       await supabase.from('product_variants').delete().eq('product_id', editingProduct.id);
     }
@@ -206,16 +209,7 @@ export default function AdminProducts() {
     }
 
     if (productVariants.length > 0) {
-      // Enhanced deduplication - check DB first, then local duplicates
-      const { data: existingVariants } = await supabase
-        .from('product_variants')
-        .select('name, price')
-        .eq('product_id', productId);
-
-      const existingSet = new Set(
-        (existingVariants || []).map(v => `${v.name.toLowerCase().trim()}|${v.price}`)
-      );
-
+      // Clean up local duplicates
       const seen = new Set<string>();
       const cleanedVariants = productVariants.filter(v => {
         const name = (v.name || '').trim();
@@ -225,9 +219,6 @@ export default function AdminProducts() {
         if (price <= 0) return false; // Require valid prices
         
         const key = `${name.toLowerCase()}|${price}`;
-        
-        // Skip if already exists in DB
-        if (existingSet.has(key)) return false;
         
         // Skip local duplicates
         if (seen.has(key)) return false;

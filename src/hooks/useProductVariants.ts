@@ -147,6 +147,7 @@ export const useDeleteProductVariant = () => {
     },
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ['product-variants'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
     },
   });
 };
