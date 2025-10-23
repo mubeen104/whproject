@@ -9,6 +9,7 @@ declare global {
       load: (pixelId: string) => void;
       page: () => void;
       track: (event: string, data?: any) => void;
+      identify: (data: any) => void;
     };
     _linkedin_partner_id?: string;
     _linkedin_data_partner_ids?: string[];

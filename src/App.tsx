@@ -8,10 +8,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollToTop from "@/components/ScrollToTop";
-import { EnhancedPixelTracker } from "@/components/EnhancedPixelTracker";
+import { UnifiedPixelTracker } from "@/components/UnifiedPixelTracker";
 import { PixelDebugger } from "@/components/PixelDebugger";
 import { MetadataManager } from "@/components/MetadataManager";
-import { CatalogSync } from "@/components/CatalogSync";
 import { useEnhancedTracking } from "@/hooks/useEnhancedTracking";
 import { useEffect } from "react";
 import Index from "./pages/Index";
@@ -58,8 +57,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
-            <EnhancedPixelTracker />
-            <CatalogSync />
+            <UnifiedPixelTracker />
             <MetadataManager 
               siteInfo={{
                 name: 'New Era Herbals',
