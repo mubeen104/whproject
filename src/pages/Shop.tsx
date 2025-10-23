@@ -98,19 +98,30 @@ export default function Shop() {
   return (
     <>
       <Helmet>
-        <title>Shop Natural Herbal Products | New Era Herbals</title>
-        <meta name="description" content="Browse our collection of premium natural herbal products, organic supplements, and wellness solutions. Shop certified organic herbs and natural remedies." />
-        <meta name="keywords" content="herbal products, natural supplements, organic health, wellness products, herbal shop" />
+        <title>Shop Premium Natural Herbal Products & Organic Supplements | New Era Herbals</title>
+        <meta name="description" content="Browse our collection of premium natural herbal products, organic supplements, ayurvedic herbs, and wellness solutions. Shop certified organic herbs, herbal teas, natural remedies, and holistic health products." />
+        <meta name="keywords" content="herbal products, natural supplements, organic health, wellness products, herbal shop, ayurvedic products, herbal medicine, natural remedies shop, organic supplements online, herbal wellness, natural health store" />
         <link rel="canonical" href="/shop" />
+        <meta property="og:title" content="Shop Premium Natural Herbal Products & Organic Supplements" />
+        <meta property="og:description" content="Browse our collection of premium natural herbal products and organic wellness solutions." />
+        <meta property="og:type" content="website" />
       </Helmet>
       
       <div className="min-h-screen flex flex-col bg-background">
         <Header />
       
-      {/* Hero Section */}
+      {/* Hero Section with SEO-optimized headings */}
       <section className="relative overflow-hidden bg-muted/20 border-b">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23059669%22%20fill-opacity%3D%220.03%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%224%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
-        
+        <div className="relative container mx-auto px-4 py-20">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground">Premium Organic Herbal Products</h1>
+            <h2 className="text-2xl md:text-3xl text-muted-foreground mb-4">Natural Wellness Solutions for Holistic Health</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Explore our curated collection of certified organic supplements, ayurvedic herbs, herbal teas, and natural remedies for complete wellness
+            </p>
+          </div>
+        </div>
       </section>
       
       <main className="flex-1">

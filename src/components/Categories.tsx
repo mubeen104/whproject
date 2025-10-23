@@ -97,22 +97,22 @@ const Categories = () => {
     }} />
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Enhanced Section Header */}
-        <div className="text-center mb-20 animate-fade-in">
+        {/* Enhanced Section Header with SEO headings */}
+        <header className="text-center mb-20 animate-fade-in">
           <div className="flex items-center justify-center mb-6">
             <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent w-32" />
-            <span className="mx-4 text-sm font-semibold text-accent uppercase tracking-wider">Categories</span>
+            <span className="mx-4 text-sm font-semibold text-accent uppercase tracking-wider">Herbal Categories</span>
             <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent w-32" />
           </div>
           
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 bg-gradient-to-r from-foreground via-accent to-foreground bg-clip-text text-transparent">
-            Shop by Category
+            Shop Natural Products by Category
           </h2>
+          <h3 className="text-2xl md:text-3xl text-muted-foreground mb-4">Organic Supplements, Herbal Teas & Wellness Products</h3>
           <p className="text-muted-foreground text-xl max-w-3xl mx-auto leading-relaxed">
-            Explore our carefully curated categories of natural wellness products, 
-            each designed to support your healthy lifestyle.
+            Explore our expertly curated categories of premium natural herbal products, organic wellness supplements, ayurvedic remedies, and holistic health solutions designed to support your healthy lifestyle journey
           </p>
-        </div>
+        </header>
 
         {/* Enhanced Categories Carousel */}
         <Carousel

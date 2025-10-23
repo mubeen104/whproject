@@ -12,15 +12,18 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>New Era Herbals - Premium Natural Wellness Products</title>
-        <meta name="description" content="Discover premium organic herbal products, natural remedies, and wellness solutions. Shop certified organic supplements, herbal teas, and natural health products." />
-        <meta name="keywords" content="herbal products, organic supplements, natural remedies, herbal teas, wellness products, organic health" />
+        <title>New Era Herbals - Premium Organic Herbal Products & Natural Wellness Solutions</title>
+        <meta name="description" content="Discover premium organic herbal products, natural remedies, and wellness solutions. Shop certified organic supplements, herbal teas, ayurvedic herbs, and natural health products for holistic wellness." />
+        <meta name="keywords" content="herbal products, organic supplements, natural remedies, herbal teas, wellness products, organic health, ayurvedic herbs, natural wellness, herbal medicine, holistic health, organic skincare, herbal supplements, natural health products, plant-based wellness" />
         <link rel="canonical" href="/" />
+        <meta property="og:title" content="New Era Herbals - Premium Organic Herbal Products & Natural Wellness Solutions" />
+        <meta property="og:description" content="Discover premium organic herbal products, natural remedies, and wellness solutions for holistic health." />
+        <meta property="og:type" content="website" />
       </Helmet>
       
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="space-y-16">
+        <main className="space-y-16">
           <Hero />
           <div className="animate-fade-in">
             <FeaturedProducts />
@@ -37,7 +40,7 @@ const Index = () => {
           <div className="animate-fade-in" style={{ animationDelay: '0.8s' }}>
             <HomepageTestimonials />
           </div>
-        </div>
+        </main>
         <Footer />
       </div>
     </>

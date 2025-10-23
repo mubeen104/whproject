@@ -127,24 +127,25 @@ const KitsDeals = () => {
       <div className="absolute top-1/2 left-1/4 w-20 h-20 bg-secondary/10 rounded-full blur-2xl animate-float" style={{ animationDelay: '4s' }} />
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Modern Section Header */}
-        <div className="text-center mb-16 animate-fade-in">
+        {/* Modern Section Header with SEO */}
+        <header className="text-center mb-16 animate-fade-in">
           <div className="inline-flex items-center justify-center p-2 bg-primary/10 rounded-full mb-6">
             <span className="text-sm font-medium text-primary px-4 py-1 bg-primary/20 rounded-full">
-              🎯 Special Offers
+              🎯 Exclusive Natural Wellness Bundles
             </span>
           </div>
           
           <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6 tracking-tight">
-            Kits &
+            Herbal Product Kits &
             <span className="block text-transparent bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text">
-              Deals
+              Special Deals
             </span>
           </h2>
+          <h3 className="text-2xl md:text-3xl text-muted-foreground mb-4">Organic Supplement Bundles & Wellness Package Offers</h3>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-            Special product bundles and exclusive deals for maximum value
+            Save on curated natural health product bundles featuring premium organic supplements, herbal remedies, and wellness kits designed for complete holistic care
           </p>
-        </div>
+        </header>
         
         {/* Modern Products Carousel */}
         <Carousel 

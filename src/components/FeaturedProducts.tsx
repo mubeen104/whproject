@@ -111,24 +111,25 @@ const FeaturedProducts = () => {
     }} />
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Modern Section Header */}
-        <div className="text-center mb-16 animate-fade-in">
+        {/* Modern Section Header with SEO-optimized headings */}
+        <header className="text-center mb-16 animate-fade-in">
           <div className="inline-flex items-center justify-center p-2 bg-primary/10 rounded-full mb-6">
             <span className="text-sm font-medium text-primary px-4 py-1 bg-primary/20 rounded-full">
-              ✨ Bestsellers
+              ✨ Bestselling Natural Products
             </span>
           </div>
           
           <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6 tracking-tight">
             Featured
             <span className="block text-transparent bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text">
-              Products
+              Herbal Products
             </span>
           </h2>
+          <h3 className="text-2xl md:text-3xl text-muted-foreground mb-4">Premium Organic Supplements & Natural Wellness</h3>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-            Handpicked wellness essentials that transform your daily routine
+            Discover our handpicked collection of organic herbal supplements, natural remedies, and ayurvedic wellness essentials that transform your daily health routine
           </p>
-        </div>
+        </header>
 
         {/* Modern Products Carousel */}
         <Carousel 

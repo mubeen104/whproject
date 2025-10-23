@@ -93,33 +93,38 @@ const Contact = () => {
   return (
     <>
       <Helmet>
-        <title>Contact Us | New Era Herbals</title>
-        <meta name="description" content="Get in touch with New Era Herbals. Contact us for questions about our natural herbal products and wellness solutions." />
+        <title>Contact New Era Herbals | Natural Health Product Inquiries & Support</title>
+        <meta name="description" content="Get in touch with New Era Herbals for questions about our organic herbal products, natural remedies, wellness solutions, and holistic health supplements. Expert support available." />
+        <meta name="keywords" content="contact herbalist, herbal product support, natural health inquiries, organic supplement questions, wellness consultation, herbal medicine support" />
         <link rel="canonical" href="/contact" />
+        <meta property="og:title" content="Contact New Era Herbals | Natural Health Support" />
+        <meta property="og:description" content="Expert support for your natural wellness journey. Contact us about organic herbal products and holistic health solutions." />
+        <meta property="og:type" content="website" />
       </Helmet>
       
       <div className="min-h-screen bg-background">
         <Header />
       
-      {/* Hero Section */}
+      {/* Hero Section with SEO headings */}
       <section className="relative overflow-hidden bg-muted/20 border-b">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23059669%22%20fill-opacity%3D%220.03%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%224%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
         <div className="relative container mx-auto px-4 py-20 animate-fade-in">
-          <div className="text-center max-w-4xl mx-auto">
+          <header className="text-center max-w-4xl mx-auto">
             <div className="inline-block p-1 bg-primary/10 rounded-full mb-8 hover:bg-primary/20 transition-all duration-300 hover:scale-105">
               <div className="bg-background rounded-full px-8 py-3 shadow-lg">
                 <span className="text-sm font-bold text-primary">
-                  Get In Touch
+                  Natural Health Support
                 </span>
               </div>
             </div>
             <h1 className="text-6xl md:text-7xl font-bold mb-8 text-foreground leading-tight animate-scale-in">
-              Contact Us
+              Contact New Era Herbals
             </h1>
+            <h2 className="text-3xl md:text-4xl text-muted-foreground mb-4">Expert Guidance for Your Wellness Journey</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+              Have questions about our organic herbal products, natural remedies, or wellness solutions? Our expert team is here to help guide your holistic health journey.
             </p>
-          </div>
+          </header>
         </div>
       </section>
 
@@ -131,10 +136,10 @@ const Contact = () => {
             <Card className="border-2 shadow-2xl bg-card backdrop-blur-sm hover:shadow-3xl hover:border-primary/20 transition-all duration-500 hover:-translate-y-1">
               <CardHeader className="pb-8">
                 <CardTitle className="text-3xl font-bold text-primary">
-                  Send us a Message
+                  <h3>Send us a Message About Natural Health Products</h3>
                 </CardTitle>
                 <p className="text-muted-foreground mt-2">
-                  Fill out the form below and we'll get back to you within 24 hours.
+                  Questions about our organic herbal supplements, natural remedies, or wellness products? Fill out the form below and our expert team will get back to you within 24 hours.
                 </p>
               </CardHeader>
               <CardContent>
@@ -220,9 +225,11 @@ const Contact = () => {
           <div className="lg:col-span-5 space-y-6 animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <Card className="border-2 shadow-xl bg-card backdrop-blur-sm hover:shadow-2xl hover:border-primary/20 transition-all duration-300 hover:-translate-y-1">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold">Get in Touch</CardTitle>
+                <CardTitle className="text-2xl font-bold">
+                  <h3>Get in Touch with Our Wellness Experts</h3>
+                </CardTitle>
                 <p className="text-muted-foreground">
-                  Reach out to us through any of these channels
+                  Reach out through any of these channels for natural health support
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
