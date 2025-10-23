@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { UnifiedPixelTracker } from "@/components/UnifiedPixelTracker";
@@ -86,20 +87,20 @@ const App = () => (
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/products" element={<AdminProducts />} />
-            <Route path="/admin/categories" element={<AdminCategories />} />
-            <Route path="/admin/orders" element={<AdminOrders />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/analytics" element={<AdminAnalytics />} />
-            <Route path="/admin/reviews" element={<AdminReviews />} />
-            <Route path="/admin/testimonials" element={<AdminTestimonials />} />
-            <Route path="/admin/coupons" element={<AdminCoupons />} />
-            <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
-            <Route path="/admin/pixels" element={<AdminPixels />} />
-            <Route path="/admin/catalog" element={<AdminCatalog />} />
-            <Route path="/admin/blog" element={<AdminBlogs />} />
-            <Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+            <Route path="/admin/products" element={<AdminLayout><AdminProducts /></AdminLayout>} />
+            <Route path="/admin/categories" element={<AdminLayout><AdminCategories /></AdminLayout>} />
+            <Route path="/admin/orders" element={<AdminLayout><AdminOrders /></AdminLayout>} />
+            <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
+            <Route path="/admin/analytics" element={<AdminLayout><AdminAnalytics /></AdminLayout>} />
+            <Route path="/admin/reviews" element={<AdminLayout><AdminReviews /></AdminLayout>} />
+            <Route path="/admin/testimonials" element={<AdminLayout><AdminTestimonials /></AdminLayout>} />
+            <Route path="/admin/coupons" element={<AdminLayout><AdminCoupons /></AdminLayout>} />
+            <Route path="/admin/hero-slides" element={<AdminLayout><AdminHeroSlides /></AdminLayout>} />
+            <Route path="/admin/pixels" element={<AdminLayout><AdminPixels /></AdminLayout>} />
+            <Route path="/admin/catalog" element={<AdminLayout><AdminCatalog /></AdminLayout>} />
+            <Route path="/admin/blog" element={<AdminLayout><AdminBlogs /></AdminLayout>} />
+            <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
