@@ -24,6 +24,7 @@ import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminPOS from "./pages/admin/AdminPOS";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminOrders from "./pages/admin/AdminOrders";
@@ -88,6 +89,7 @@ const App = () => (
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+            <Route path="/admin/pos" element={<AdminLayout><AdminPOS /></AdminLayout>} />
             <Route path="/admin/products" element={<AdminLayout><AdminProducts /></AdminLayout>} />
             <Route path="/admin/categories" element={<AdminLayout><AdminCategories /></AdminLayout>} />
             <Route path="/admin/orders" element={<AdminLayout><AdminOrders /></AdminLayout>} />
