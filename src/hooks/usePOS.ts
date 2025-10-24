@@ -212,15 +212,33 @@ export const usePOS = () => {
       // Update inventory
       for (const item of cart) {
         if (item.variant_id) {
-          await supabase.rpc('decrement_variant_inventory', {
-            p_variant_id: item.variant_id,
-            p_quantity: item.quantity,
-          });
+          // Get current inventory
+          const { data: variant } = await supabase
+            .from('product_variants')
+            .select('inventory_quantity')
+            .eq('id', item.variant_id)
+            .single();
+          
+          if (variant) {
+            await supabase
+              .from('product_variants')
+              .update({ inventory_quantity: variant.inventory_quantity - item.quantity })
+              .eq('id', item.variant_id);
+          }
         } else {
-          await supabase.rpc('decrement_product_inventory', {
-            p_product_id: item.product_id,
-            p_quantity: item.quantity,
-          });
+          // Get current inventory
+          const { data: product } = await supabase
+            .from('products')
+            .select('inventory_quantity')
+            .eq('id', item.product_id)
+            .single();
+          
+          if (product) {
+            await supabase
+              .from('products')
+              .update({ inventory_quantity: (product.inventory_quantity || 0) - item.quantity })
+              .eq('id', item.product_id);
+          }
         }
       }
 

@@ -1,10 +1,15 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, FolderTree, ShoppingCart, Users, BarChart3, Settings, Leaf, ChevronRight, Star, Percent, Image, FileText, Target, MessageSquare, Database } from 'lucide-react';
+import { LayoutDashboard, Package, FolderTree, ShoppingCart, Users, BarChart3, Settings, Leaf, ChevronRight, Star, Percent, Image, FileText, Target, MessageSquare, Database, CreditCard } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 const adminMenuItems = [{
   title: 'Dashboard',
   url: '/admin',
   icon: LayoutDashboard,
+  badge: null
+}, {
+  title: 'Point of Sale',
+  url: '/admin/pos',
+  icon: CreditCard,
   badge: null
 }, {
   title: 'Products',

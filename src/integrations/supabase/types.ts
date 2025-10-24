@@ -1160,6 +1160,14 @@ export type Database = {
       }
     }
     Functions: {
+      decrement_product_inventory: {
+        Args: { p_product_id: string; p_quantity: number }
+        Returns: undefined
+      }
+      decrement_variant_inventory: {
+        Args: { p_quantity: number; p_variant_id: string }
+        Returns: undefined
+      }
       ensure_user_has_role: { Args: { _user_id: string }; Returns: undefined }
       generate_order_number: { Args: never; Returns: string }
       get_current_user_role: {
