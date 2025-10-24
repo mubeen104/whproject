@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { useCatalogExport, CatalogFormat } from '@/hooks/useCatalogExport';
+import { useCategories } from '@/hooks/useCategories';
 import { Download, FileJson, FileSpreadsheet, FileCode2, RefreshCw, CheckCircle2, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator';
@@ -22,6 +25,8 @@ const PLATFORM_INFO = {
 
 export default function AdminCatalog() {
   const [selectedFormat, setSelectedFormat] = useState<CatalogFormat>('generic');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const { data: categories = [] } = useCategories();
   const { 
     catalogData, 
     isLoading, 
@@ -30,7 +35,7 @@ export default function AdminCatalog() {
     exportAsXML,
     totalProducts,
     totalCategories 
-  } = useCatalogExport();
+  } = useCatalogExport(selectedCategories.length > 0 ? selectedCategories : undefined);
 
   const handleExport = (type: 'json' | 'csv' | 'xml') => {
     try {
@@ -41,10 +46,29 @@ export default function AdminCatalog() {
       } else {
         exportAsXML(selectedFormat);
       }
-      toast.success(`Catalog exported successfully as ${type.toUpperCase()}`);
+      const categoryInfo = selectedCategories.length > 0 
+        ? ` (${selectedCategories.length} ${selectedCategories.length === 1 ? 'category' : 'categories'})` 
+        : ' (all products)';
+      toast.success(`Catalog exported successfully as ${type.toUpperCase()}${categoryInfo}`);
     } catch (error) {
       toast.error('Failed to export catalog');
       console.error('Export error:', error);
+    }
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
+
+  const toggleAllCategories = () => {
+    if (selectedCategories.length === categories.length && categories.length > 0) {
+      setSelectedCategories([]);
+    } else {
+      setSelectedCategories(categories.map(c => c.id));
     }
   };
 
@@ -61,13 +85,18 @@ export default function AdminCatalog() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {selectedCategories.length > 0 ? 'Filtered Products' : 'Total Products'}
+            </CardTitle>
             <Database className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalProducts}</div>
+            <div className="text-2xl font-bold">{catalogData.length}</div>
             <p className="text-xs text-muted-foreground">
-              Active products in catalog
+              {selectedCategories.length > 0 
+                ? `Products in ${selectedCategories.length} selected ${selectedCategories.length === 1 ? 'category' : 'categories'}`
+                : 'Active products in catalog'
+              }
             </p>
           </CardContent>
         </Card>
@@ -101,12 +130,56 @@ export default function AdminCatalog() {
         </Card>
       </div>
 
+      {/* Category Filter Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Filter by Category</CardTitle>
+          <CardDescription>
+            Select specific categories to export, or leave all unchecked to export all products
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="select-all"
+                checked={selectedCategories.length === categories.length && categories.length > 0}
+                onCheckedChange={toggleAllCategories}
+              />
+              <Label htmlFor="select-all" className="font-semibold cursor-pointer">
+                Select All Categories
+              </Label>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
+              {categories.map(category => (
+                <div key={category.id} className="flex items-center space-x-2">
+                  <Checkbox 
+                    id={category.id}
+                    checked={selectedCategories.includes(category.id)}
+                    onCheckedChange={() => toggleCategory(category.id)}
+                  />
+                  <Label htmlFor={category.id} className="cursor-pointer">
+                    {category.name}
+                  </Label>
+                </div>
+              ))}
+            </div>
+            {selectedCategories.length > 0 && (
+              <p className="text-sm text-muted-foreground pt-2">
+                {selectedCategories.length} {selectedCategories.length === 1 ? 'category' : 'categories'} selected • {catalogData.length} products
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Export Section */}
       <Card>
         <CardHeader>
           <CardTitle>Export Catalog</CardTitle>
           <CardDescription>
             Select a platform format and export type to download your product catalog
+            {selectedCategories.length > 0 && ` (${catalogData.length} products from selected categories)`}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

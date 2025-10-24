@@ -32,19 +32,29 @@ interface CatalogProduct {
   tags?: string[];
 }
 
-export const useCatalogExport = () => {
+export const useCatalogExport = (selectedCategoryIds?: string[]) => {
   const { data: products = [], isLoading: productsLoading } = useProducts();
   const { data: categories = [] } = useCategories();
   const settings = useStoreSettings();
 
   const catalogData = useQuery({
-    queryKey: ['catalog-export', products.length],
+    queryKey: ['catalog-export', products.length, selectedCategoryIds],
     queryFn: () => {
       const baseUrl = window.location.origin;
       const currency = settings?.currency || 'PKR';
       const brandName = settings?.storeName || 'New Era Herbals';
 
-      return products.map(product => {
+      // Filter products by selected categories if specified
+      let filteredProducts = products;
+      if (selectedCategoryIds && selectedCategoryIds.length > 0) {
+        filteredProducts = products.filter(product => 
+          product.product_categories?.some(pc => 
+            selectedCategoryIds.includes(pc.category_id)
+          )
+        );
+      }
+
+      return filteredProducts.map(product => {
         const mainImage = product.product_images?.find(img => img.sort_order === 0) 
           || product.product_images?.[0];
         const additionalImages = product.product_images
