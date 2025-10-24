@@ -1,11 +1,23 @@
 import { useCallback } from 'react';
+import { useEnabledPixels } from './useAdvertisingPixels';
+import { trackPixelEvent } from './usePixelPerformance';
 
 /**
  * Modern pixel tracking hook - Unified interface for all advertising pixels
- * Works seamlessly like Shopify's tracking system
+ * Works seamlessly like Shopify's tracking system with performance tracking
  */
 export const usePixelTracking = () => {
-  
+  const { data: enabledPixels } = useEnabledPixels();
+
+  const getSessionId = () => {
+    let sessionId = sessionStorage.getItem('pixel_session_id');
+    if (!sessionId) {
+      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      sessionStorage.setItem('pixel_session_id', sessionId);
+    }
+    return sessionId;
+  };
+
   const trackViewContent = useCallback((productData: {
     id: string;
     name: string;
@@ -78,8 +90,21 @@ export const usePixelTracking = () => {
     if (window.rdt) window.rdt('track', 'ViewContent', data);
     if (window.qp) window.qp('track', 'ViewContent', data);
 
+    // Track to database
+    enabledPixels?.forEach(pixel => {
+      trackPixelEvent({
+        pixelId: pixel.id,
+        eventType: 'view_content',
+        eventValue: productData.price,
+        currency: productData.currency,
+        productId: productData.id,
+        sessionId: getSessionId(),
+        metadata: { product_name: productData.name, category: productData.category, brand: productData.brand }
+      }).catch(console.error);
+    });
+
     console.info('👁️ Product view tracked:', productData.name);
-  }, []);
+  }, [enabledPixels]);
 
   const trackAddToCart = useCallback((productData: {
     id: string;
@@ -144,8 +169,21 @@ export const usePixelTracking = () => {
     if (window.rdt) window.rdt('track', 'AddToCart', { itemCount: productData.quantity, value: totalValue, currency: productData.currency });
     if (window.qp) window.qp('track', 'AddToCart', { value: totalValue, currency: productData.currency });
 
+    // Track to database
+    enabledPixels?.forEach(pixel => {
+      trackPixelEvent({
+        pixelId: pixel.id,
+        eventType: 'add_to_cart',
+        eventValue: totalValue,
+        currency: productData.currency,
+        productId: productData.id,
+        sessionId: getSessionId(),
+        metadata: { product_name: productData.name, quantity: productData.quantity, category: productData.category, brand: productData.brand }
+      }).catch(console.error);
+    });
+
     console.info('🛒 Add to cart tracked:', productData.name, 'x', productData.quantity);
-  }, []);
+  }, [enabledPixels]);
 
   const trackInitiateCheckout = useCallback((checkoutData: {
     value: number;
@@ -212,8 +250,20 @@ export const usePixelTracking = () => {
     if (window.rdt) window.rdt('track', 'InitiateCheckout', { value: checkoutData.value, currency: checkoutData.currency });
     if (window.qp) window.qp('track', 'InitiateCheckout', { value: checkoutData.value, currency: checkoutData.currency });
 
+    // Track to database
+    enabledPixels?.forEach(pixel => {
+      trackPixelEvent({
+        pixelId: pixel.id,
+        eventType: 'initiate_checkout',
+        eventValue: checkoutData.value,
+        currency: checkoutData.currency,
+        sessionId: getSessionId(),
+        metadata: { items: checkoutData.items, num_items: checkoutData.items.length }
+      }).catch(console.error);
+    });
+
     console.info('💳 Checkout initiated:', checkoutData.value, checkoutData.currency);
-  }, []);
+  }, [enabledPixels]);
 
   const trackPurchase = useCallback((orderData: {
     orderId: string;
@@ -289,8 +339,21 @@ export const usePixelTracking = () => {
     if (window.rdt) window.rdt('track', 'Purchase', { transactionId: orderData.orderId, value: orderData.value, currency: orderData.currency });
     if (window.qp) window.qp('track', 'Purchase', { value: orderData.value, currency: orderData.currency });
 
+    // Track to database
+    enabledPixels?.forEach(pixel => {
+      trackPixelEvent({
+        pixelId: pixel.id,
+        eventType: 'purchase',
+        eventValue: orderData.value,
+        currency: orderData.currency,
+        orderId: orderData.orderId,
+        sessionId: getSessionId(),
+        metadata: { items: orderData.items, shipping: orderData.shipping, tax: orderData.tax, coupon: orderData.coupon, num_items: orderData.items.length }
+      }).catch(console.error);
+    });
+
     console.info('💰 Purchase tracked:', orderData.orderId, orderData.value, orderData.currency);
-  }, []);
+  }, [enabledPixels]);
 
   const trackSearch = useCallback((searchTerm: string, resultsCount?: number) => {
     const data = {
@@ -305,8 +368,18 @@ export const usePixelTracking = () => {
     if (window.pintrk) window.pintrk('track', 'search', { search_query: searchTerm });
     if (window.rdt) window.rdt('track', 'Search');
 
+    // Track to database
+    enabledPixels?.forEach(pixel => {
+      trackPixelEvent({
+        pixelId: pixel.id,
+        eventType: 'search',
+        sessionId: getSessionId(),
+        metadata: { search_term: searchTerm, results_count: resultsCount }
+      }).catch(console.error);
+    });
+
     console.info('🔍 Search tracked:', searchTerm);
-  }, []);
+  }, [enabledPixels]);
 
   return {
     trackViewContent,

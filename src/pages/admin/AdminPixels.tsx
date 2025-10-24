@@ -3,10 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Trash2, Eye, EyeOff } from 'lucide-react';
+import { Trash2, Eye, EyeOff, Settings, BarChart3, Loader2 } from 'lucide-react';
 import { useAdvertisingPixels, PLATFORM_OPTIONS } from '@/hooks/useAdvertisingPixels';
+import { usePixelPerformance } from '@/hooks/usePixelPerformance';
 import { PixelForm } from '@/components/admin/PixelForm';
+import { PixelPerformanceCard } from '@/components/admin/PixelPerformanceCard';
 import { toast } from 'sonner';
 
 const PLATFORM_ICONS = {
@@ -37,6 +40,7 @@ const PLATFORM_COLORS = {
 
 export default function AdminPixels() {
   const { pixels, isLoading, updatePixel, deletePixel } = useAdvertisingPixels();
+  const { data: performance, isLoading: isLoadingPerformance } = usePixelPerformance();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleToggleEnabled = async (id: string, currentState: boolean) => {
@@ -82,11 +86,59 @@ export default function AdminPixels() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Advertising Pixels</h1>
           <p className="text-muted-foreground">
-            Manage tracking pixels for advertising platforms
+            Manage and track performance of your advertising pixels across platforms
           </p>
         </div>
         <PixelForm />
       </div>
+
+      <Tabs defaultValue="management" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="management" className="gap-2">
+            <Settings className="h-4 w-4" />
+            Pixel Management
+          </TabsTrigger>
+          <TabsTrigger value="performance" className="gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Performance Tracking
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="performance" className="space-y-6">
+          {isLoadingPerformance ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : !performance || performance.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No Performance Data Yet</h3>
+                <p className="text-muted-foreground">
+                  Pixel tracking data will appear here once events are tracked
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-6">
+              {performance.map((perf) => {
+                const platformIcon = PLATFORM_ICONS[perf.platform as keyof typeof PLATFORM_ICONS] || '📊';
+                const platformColor = PLATFORM_COLORS[perf.platform as keyof typeof PLATFORM_COLORS] || 'bg-gray-600';
+                
+                return (
+                  <PixelPerformanceCard
+                    key={perf.pixel_id}
+                    performance={perf}
+                    platformIcon={platformIcon}
+                    platformColor={platformColor}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="management" className="space-y-6">
 
       <Card>
         <CardHeader>
@@ -319,6 +371,8 @@ export default function AdminPixels() {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

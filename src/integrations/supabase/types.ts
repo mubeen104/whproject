@@ -567,6 +567,63 @@ export type Database = {
           },
         ]
       }
+      pixel_events: {
+        Row: {
+          created_at: string
+          currency: string | null
+          event_type: string
+          event_value: number | null
+          id: string
+          metadata: Json | null
+          order_id: string | null
+          pixel_id: string
+          product_id: string | null
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          event_type: string
+          event_value?: number | null
+          id?: string
+          metadata?: Json | null
+          order_id?: string | null
+          pixel_id: string
+          product_id?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          event_type?: string
+          event_value?: number | null
+          id?: string
+          metadata?: Json | null
+          order_id?: string | null
+          pixel_id?: string
+          product_id?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pixel_events_pixel_id_fkey"
+            columns: ["pixel_id"]
+            isOneToOne: false
+            referencedRelation: "advertising_pixels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pixel_events_pixel_id_fkey"
+            columns: ["pixel_id"]
+            isOneToOne: false
+            referencedRelation: "pixel_performance_summary"
+            referencedColumns: ["pixel_id"]
+          },
+        ]
+      }
       product_categories: {
         Row: {
           category_id: string
@@ -983,6 +1040,63 @@ export type Database = {
         }
         Relationships: []
       }
+      website_analytics: {
+        Row: {
+          browser_name: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          id: string
+          is_unique_visitor: boolean | null
+          os_name: string | null
+          page_title: string | null
+          page_url: string
+          referrer_domain: string | null
+          referrer_url: string | null
+          session_id: string | null
+          user_agent: string | null
+          visit_duration: number | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          browser_name?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          is_unique_visitor?: boolean | null
+          os_name?: string | null
+          page_title?: string | null
+          page_url: string
+          referrer_domain?: string | null
+          referrer_url?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          visit_duration?: number | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          browser_name?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          is_unique_visitor?: boolean | null
+          os_name?: string | null
+          page_title?: string | null
+          page_url?: string
+          referrer_domain?: string | null
+          referrer_url?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          visit_duration?: number | null
+          visitor_ip?: string | null
+        }
+        Relationships: []
+      }
       wishlists: {
         Row: {
           created_at: string
@@ -1014,19 +1128,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      analytics_summary: {
+        Row: {
+          avg_duration: number | null
+          date: string | null
+          desktop_visits: number | null
+          mobile_visits: number | null
+          tablet_visits: number | null
+          total_visits: number | null
+          unique_visitors: number | null
+        }
+        Relationships: []
+      }
+      pixel_performance_summary: {
+        Row: {
+          add_to_carts: number | null
+          checkouts: number | null
+          content_views: number | null
+          conversion_rate: number | null
+          page_views: number | null
+          pixel_id: string | null
+          platform: string | null
+          purchases: number | null
+          total_events: number | null
+          total_revenue: number | null
+          tracking_id: string | null
+          unique_sessions: number | null
+          unique_users: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      ensure_user_has_role: {
-        Args: { _user_id: string }
-        Returns: undefined
-      }
-      generate_order_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      ensure_user_has_role: { Args: { _user_id: string }; Returns: undefined }
+      generate_order_number: { Args: never; Returns: string }
       get_current_user_role: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
       has_role: {
@@ -1036,12 +1173,10 @@ export type Database = {
         }
         Returns: boolean
       }
-      promote_to_admin: {
-        Args: { _email: string }
-        Returns: undefined
-      }
-      remove_admin_role: {
-        Args: { _email: string }
+      promote_to_admin: { Args: { _email: string }; Returns: undefined }
+      remove_admin_role: { Args: { _email: string }; Returns: undefined }
+      update_visit_duration: {
+        Args: { p_duration: number; p_session_id: string }
         Returns: undefined
       }
     }
