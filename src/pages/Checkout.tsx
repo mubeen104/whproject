@@ -117,7 +117,9 @@ const Checkout = () => {
     product: directProduct,
   }] : cartItems;
 
-  const effectiveCartTotal = isDirectCheckout ? directPrice * directQuantity : cartTotal;
+  // Use variant price if available in direct checkout
+  const effectiveDirectPrice = directVariant?.price || directPrice;
+  const effectiveCartTotal = isDirectCheckout ? effectiveDirectPrice * directQuantity : cartTotal;
   const effectiveCartCount = isDirectCheckout ? directQuantity : cartCount;
 
   const [guestInfo, setGuestInfo] = useState<GuestInfo>({
@@ -276,8 +278,8 @@ const Checkout = () => {
           productId: item.product_id,
           variantId: item.variant_id,
           quantity: item.quantity,
-          price: isDirectCheckout ? directPrice : (item.products?.price || item.product?.price || 0),
-          total: isDirectCheckout ? directPrice * item.quantity : (item.products?.price || item.product?.price || 0) * item.quantity,
+          price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || item.product?.price || 0),
+          total: isDirectCheckout ? effectiveDirectPrice * item.quantity : ((item.product_variants?.price || item.products?.price || item.product?.price || 0) * item.quantity),
         })),
       };
 
@@ -292,7 +294,7 @@ const Checkout = () => {
           product_id: item.product_id,
           product_name: item.products?.name || item.product?.name || 'Unknown Product',
           quantity: item.quantity,
-          price: isDirectCheckout ? directPrice : (item.products?.price || item.product?.price || 0),
+          price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || item.product?.price || 0),
           currency: currency === 'Rs' ? 'PKR' : 'USD'
         }))
       });
