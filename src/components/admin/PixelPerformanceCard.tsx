@@ -105,9 +105,40 @@ export const PixelPerformanceCard = ({
             })}
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg text-sm">
-            <span className="text-muted-foreground">Total Events Tracked</span>
-            <span className="font-semibold">{performance.total_events.toLocaleString()}</span>
+          {/* Conversion Funnel Metrics */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Conversion Funnel</p>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="text-center p-3 bg-orange-50 dark:bg-orange-950/20 rounded border border-orange-200 dark:border-orange-800">
+                <p className="text-xs text-muted-foreground mb-1">Add to Cart Rate</p>
+                <p className="text-lg font-bold text-orange-600 dark:text-orange-400">
+                  {performance.add_to_cart_rate.toFixed(1)}%
+                </p>
+              </div>
+              <div className="text-center p-3 bg-indigo-50 dark:bg-indigo-950/20 rounded border border-indigo-200 dark:border-indigo-800">
+                <p className="text-xs text-muted-foreground mb-1">Checkout Rate</p>
+                <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+                  {performance.checkout_rate.toFixed(1)}%
+                </p>
+              </div>
+              <div className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded border border-green-200 dark:border-green-800">
+                <p className="text-xs text-muted-foreground mb-1">Purchase Rate</p>
+                <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                  {performance.purchase_rate.toFixed(1)}%
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 bg-muted/30 rounded-lg text-sm">
+              <span className="text-muted-foreground block mb-1">Avg Order Value</span>
+              <span className="font-semibold text-lg">{formatCurrency(Number(performance.average_order_value))}</span>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-lg text-sm">
+              <span className="text-muted-foreground block mb-1">Total Events</span>
+              <span className="font-semibold text-lg">{performance.total_events.toLocaleString()}</span>
+            </div>
           </div>
         </div>
       </CardContent>

@@ -629,13 +629,6 @@ export type Database = {
             referencedRelation: "advertising_pixels"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "pixel_events_pixel_id_fkey"
-            columns: ["pixel_id"]
-            isOneToOne: false
-            referencedRelation: "pixel_performance_summary"
-            referencedColumns: ["pixel_id"]
-          },
         ]
       }
       product_categories: {
@@ -1219,13 +1212,18 @@ export type Database = {
       }
       pixel_performance_summary: {
         Row: {
+          add_to_cart_rate: number | null
           add_to_carts: number | null
+          average_order_value: number | null
+          checkout_rate: number | null
           checkouts: number | null
           content_views: number | null
           conversion_rate: number | null
           page_views: number | null
+          pixel_enabled: boolean | null
           pixel_id: string | null
           platform: string | null
+          purchase_rate: number | null
           purchases: number | null
           total_events: number | null
           total_revenue: number | null
@@ -1233,7 +1231,15 @@ export type Database = {
           unique_sessions: number | null
           unique_users: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "pixel_events_pixel_id_fkey"
+            columns: ["pixel_id"]
+            isOneToOne: false
+            referencedRelation: "advertising_pixels"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {

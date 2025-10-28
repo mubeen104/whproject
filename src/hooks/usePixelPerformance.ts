@@ -5,6 +5,7 @@ export interface PixelPerformance {
   pixel_id: string;
   platform: string;
   tracking_id: string;
+  pixel_enabled: boolean;
   total_events: number;
   page_views: number;
   content_views: number;
@@ -15,6 +16,10 @@ export interface PixelPerformance {
   unique_sessions: number;
   unique_users: number;
   conversion_rate: number;
+  average_order_value: number;
+  add_to_cart_rate: number;
+  checkout_rate: number;
+  purchase_rate: number;
 }
 
 export interface PixelEventDetail {
