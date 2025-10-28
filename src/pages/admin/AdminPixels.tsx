@@ -5,11 +5,16 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Trash2, Eye, EyeOff, Settings, BarChart3, Loader2 } from 'lucide-react';
+import { Trash2, Eye, EyeOff, Settings, BarChart3, Loader2, List, TrendingUp, Route } from 'lucide-react';
 import { useAdvertisingPixels, PLATFORM_OPTIONS } from '@/hooks/useAdvertisingPixels';
 import { usePixelPerformance } from '@/hooks/usePixelPerformance';
 import { PixelForm } from '@/components/admin/PixelForm';
 import { PixelPerformanceCard } from '@/components/admin/PixelPerformanceCard';
+import { PixelEventFilters } from '@/components/admin/PixelEventFilters';
+import { PixelEventDetailsTable } from '@/components/admin/PixelEventDetailsTable';
+import { ProductPixelPerformance } from '@/components/admin/ProductPixelPerformance';
+import { UserPixelJourney } from '@/components/admin/UserPixelJourney';
+import { EventFilters } from '@/hooks/usePixelEventDetails';
 import { toast } from 'sonner';
 
 const PLATFORM_ICONS = {
@@ -42,6 +47,7 @@ export default function AdminPixels() {
   const { pixels, isLoading, updatePixel, deletePixel } = useAdvertisingPixels();
   const { data: performance, isLoading: isLoadingPerformance } = usePixelPerformance();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [eventFilters, setEventFilters] = useState<EventFilters>({});
 
   const handleToggleEnabled = async (id: string, currentState: boolean) => {
     try {
@@ -100,7 +106,19 @@ export default function AdminPixels() {
           </TabsTrigger>
           <TabsTrigger value="performance" className="gap-2">
             <BarChart3 className="h-4 w-4" />
-            Performance Tracking
+            Performance Summary
+          </TabsTrigger>
+          <TabsTrigger value="events" className="gap-2">
+            <List className="h-4 w-4" />
+            Event Details
+          </TabsTrigger>
+          <TabsTrigger value="products" className="gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Product Analytics
+          </TabsTrigger>
+          <TabsTrigger value="journey" className="gap-2">
+            <Route className="h-4 w-4" />
+            User Journey
           </TabsTrigger>
         </TabsList>
 
@@ -136,6 +154,22 @@ export default function AdminPixels() {
               })}
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="events" className="space-y-6">
+          <PixelEventFilters 
+            onFilterChange={setEventFilters} 
+            currentFilters={eventFilters}
+          />
+          <PixelEventDetailsTable filters={eventFilters} />
+        </TabsContent>
+
+        <TabsContent value="products" className="space-y-6">
+          <ProductPixelPerformance />
+        </TabsContent>
+
+        <TabsContent value="journey" className="space-y-6">
+          <UserPixelJourney />
         </TabsContent>
 
         <TabsContent value="management" className="space-y-6">

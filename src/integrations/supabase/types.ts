@@ -179,6 +179,13 @@ export type Database = {
             foreignKeyName: "cart_items_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "pixel_events_detailed"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -475,6 +482,13 @@ export type Database = {
             foreignKeyName: "order_items_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "pixel_events_detailed"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -649,6 +663,13 @@ export type Database = {
             foreignKeyName: "product_categories_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "pixel_events_detailed"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "product_categories_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -680,6 +701,13 @@ export type Database = {
           sort_order?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "pixel_events_detailed"
+            referencedColumns: ["product_id"]
+          },
           {
             foreignKeyName: "product_images_product_id_fkey"
             columns: ["product_id"]
@@ -774,6 +802,13 @@ export type Database = {
           weight?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_product_variants_product_id"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "pixel_events_detailed"
+            referencedColumns: ["product_id"]
+          },
           {
             foreignKeyName: "fk_product_variants_product_id"
             columns: ["product_id"]
@@ -944,6 +979,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "pixel_events_detailed"
+            referencedColumns: ["product_id"]
+          },
           {
             foreignKeyName: "reviews_product_id_fkey"
             columns: ["product_id"]
@@ -1121,6 +1163,13 @@ export type Database = {
             foreignKeyName: "wishlists_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "pixel_events_detailed"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "wishlists_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -1137,6 +1186,34 @@ export type Database = {
           tablet_visits: number | null
           total_visits: number | null
           unique_visitors: number | null
+        }
+        Relationships: []
+      }
+      pixel_events_detailed: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          event_type: string | null
+          event_value: number | null
+          id: string | null
+          metadata: Json | null
+          order_id: string | null
+          order_number: string | null
+          order_status: string | null
+          order_total: number | null
+          pixel_enabled: boolean | null
+          pixel_platform: string | null
+          product_id: string | null
+          product_image: string | null
+          product_name: string | null
+          product_price: number | null
+          product_sku: string | null
+          product_slug: string | null
+          session_id: string | null
+          tracking_id: string | null
+          user_email: string | null
+          user_id: string | null
+          user_name: string | null
         }
         Relationships: []
       }
