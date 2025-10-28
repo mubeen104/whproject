@@ -98,7 +98,7 @@ const ProductDetail = () => {
       const mainImage = product.product_images?.[0]?.image_url || '/logo.png';
       const categoryName = product.product_categories?.[0]?.categories?.name || '';
       trackViewContent({
-        id: product.id,
+        id: product.sku || product.id, // Use SKU for Meta Pixel catalog matching
         name: product.name,
         price: selectedVariant?.price || product.price,
         currency: currency === 'Rs' ? 'PKR' : 'USD',
@@ -148,9 +148,9 @@ const ProductDetail = () => {
       const displayName = selectedVariant ? `${product.name} - ${selectedVariant.name}` : product.name;
       const categoryName = product.product_categories?.[0]?.categories?.name || '';
       
-      // Track add to cart event
+      // Track add to cart event with SKU for Meta Pixel catalog matching
       trackAddToCart({
-        id: product.id,
+        id: product.sku || product.id, // Use SKU for catalog matching
         name: product.name,
         price: selectedVariant?.price || product.price,
         currency: currency === 'Rs' ? 'PKR' : 'USD',

@@ -12,6 +12,7 @@ import { useEnhancedTracking } from '@/hooks/useEnhancedTracking';
 interface Product {
   id: string;
   name: string;
+  sku?: string; // Added SKU for pixel tracking
   price: number;
   compare_price?: number;
   inventory_quantity: number;
@@ -73,9 +74,9 @@ export const AddToCartModal: React.FC<AddToCartModalProps> = ({
     try {
       await onAddToCart(product.id, quantity, selectedVariant?.id);
       
-      // Track add to cart event
+      // Track add to cart event with SKU for catalog matching
       trackAddToCart({
-        product_id: product.id,
+        product_id: product.sku || product.id, // Use SKU for Meta Pixel catalog matching
         product_name: product.name,
         price: getCurrentPrice(),
         currency: currency,

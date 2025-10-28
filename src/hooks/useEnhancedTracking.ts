@@ -186,7 +186,7 @@ export const useEnhancedTracking = () => {
     const enhancedProductData = {
       currency: productData.currency,
       value: productData.price,
-      content_ids: [productData.product_id],
+      content_ids: [productData.product_id], // Using product_id which should be SKU
       content_name: productData.product_name,
       content_category: productData.category,
       content_type: 'product',
@@ -194,7 +194,9 @@ export const useEnhancedTracking = () => {
       item_name: productData.product_name,
       item_category: productData.category,
       price: productData.price,
-      quantity: productData.quantity || 1
+      quantity: productData.quantity || 1,
+      // Additional Meta Pixel specific parameters
+      num_items: 1
     };
 
     trackEvent('ViewContent', enhancedProductData, { retry: true });
@@ -205,7 +207,7 @@ export const useEnhancedTracking = () => {
     const enhancedCartData = {
       currency: productData.currency,
       value: productData.price * (productData.quantity || 1),
-      content_ids: [productData.product_id],
+      content_ids: [productData.product_id], // Using product_id which should be SKU
       content_name: productData.product_name,
       content_category: productData.category,
       content_type: 'product',
@@ -214,6 +216,7 @@ export const useEnhancedTracking = () => {
       item_category: productData.category,
       price: productData.price,
       quantity: productData.quantity || 1,
+      num_items: productData.quantity || 1,
       contents: [{
         id: productData.product_id,
         quantity: productData.quantity || 1,

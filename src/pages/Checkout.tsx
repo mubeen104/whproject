@@ -296,13 +296,13 @@ const Checkout = () => {
 
       const order = await createOrder.mutateAsync(orderData);
       
-      // Track conversion event for advertising pixels
+      // Track conversion event for advertising pixels with SKU for catalog matching
       trackPurchase({
         order_id: order.order_number,
         value: totalAmount,
         currency: currency === 'Rs' ? 'PKR' : 'USD',
         items: effectiveCartItems.map(item => ({
-          product_id: item.product_id,
+          product_id: item.products?.sku || item.product?.sku || item.product_id, // Use SKU for Meta Pixel catalog matching
           product_name: item.products?.name || item.product?.name || 'Unknown Product',
           quantity: item.quantity,
           price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || item.product?.price || 0),

@@ -11,6 +11,7 @@ export interface GuestCartItem {
   product?: {
     id: string;
     name: string;
+    sku?: string; // Added SKU for pixel tracking
     price: number;
     product_images: Array<{
       id: string;
@@ -19,10 +20,17 @@ export interface GuestCartItem {
       sort_order: number;
     }>;
   };
+  products?: {
+    id: string;
+    name: string;
+    sku?: string; // Added SKU for pixel tracking
+    price: number;
+  };
   product_variants?: {
     id: string;
     name: string;
     price: number;
+    sku?: string; // Added SKU for pixel tracking
     inventory_quantity: number;
     product_variant_images: Array<{
       id: string;
@@ -73,6 +81,7 @@ export const useGuestCart = () => {
         .select(`
           id,
           name,
+          sku,
           price,
           product_images (
             id,
@@ -93,6 +102,7 @@ export const useGuestCart = () => {
           .select(`
             id,
             name,
+            sku,
             price,
             inventory_quantity,
             product_variant_images (
