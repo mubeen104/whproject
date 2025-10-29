@@ -106,7 +106,7 @@ const ProductDetail = () => {
       const mainImage = product.product_images?.[0]?.image_url || '/logo.png';
       const categoryName = product.product_categories?.[0]?.categories?.name || '';
       trackViewContent({
-        id: product.sku || product.id, // Use SKU for Meta Pixel catalog matching
+        product_id: selectedVariant?.sku || product.sku || product.id, // Priority: variant SKU → parent SKU → UUID
         name: product.name,
         price: selectedVariant?.price || product.price,
         currency: currency === 'Rs' ? 'PKR' : 'USD',
@@ -158,7 +158,7 @@ const ProductDetail = () => {
       
       // Track add to cart event with SKU for Meta Pixel catalog matching
       trackAddToCart({
-        id: product.sku || product.id, // Use SKU for catalog matching
+        product_id: selectedVariant?.sku || product.sku || product.id, // Priority: variant SKU → parent SKU → UUID
         name: product.name,
         price: selectedVariant?.price || product.price,
         currency: currency === 'Rs' ? 'PKR' : 'USD',

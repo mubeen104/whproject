@@ -19,7 +19,8 @@ export const usePixelTracking = () => {
   };
 
   const trackViewContent = useCallback((productData: {
-    id: string;
+    product_id: string; // Changed from 'id' to match actual usage (SKU or UUID)
+    id?: string; // Backward compatibility
     name: string;
     price: number;
     currency: string;
@@ -28,14 +29,15 @@ export const usePixelTracking = () => {
     availability?: string;
     imageUrl?: string;
   }) => {
+    const productId = productData.product_id || productData.id || '';
     const data = {
-      content_ids: [productData.id],
+      content_ids: [productId],
       content_name: productData.name,
       content_type: 'product',
       content_category: productData.category,
       currency: productData.currency,
       value: productData.price,
-      item_id: productData.id,
+      item_id: productId,
       item_name: productData.name,
       item_brand: productData.brand,
       price: productData.price,
@@ -73,7 +75,7 @@ export const usePixelTracking = () => {
     // TikTok
     if (window.ttq) {
       window.ttq.track('ViewContent', {
-        content_id: productData.id,
+        content_id: productId,
         content_name: productData.name,
         content_category: productData.category,
         price: productData.price,
@@ -97,7 +99,7 @@ export const usePixelTracking = () => {
         eventType: 'view_content',
         eventValue: productData.price,
         currency: productData.currency,
-        productId: productData.id,
+        productId: productId,
         sessionId: getSessionId(),
         metadata: { product_name: productData.name, category: productData.category, brand: productData.brand }
       }).catch(console.error);
@@ -107,7 +109,8 @@ export const usePixelTracking = () => {
   }, [enabledPixels]);
 
   const trackAddToCart = useCallback((productData: {
-    id: string;
+    product_id: string; // Changed from 'id' to match actual usage (SKU or UUID)
+    id?: string; // Backward compatibility
     name: string;
     price: number;
     currency: string;
@@ -115,6 +118,7 @@ export const usePixelTracking = () => {
     category?: string;
     brand?: string;
   }) => {
+    const productId = productData.product_id || productData.id || '';
     const totalValue = productData.price * productData.quantity;
 
     // Google Ads
@@ -123,7 +127,7 @@ export const usePixelTracking = () => {
         currency: productData.currency,
         value: totalValue,
         items: [{
-          item_id: productData.id,
+          item_id: productId,
           item_name: productData.name,
           item_brand: productData.brand,
           item_category: productData.category,
@@ -136,13 +140,13 @@ export const usePixelTracking = () => {
     // Meta Pixel
     if (window.fbq) {
       window.fbq('track', 'AddToCart', {
-        content_ids: [productData.id],
+        content_ids: [productId],
         content_name: productData.name,
         content_type: 'product',
         currency: productData.currency,
         value: totalValue,
         contents: [{
-          id: productData.id,
+          id: productId,
           quantity: productData.quantity,
           item_price: productData.price
         }]
@@ -152,7 +156,7 @@ export const usePixelTracking = () => {
     // TikTok
     if (window.ttq) {
       window.ttq.track('AddToCart', {
-        content_id: productData.id,
+        content_id: productId,
         content_name: productData.name,
         price: productData.price,
         quantity: productData.quantity,
@@ -163,9 +167,9 @@ export const usePixelTracking = () => {
 
     // Other pixels
     if (window.twq) window.twq('track', 'AddToCart', { value: totalValue, currency: productData.currency });
-    if (window.pintrk) window.pintrk('track', 'addtocart', { value: totalValue, currency: productData.currency, product_id: productData.id });
-    if (window.snaptr) window.snaptr('track', 'ADD_CART', { item_ids: [productData.id], price: totalValue, currency: productData.currency });
-    if (window.uetq) window.uetq.push('event', 'add_to_cart', { ecomm_prodid: productData.id, ecomm_totalvalue: totalValue });
+    if (window.pintrk) window.pintrk('track', 'addtocart', { value: totalValue, currency: productData.currency, product_id: productId });
+    if (window.snaptr) window.snaptr('track', 'ADD_CART', { item_ids: [productId], price: totalValue, currency: productData.currency });
+    if (window.uetq) window.uetq.push('event', 'add_to_cart', { ecomm_prodid: productId, ecomm_totalvalue: totalValue });
     if (window.rdt) window.rdt('track', 'AddToCart', { itemCount: productData.quantity, value: totalValue, currency: productData.currency });
     if (window.qp) window.qp('track', 'AddToCart', { value: totalValue, currency: productData.currency });
 
@@ -176,7 +180,7 @@ export const usePixelTracking = () => {
         eventType: 'add_to_cart',
         eventValue: totalValue,
         currency: productData.currency,
-        productId: productData.id,
+        productId: productId,
         sessionId: getSessionId(),
         metadata: { product_name: productData.name, quantity: productData.quantity, category: productData.category, brand: productData.brand }
       }).catch(console.error);
@@ -189,8 +193,10 @@ export const usePixelTracking = () => {
     value: number;
     currency: string;
     items: Array<{
-      id: string;
-      name: string;
+      product_id: string; // Changed from 'id' to match actual usage (SKU or UUID)
+      id?: string; // Backward compatibility
+      product_name: string; // Changed from 'name'
+      name?: string; // Backward compatibility
       price: number;
       quantity: number;
       category?: string;
@@ -203,8 +209,8 @@ export const usePixelTracking = () => {
         currency: checkoutData.currency,
         value: checkoutData.value,
         items: checkoutData.items.map(item => ({
-          item_id: item.id,
-          item_name: item.name,
+          item_id: item.product_id || item.id,
+          item_name: item.product_name || item.name,
           item_brand: item.brand,
           item_category: item.category,
           price: item.price,
@@ -216,12 +222,12 @@ export const usePixelTracking = () => {
     // Meta Pixel
     if (window.fbq) {
       window.fbq('track', 'InitiateCheckout', {
-        content_ids: checkoutData.items.map(i => i.id),
+        content_ids: checkoutData.items.map(i => i.product_id || i.id),
         currency: checkoutData.currency,
         value: checkoutData.value,
         num_items: checkoutData.items.length,
         contents: checkoutData.items.map(i => ({
-          id: i.id,
+          id: i.product_id || i.id,
           quantity: i.quantity,
           item_price: i.price
         }))
@@ -232,8 +238,8 @@ export const usePixelTracking = () => {
     if (window.ttq) {
       window.ttq.track('InitiateCheckout', {
         contents: checkoutData.items.map(i => ({
-          content_id: i.id,
-          content_name: i.name,
+          content_id: i.product_id || i.id,
+          content_name: i.product_name || i.name,
           price: i.price,
           quantity: i.quantity
         })),
@@ -266,12 +272,15 @@ export const usePixelTracking = () => {
   }, [enabledPixels]);
 
   const trackPurchase = useCallback((orderData: {
-    orderId: string;
+    order_id: string; // Changed from 'orderId' to match actual usage
+    orderId?: string; // Backward compatibility
     value: number;
     currency: string;
     items: Array<{
-      id: string;
-      name: string;
+      product_id: string; // Changed from 'id' to match actual usage (SKU or UUID)
+      id?: string; // Backward compatibility
+      product_name: string; // Changed from 'name'
+      name?: string; // Backward compatibility
       price: number;
       quantity: number;
       category?: string;
@@ -281,18 +290,19 @@ export const usePixelTracking = () => {
     tax?: number;
     coupon?: string;
   }) => {
+    const orderId = orderData.order_id || orderData.orderId || '';
     // Google Ads
     if (window.gtag) {
       window.gtag('event', 'purchase', {
-        transaction_id: orderData.orderId,
+        transaction_id: orderId,
         currency: orderData.currency,
         value: orderData.value,
         shipping: orderData.shipping || 0,
         tax: orderData.tax || 0,
         coupon: orderData.coupon,
         items: orderData.items.map(item => ({
-          item_id: item.id,
-          item_name: item.name,
+          item_id: item.product_id || item.id,
+          item_name: item.product_name || item.name,
           item_brand: item.brand,
           item_category: item.category,
           price: item.price,
@@ -304,13 +314,13 @@ export const usePixelTracking = () => {
     // Meta Pixel
     if (window.fbq) {
       window.fbq('track', 'Purchase', {
-        content_ids: orderData.items.map(i => i.id),
+        content_ids: orderData.items.map(i => i.product_id || i.id),
         content_type: 'product',
         currency: orderData.currency,
         value: orderData.value,
         num_items: orderData.items.length,
         contents: orderData.items.map(i => ({
-          id: i.id,
+          id: i.product_id || i.id,
           quantity: i.quantity,
           item_price: i.price
         }))
@@ -321,8 +331,8 @@ export const usePixelTracking = () => {
     if (window.ttq) {
       window.ttq.track('PlaceAnOrder', {
         contents: orderData.items.map(i => ({
-          content_id: i.id,
-          content_name: i.name,
+          content_id: i.product_id || i.id,
+          content_name: i.product_name || i.name,
           price: i.price,
           quantity: i.quantity
         })),
@@ -332,11 +342,11 @@ export const usePixelTracking = () => {
     }
 
     // Other pixels
-    if (window.twq) window.twq('track', 'Purchase', { value: orderData.value, currency: orderData.currency, conversion_id: orderData.orderId });
-    if (window.pintrk) window.pintrk('track', 'checkout', { value: orderData.value, currency: orderData.currency, order_id: orderData.orderId });
-    if (window.snaptr) window.snaptr('track', 'PURCHASE', { transaction_id: orderData.orderId, price: orderData.value, currency: orderData.currency });
+    if (window.twq) window.twq('track', 'Purchase', { value: orderData.value, currency: orderData.currency, conversion_id: orderId });
+    if (window.pintrk) window.pintrk('track', 'checkout', { value: orderData.value, currency: orderData.currency, order_id: orderId });
+    if (window.snaptr) window.snaptr('track', 'PURCHASE', { transaction_id: orderId, price: orderData.value, currency: orderData.currency });
     if (window.uetq) window.uetq.push('event', 'purchase', { revenue_value: orderData.value, currency: orderData.currency });
-    if (window.rdt) window.rdt('track', 'Purchase', { transactionId: orderData.orderId, value: orderData.value, currency: orderData.currency });
+    if (window.rdt) window.rdt('track', 'Purchase', { transactionId: orderId, value: orderData.value, currency: orderData.currency });
     if (window.qp) window.qp('track', 'Purchase', { value: orderData.value, currency: orderData.currency });
 
     // Track to database
@@ -346,13 +356,13 @@ export const usePixelTracking = () => {
         eventType: 'purchase',
         eventValue: orderData.value,
         currency: orderData.currency,
-        orderId: orderData.orderId,
+        orderId: orderId,
         sessionId: getSessionId(),
         metadata: { items: orderData.items, shipping: orderData.shipping, tax: orderData.tax, coupon: orderData.coupon, num_items: orderData.items.length }
       }).catch(console.error);
     });
 
-    console.info('💰 Purchase tracked:', orderData.orderId, orderData.value, orderData.currency);
+    console.info('💰 Purchase tracked:', orderId, orderData.value, orderData.currency);
   }, [enabledPixels]);
 
   const trackSearch = useCallback((searchTerm: string, resultsCount?: number) => {

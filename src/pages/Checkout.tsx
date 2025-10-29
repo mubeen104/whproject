@@ -50,7 +50,7 @@ const Checkout = () => {
   const { taxRate, shippingRate, freeShippingThreshold, currency } = useStoreSettings();
   const { toast } = useToast();
   const { user } = useAuth();
-  const { trackPurchase } = useEnhancedTracking();
+  const { trackPurchase, trackInitiateCheckout } = useEnhancedTracking();
   
   // Check for direct product checkout
   const isDirectCheckout = searchParams.get('directProduct') === 'true';
@@ -122,6 +122,33 @@ const Checkout = () => {
   const effectiveDirectPrice = directVariant?.price || directPrice;
   const effectiveCartTotal = isDirectCheckout ? effectiveDirectPrice * directQuantity : cartTotal;
   const effectiveCartCount = isDirectCheckout ? directQuantity : cartCount;
+
+  // Track InitiateCheckout when user lands on checkout page
+  useEffect(() => {
+    if (effectiveCartItems.length > 0) {
+      const discount = appliedCoupon ? 
+        (appliedCoupon.type === 'percentage' ? 
+          (effectiveCartTotal * appliedCoupon.value) / 100 : 
+          Math.min(appliedCoupon.value, effectiveCartTotal)) 
+        : 0;
+      const subtotal = effectiveCartTotal - discount;
+      const shipping = subtotal >= freeShippingThreshold ? 0 : shippingRate;
+      const tax = subtotal * (taxRate / 100);
+      const total = subtotal + shipping + tax;
+
+      trackInitiateCheckout({
+        value: total,
+        currency: currency === 'Rs' ? 'PKR' : 'USD',
+        items: effectiveCartItems.map(item => ({
+          product_id: item.product_variants?.sku || item.products?.sku || item.product?.sku || item.product_id,
+          product_name: item.products?.name || item.product?.name || 'Unknown Product',
+          quantity: item.quantity,
+          price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || item.product?.price || 0),
+          currency: currency === 'Rs' ? 'PKR' : 'USD'
+        }))
+      });
+    }
+  }, []); // Only run once on mount
 
   const [guestInfo, setGuestInfo] = useState<GuestInfo>({
     email: "",
@@ -302,7 +329,7 @@ const Checkout = () => {
         value: totalAmount,
         currency: currency === 'Rs' ? 'PKR' : 'USD',
         items: effectiveCartItems.map(item => ({
-          product_id: item.products?.sku || item.product?.sku || item.product_id, // Meta Pixel requires SKU matching catalog
+          product_id: item.product_variants?.sku || item.products?.sku || item.product?.sku || item.product_id, // Priority: variant SKU → parent SKU → UUID
           product_name: item.products?.name || item.product?.name || 'Unknown Product',
           quantity: item.quantity,
           price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || item.product?.price || 0),
