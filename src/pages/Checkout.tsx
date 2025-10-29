@@ -302,7 +302,7 @@ const Checkout = () => {
         value: totalAmount,
         currency: currency === 'Rs' ? 'PKR' : 'USD',
         items: effectiveCartItems.map(item => ({
-          product_id: item.products?.sku || item.product?.sku || item.product_id, // Use SKU for Meta Pixel catalog matching
+          product_id: item.products?.sku || item.product?.sku || item.product_id, // Meta Pixel requires SKU matching catalog
           product_name: item.products?.name || item.product?.name || 'Unknown Product',
           quantity: item.quantity,
           price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || item.product?.price || 0),

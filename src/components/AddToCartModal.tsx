@@ -74,12 +74,12 @@ export const AddToCartModal: React.FC<AddToCartModalProps> = ({
     try {
       await onAddToCart(product.id, quantity, selectedVariant?.id);
       
-      // Track add to cart event with SKU for catalog matching
+      // Track add to cart event with SKU for catalog matching (required for Meta Pixel)
       trackAddToCart({
-        product_id: product.sku || product.id, // Use SKU for Meta Pixel catalog matching
+        product_id: product.sku || product.id, // Meta Pixel requires SKU matching catalog
         product_name: product.name,
         price: getCurrentPrice(),
-        currency: currency,
+        currency: currency === 'Rs' ? 'PKR' : 'USD',
         quantity: quantity,
         category: 'Herbal Products'
       });

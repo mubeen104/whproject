@@ -224,10 +224,15 @@ export const useEnhancedTracking = () => {
 
   // Enhanced product view tracking
   const trackProductView = useCallback((productData: ProductTrackingData) => {
+    // Warn if product_id is not a SKU (UUIDs indicate missing SKU)
+    if (productData.product_id && productData.product_id.length > 20 && productData.product_id.includes('-')) {
+      console.warn('⚠️ Meta Pixel: Product missing SKU, using database ID. This will cause catalog matching issues!', productData.product_name);
+    }
+    
     const enhancedProductData = {
       currency: productData.currency,
       value: productData.price,
-      content_ids: [productData.product_id], // Using product_id which should be SKU
+      content_ids: [productData.product_id], // Must be SKU for Meta Pixel catalog matching
       content_name: productData.product_name,
       content_category: productData.category,
       content_type: 'product',
@@ -245,10 +250,15 @@ export const useEnhancedTracking = () => {
 
   // Enhanced add to cart tracking
   const trackAddToCart = useCallback((productData: ProductTrackingData) => {
+    // Warn if product_id is not a SKU (UUIDs indicate missing SKU)
+    if (productData.product_id && productData.product_id.length > 20 && productData.product_id.includes('-')) {
+      console.warn('⚠️ Meta Pixel: Product missing SKU, using database ID. This will cause catalog matching issues!', productData.product_name);
+    }
+    
     const enhancedCartData = {
       currency: productData.currency,
       value: productData.price * (productData.quantity || 1),
-      content_ids: [productData.product_id], // Using product_id which should be SKU
+      content_ids: [productData.product_id], // Must be SKU for Meta Pixel catalog matching
       content_name: productData.product_name,
       content_category: productData.category,
       content_type: 'product',
@@ -270,6 +280,13 @@ export const useEnhancedTracking = () => {
 
   // Enhanced purchase tracking
   const trackPurchase = useCallback((purchaseData: PurchaseTrackingData) => {
+    // Warn if any items are missing SKUs
+    purchaseData.items.forEach(item => {
+      if (item.product_id && item.product_id.length > 20 && item.product_id.includes('-')) {
+        console.warn('⚠️ Meta Pixel: Product missing SKU in purchase event. This will cause catalog matching issues!', item.product_name);
+      }
+    });
+    
     // Ensure value is a valid number > 0
     const numericValue = parseFloat(String(purchaseData.value).replace(/[^0-9.]/g, ''));
     const validValue = numericValue > 0 ? numericValue : 0.01;
