@@ -27,7 +27,7 @@ export const ProductSchema = ({ product, reviews, selectedVariant }: ProductSche
     "offers": {
       "@type": "Offer",
       "url": `https://www.neweraherbals.com/product/${product.id}`,
-      "priceCurrency": "USD",
+      "priceCurrency": "PKR",
       "price": getCurrentPrice(),
       "availability": (product.inventory_quantity || 0) > 0 
         ? "https://schema.org/InStock" 
@@ -106,7 +106,11 @@ export const ProductSchema = ({ product, reviews, selectedVariant }: ProductSche
       <meta property="og:description" content={product.description || product.short_description || ''} />
       <meta property="og:image" content={product.product_images?.[0]?.image_url || '/logo.png'} />
       <meta property="product:price:amount" content={getCurrentPrice().toString()} />
-      <meta property="product:price:currency" content="USD" />
+      <meta property="product:price:currency" content="PKR" />
+      <meta property="product:availability" content={(product.inventory_quantity || 0) > 0 ? "in stock" : "out of stock"} />
+      <meta property="product:brand" content="New Era Herbals" />
+      <meta property="product:category" content={product.product_categories?.[0]?.categories?.name || "Herbal Products"} />
+      <meta property="product:retailer_item_id" content={selectedVariant?.sku || product.sku || product.id} />
       
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
