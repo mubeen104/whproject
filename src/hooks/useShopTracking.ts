@@ -27,14 +27,23 @@ export const useShopTracking = (
     if (category && category !== 'all') {
       console.info('🏷️ Category View:', category, products.length, 'products');
       
-      // Track with Meta Pixel
+      // Track with Meta Pixel - correct format
       if (window.fbq) {
         window.fbq('track', 'ViewContent', {
           content_type: 'product_group',
-          content_ids: productData.map(p => p.id),
-          content_category: category,
+          content_ids: productData
+            .map(p => p.id)
+            .filter(id => id && typeof id === 'string'),
+          contents: productData
+            .map(p => ({
+              id: p.id,
+              quantity: 1,
+              item_price: p.price
+            }))
+            .filter(item => item.id && !isNaN(item.item_price)),
           num_items: products.length,
-          currency: 'PKR'
+          currency: 'PKR',
+          value: productData.reduce((sum, p) => sum + p.price, 0)
         });
       }
 
@@ -42,6 +51,8 @@ export const useShopTracking = (
       if (window.gtag) {
         window.gtag('event', 'view_item_list', {
           item_list_name: category,
+          currency: 'PKR',
+          value: productData.reduce((sum, p) => sum + p.price, 0),
           items: productData.map((p, i) => ({
             item_id: p.id,
             item_name: p.name,
@@ -57,14 +68,24 @@ export const useShopTracking = (
     if (searchTerm && searchTerm.trim()) {
       console.info('🔍 Search:', searchTerm, products.length, 'results');
       
-      // Track with Meta Pixel
+      // Track with Meta Pixel - correct format
       if (window.fbq) {
         window.fbq('track', 'Search', {
           search_string: searchTerm,
-          content_ids: productData.map(p => p.id),
           content_type: 'product',
+          content_ids: productData
+            .map(p => p.id)
+            .filter(id => id && typeof id === 'string'),
+          contents: productData
+            .map(p => ({
+              id: p.id,
+              quantity: 1,
+              item_price: p.price
+            }))
+            .filter(item => item.id && !isNaN(item.item_price)),
           num_items: products.length,
-          currency: 'PKR'
+          currency: 'PKR',
+          value: productData.reduce((sum, p) => sum + p.price, 0)
         });
       }
 

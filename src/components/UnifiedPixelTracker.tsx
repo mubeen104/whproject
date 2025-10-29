@@ -148,7 +148,6 @@ function loadMetaPixel(pixelId: string) {
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '${pixelId}', {
-      em: 'auto',
       external_id: 'auto',
       fbp: 'auto',
       fbc: 'auto'
@@ -289,20 +288,24 @@ function syncCatalogToPixel(platform: string, catalog: any[]) {
     switch (platform) {
       case 'meta_pixel':
         if (window.fbq) {
+          const topProducts = catalog.slice(0, 20);
           window.fbq('track', 'ViewContent', {
-            ...catalogEvent,
-            content_ids: catalog.map(p => p.sku || p.id), // Meta Pixel requires SKU
-            contents: catalog.map(p => ({
-              id: p.sku || p.id, // Use SKU for catalog matching
-              title: p.title,
-              price: p.price,
-              availability: p.availability,
-              brand: p.brand,
-              category: p.category,
-              image_link: p.image_url
-            }))
+            content_type: 'product_group',
+            content_ids: topProducts
+              .map(p => p.sku || p.id)
+              .filter(id => id && typeof id === 'string'),
+            contents: topProducts
+              .map(p => ({
+                id: p.sku || p.id,
+                quantity: 1,
+                item_price: parseFloat(p.price)
+              }))
+              .filter(item => item.id && !isNaN(item.item_price)),
+            num_items: topProducts.length,
+            currency: catalog[0]?.currency || 'PKR',
+            value: topProducts.reduce((sum, p) => sum + parseFloat(p.price), 0)
           });
-          console.info('📦 Meta: Catalog synced with SKUs -', catalog.length, 'products');
+          console.info('📦 Meta: Catalog synced with SKUs -', topProducts.length, 'products');
         }
         break;
 
@@ -441,28 +444,39 @@ export const pixelTracking = {
     category?: string;
     brand?: string;
   }) => {
-    const data = {
-      content_ids: [productData.id], // Meta Pixel: id should be SKU
-      content_name: productData.name,
+    const metaData = {
       content_type: 'product',
-      content_category: productData.category,
+      content_ids: [productData.id],
+      contents: [{
+        id: productData.id,
+        quantity: 1,
+        item_price: productData.price
+      }],
       currency: productData.currency,
-      value: productData.price,
-      item_id: productData.id, // SKU
-      item_name: productData.name,
-      item_brand: productData.brand,
-      price: productData.price
+      value: productData.price
     };
 
-    if (window.gtag) window.gtag('event', 'view_item', data);
-    if (window.fbq) window.fbq('track', 'ViewContent', data);
-    if (window.ttq) window.ttq.track('ViewContent', data);
-    if (window.twq) window.twq('track', 'ViewContent', data);
-    if (window.pintrk) window.pintrk('track', 'pagevisit', data);
-    if (window.snaptr) window.snaptr('track', 'VIEW_CONTENT', data);
-    if (window.uetq) window.uetq.push('event', 'view_item', data);
-    if (window.rdt) window.rdt('track', 'ViewContent', data);
-    if (window.qp) window.qp('track', 'ViewContent', data);
+    const googleData = {
+      currency: productData.currency,
+      value: productData.price,
+      items: [{
+        item_id: productData.id,
+        item_name: productData.name,
+        item_brand: productData.brand,
+        item_category: productData.category,
+        price: productData.price
+      }]
+    };
+
+    if (window.gtag) window.gtag('event', 'view_item', googleData);
+    if (window.fbq) window.fbq('track', 'ViewContent', metaData);
+    if (window.ttq) window.ttq.track('ViewContent', metaData);
+    if (window.twq) window.twq('track', 'ViewContent', metaData);
+    if (window.pintrk) window.pintrk('track', 'pagevisit', metaData);
+    if (window.snaptr) window.snaptr('track', 'VIEW_CONTENT', metaData);
+    if (window.uetq) window.uetq.push('event', 'view_item', googleData);
+    if (window.rdt) window.rdt('track', 'ViewContent', metaData);
+    if (window.qp) window.qp('track', 'ViewContent', metaData);
   },
 
   trackAddToCart: (productData: {
@@ -474,19 +488,23 @@ export const pixelTracking = {
     category?: string;
     brand?: string;
   }) => {
-    const data = {
-      content_ids: [productData.id], // Meta Pixel: id should be SKU
-      content_name: productData.name,
+    const metaData = {
       content_type: 'product',
-      currency: productData.currency,
-      value: productData.price * productData.quantity,
+      content_ids: [productData.id],
       contents: [{
-        id: productData.id, // SKU
+        id: productData.id,
         quantity: productData.quantity,
         item_price: productData.price
       }],
+      currency: productData.currency,
+      value: productData.price * productData.quantity
+    };
+
+    const googleData = {
+      currency: productData.currency,
+      value: productData.price * productData.quantity,
       items: [{
-        item_id: productData.id, // SKU
+        item_id: productData.id,
         item_name: productData.name,
         item_brand: productData.brand,
         item_category: productData.category,
@@ -495,15 +513,15 @@ export const pixelTracking = {
       }]
     };
 
-    if (window.gtag) window.gtag('event', 'add_to_cart', data);
-    if (window.fbq) window.fbq('track', 'AddToCart', data);
-    if (window.ttq) window.ttq.track('AddToCart', data);
-    if (window.twq) window.twq('track', 'AddToCart', data);
-    if (window.pintrk) window.pintrk('track', 'addtocart', data);
-    if (window.snaptr) window.snaptr('track', 'ADD_CART', data);
-    if (window.uetq) window.uetq.push('event', 'add_to_cart', data);
-    if (window.rdt) window.rdt('track', 'AddToCart', data);
-    if (window.qp) window.qp('track', 'AddToCart', data);
+    if (window.gtag) window.gtag('event', 'add_to_cart', googleData);
+    if (window.fbq) window.fbq('track', 'AddToCart', metaData);
+    if (window.ttq) window.ttq.track('AddToCart', metaData);
+    if (window.twq) window.twq('track', 'AddToCart', metaData);
+    if (window.pintrk) window.pintrk('track', 'addtocart', metaData);
+    if (window.snaptr) window.snaptr('track', 'ADD_CART', metaData);
+    if (window.uetq) window.uetq.push('event', 'add_to_cart', googleData);
+    if (window.rdt) window.rdt('track', 'AddToCart', metaData);
+    if (window.qp) window.qp('track', 'AddToCart', metaData);
   },
 
   trackInitiateCheckout: (checkoutData: {

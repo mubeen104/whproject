@@ -84,27 +84,30 @@ export const CatalogSync = () => {
 function syncMetaCatalog(products: any[]) {
   if (!window.fbq) return;
 
-  // CRITICAL: Use SKU for catalog matching
+  // Limit to top 20 products for efficient catalog sync
+  const topProducts = products.slice(0, 20);
+
+  // CRITICAL: Use correct format for Meta Pixel events
+  // Only id, quantity, item_price are allowed in contents array
   window.fbq('track', 'ViewContent', {
     content_type: 'product_group',
-    content_ids: products.map(p => p.sku || p.id), // SKU required for catalog matching
-    contents: products.map(product => ({
-      id: product.sku || product.id, // Meta Pixel requires SKU
-      quantity: 1,
-      item_price: product.price,
-      title: product.title,
-      description: product.description,
-      availability: product.availability,
-      condition: product.condition,
-      link: product.product_url,
-      image_link: product.image_url,
-      brand: product.brand
-    })),
+    content_ids: topProducts
+      .map(p => p.sku || p.id)
+      .filter(id => id && typeof id === 'string')
+      .slice(0, 100),
+    contents: topProducts
+      .map(product => ({
+        id: product.sku || product.id,
+        quantity: 1,
+        item_price: parseFloat(product.price)
+      }))
+      .filter(item => item.id && !isNaN(item.item_price)),
+    num_items: topProducts.length,
     currency: products[0]?.currency || 'PKR',
-    value: products.reduce((sum, p) => sum + p.price, 0)
+    value: topProducts.reduce((sum, p) => sum + parseFloat(p.price), 0)
   });
 
-  console.info('📱 Meta Pixel: Catalog synced with', products.length, 'products (using SKUs)');
+  console.info('📱 Meta Pixel: Catalog synced with', topProducts.length, 'products (using SKUs)');
 }
 
 function syncGoogleCatalog(products: any[]) {
