@@ -119,9 +119,6 @@ const PageViewTracker = () => {
   const location = useLocation();
   
   useEffect(() => {
-    // Generate unique event ID for deduplication
-    const eventId = `pageview_${location.pathname}_${Date.now()}`;
-    
     // Wait for pixels to be loaded
     const timer = setTimeout(() => {
       const pageData = {
@@ -131,11 +128,25 @@ const PageViewTracker = () => {
       };
 
       // Track page view with all enabled pixels
-      if (window.gtag) window.gtag('event', 'page_view', pageData);
-      if (window.fbq) window.fbq('trackSingle', eventId, 'PageView');
-      if (window.ttq) window.ttq.page();
-      if (window.twq) window.twq('track', 'PageView');
-      if (window.pintrk) window.pintrk('page');
+      if (window.gtag) {
+        window.gtag('event', 'page_view', pageData);
+      }
+      
+      if (window.fbq) {
+        window.fbq('track', 'PageView');
+      }
+      
+      if (window.ttq) {
+        window.ttq.page();
+      }
+      
+      if (window.twq) {
+        window.twq('track', 'PageView');
+      }
+      
+      if (window.pintrk) {
+        window.pintrk('page');
+      }
       
       console.info('📄 Page view tracked:', location.pathname);
     }, 500);
