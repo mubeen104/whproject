@@ -288,25 +288,25 @@ function syncCatalogToPixel(platform: string, catalog: any[]) {
     switch (platform) {
       case 'meta_pixel':
         if (window.fbq) {
-          window.fbq('track', 'ViewContent', {
-            content_type: 'product_group',
-            content_ids: catalog
-              .map(p => p.sku || p.id)
-              .filter(id => id && typeof id === 'string')
-              .slice(0, 100), // Meta has a 100 content_ids limit
-            contents: catalog
-              .map(p => ({
-                id: p.sku || p.id,
+          const validProducts = catalog
+            .filter(p => (p.sku || p.id) && !isNaN(parseFloat(p.price)))
+            .slice(0, 100);
+
+          if (validProducts.length > 0) {
+            window.fbq('track', 'ViewContent', {
+              content_type: 'product_group',
+              content_ids: validProducts.map(p => String(p.sku || p.id)),
+              contents: validProducts.map(p => ({
+                id: String(p.sku || p.id),
                 quantity: 1,
                 item_price: parseFloat(p.price)
-              }))
-              .filter(item => item.id && !isNaN(item.item_price))
-              .slice(0, 100), // Meta has a 100 contents limit
-            num_items: catalog.length,
-            currency: catalog[0]?.currency || 'PKR',
-            value: catalog.reduce((sum, p) => sum + parseFloat(p.price), 0)
-          });
-          console.info('📦 Meta: Catalog synced with SKUs -', catalog.length, 'products');
+              })),
+              num_items: validProducts.length,
+              currency: catalog[0]?.currency || 'PKR',
+              value: validProducts.reduce((sum, p) => sum + parseFloat(p.price), 0)
+            });
+            console.info('📦 Meta: Catalog synced with SKUs -', validProducts.length, 'products');
+          }
         }
         break;
 

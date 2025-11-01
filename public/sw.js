@@ -28,10 +28,9 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Don't cache third-party tracking scripts
+  // Don't cache third-party tracking scripts - let browser handle them directly
   if (TRACKING_DOMAINS.some(domain => url.hostname.includes(domain))) {
-    // Let the browser fetch directly without service worker intervention
-    return;
+    return; // Important: Just return, don't call event.respondWith
   }
   
   // For all other requests, use network-first strategy
@@ -49,7 +48,9 @@ self.addEventListener('fetch', (event) => {
       })
       .catch(() => {
         // On network failure, try cache
-        return caches.match(event.request);
+        return caches.match(event.request).then(cachedResponse => {
+          return cachedResponse || new Response('Offline', { status: 503 });
+        });
       })
   );
 });

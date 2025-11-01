@@ -84,28 +84,31 @@ export const CatalogSync = () => {
 function syncMetaCatalog(products: any[]) {
   if (!window.fbq) return;
 
-  // CRITICAL: Use correct format for Meta Pixel events
-  // Only id, quantity, item_price are allowed in contents array
+  // CRITICAL: Meta Pixel requires content_ids as flat array of strings
+  // contents must be array of objects with ONLY: id, quantity, item_price
+  const validProducts = products
+    .filter(p => (p.sku || p.id) && !isNaN(parseFloat(p.price)))
+    .slice(0, 100); // Meta has a 100 item limit
+
+  if (validProducts.length === 0) return;
+
+  const contentIds = validProducts.map(p => String(p.sku || p.id));
+  const contents = validProducts.map(product => ({
+    id: String(product.sku || product.id),
+    quantity: 1,
+    item_price: parseFloat(product.price)
+  }));
+
   window.fbq('track', 'ViewContent', {
     content_type: 'product_group',
-    content_ids: products
-      .map(p => p.sku || p.id)
-      .filter(id => id && typeof id === 'string')
-      .slice(0, 100), // Meta has a 100 content_ids limit
-    contents: products
-      .map(product => ({
-        id: product.sku || product.id,
-        quantity: 1,
-        item_price: parseFloat(product.price)
-      }))
-      .filter(item => item.id && !isNaN(item.item_price))
-      .slice(0, 100), // Meta has a 100 contents limit
-    num_items: products.length,
+    content_ids: contentIds,
+    contents: contents,
+    num_items: validProducts.length,
     currency: products[0]?.currency || 'PKR',
-    value: products.reduce((sum, p) => sum + parseFloat(p.price), 0)
+    value: validProducts.reduce((sum, p) => sum + parseFloat(p.price), 0)
   });
 
-  console.info('📱 Meta Pixel: Catalog synced with', products.length, 'products (using SKUs)');
+  console.info('📱 Meta Pixel: Catalog synced with', validProducts.length, 'products (using SKUs)');
 }
 
 function syncGoogleCatalog(products: any[]) {
