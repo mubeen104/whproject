@@ -33,9 +33,10 @@ const KitsDeals = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [addToCartProduct, setAddToCartProduct] = useState<any>(null);
   const [carouselApi, setCarouselApi] = useState<any>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Use centralized auto-scroll hook
-  useCarouselAutoScroll(carouselApi);
+  useCarouselAutoScroll(carouselApi, isPaused);
 
   const handleAddToCartRequest = (product: any) => {
     setAddToCartProduct(product);
@@ -148,17 +149,21 @@ const KitsDeals = () => {
         </header>
         
         {/* Modern Products Carousel */}
-        <Carousel 
-          opts={{
-            align: "start",
-            loop: true,
-            duration: enableSmoothScrolling ? 600 : 0,
-            skipSnaps: false,
-            dragFree: true
-          }} 
-          className="w-full max-w-7xl mx-auto" 
-          setApi={setCarouselApi}
+        <div
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
         >
+          <Carousel 
+            opts={{
+              align: "start",
+              loop: true,
+              duration: enableSmoothScrolling ? 600 : 0,
+              skipSnaps: false,
+              dragFree: true
+            }} 
+            className="w-full max-w-7xl mx-auto" 
+            setApi={setCarouselApi}
+          >
           <CarouselContent className="-ml-2 md:-ml-4">
             {kitsDealsProducts.map((product, index) => (
               <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-1/2 sm:basis-1/2 lg:basis-1/3">
@@ -352,6 +357,7 @@ const KitsDeals = () => {
             ))}
           </CarouselContent>
         </Carousel>
+        </div>
         
         {/* Modern View All Button */}
         <div className="text-center mt-16">

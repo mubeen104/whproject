@@ -9,7 +9,7 @@ interface CarouselApi {
   off(event: string, callback: () => void): void;
 }
 
-export const useCarouselAutoScroll = (api: CarouselApi | undefined) => {
+export const useCarouselAutoScroll = (api: CarouselApi | undefined, isPaused: boolean = false) => {
   const { carouselScrollSpeed, enableSmoothScrolling } = useUISettings();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isUserInteractingRef = useRef(false);
@@ -25,8 +25,8 @@ export const useCarouselAutoScroll = (api: CarouselApi | undefined) => {
       }
 
       intervalRef.current = setInterval(() => {
-        // Only auto-scroll if user is not currently interacting
-        if (!isUserInteractingRef.current) {
+        // Only auto-scroll if user is not currently interacting and not paused
+        if (!isUserInteractingRef.current && !isPaused) {
           if (api.canScrollNext()) {
             api.scrollNext();
           } else {
@@ -71,7 +71,7 @@ export const useCarouselAutoScroll = (api: CarouselApi | undefined) => {
       api.off('pointerDown', handleUserInteractionStart);
       api.off('select', handleUserInteractionEnd);
     };
-  }, [api, carouselScrollSpeed, enableSmoothScrolling]);
+  }, [api, carouselScrollSpeed, enableSmoothScrolling, isPaused]);
 
   // Cleanup on unmount
   useEffect(() => {

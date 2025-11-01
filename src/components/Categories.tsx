@@ -20,9 +20,10 @@ const Categories = () => {
   const navigate = useNavigate();
   const { carouselScrollSpeed, animationDuration, enableSmoothScrolling } = useUISettings();
   const [carouselApi, setCarouselApi] = useState<any>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Use centralized auto-scroll hook
-  useCarouselAutoScroll(carouselApi);
+  useCarouselAutoScroll(carouselApi, isPaused);
   const getIconForCategory = (slug: string) => {
     const iconMap: {
       [key: string]: JSX.Element;
@@ -115,17 +116,21 @@ const Categories = () => {
         </header>
 
         {/* Enhanced Categories Carousel */}
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-            duration: enableSmoothScrolling ? 600 : 0,
-            skipSnaps: false,
-            dragFree: true
-          }}
-          className="w-full max-w-7xl mx-auto"
-          setApi={setCarouselApi}
+        <div
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
         >
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+              duration: enableSmoothScrolling ? 600 : 0,
+              skipSnaps: false,
+              dragFree: true
+            }}
+            className="w-full max-w-7xl mx-auto"
+            setApi={setCarouselApi}
+          >
           <CarouselContent className="-ml-2 md:-ml-4">
             {categories.map((category, index) => (
               <CarouselItem key={category.id} className="pl-2 md:pl-4 basis-1/2 sm:basis-1/2 lg:basis-1/3">
@@ -187,6 +192,7 @@ const Categories = () => {
             ))}
           </CarouselContent>
         </Carousel>
+        </div>
       </div>
     </section>;
 };
