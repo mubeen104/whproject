@@ -32,6 +32,7 @@ import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminHeroSlides from "./pages/admin/AdminHeroSlides";
 import AdminPixels from "./pages/admin/AdminPixels";
 import AdminCatalog from "./pages/admin/AdminCatalog";
+import AdminCatalogFeeds from "./pages/admin/AdminCatalogFeeds";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminBlogs from "./pages/admin/AdminBlogs";
 import Cart from "./pages/Cart";
@@ -86,6 +87,7 @@ const App = () => (
             <Route path="/admin/coupons" element={<AdminLayout><AdminCoupons /></AdminLayout>} />
             <Route path="/admin/hero-slides" element={<AdminLayout><AdminHeroSlides /></AdminLayout>} />
             <Route path="/admin/pixels" element={<AdminLayout><AdminPixels /></AdminLayout>} />
+            <Route path="/admin/catalog-feeds" element={<AdminLayout><AdminCatalogFeeds /></AdminLayout>} />
             <Route path="/admin/catalog" element={<AdminLayout><AdminCatalog /></AdminLayout>} />
             <Route path="/admin/blog" element={<AdminLayout><AdminBlogs /></AdminLayout>} />
             <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
