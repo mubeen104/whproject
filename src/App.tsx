@@ -108,9 +108,9 @@ const App = () => (
 // Enhanced page view tracker with deduplication
 const PageViewTracker = () => {
   const location = useLocation();
-  
+
   useEffect(() => {
-    // Wait for pixels to be loaded
+    // Wait for pixels to be loaded and initialized
     const timer = setTimeout(() => {
       const pageData = {
         page_path: location.pathname,
@@ -122,29 +122,50 @@ const PageViewTracker = () => {
       if (window.gtag) {
         window.gtag('event', 'page_view', pageData);
       }
-      
+
       if (window.fbq) {
         window.fbq('track', 'PageView');
+        console.info('📘 Meta Pixel PageView tracked');
       }
-      
+
       if (window.ttq) {
         window.ttq.page();
       }
-      
+
       if (window.twq) {
         window.twq('track', 'PageView');
       }
-      
+
       if (window.pintrk) {
         window.pintrk('page');
       }
-      
+
+      if (window.snaptr) {
+        window.snaptr('track', 'PAGE_VIEW');
+      }
+
+      if (window.lintrk) {
+        window.lintrk('track', { conversion_id: 'pageview' });
+      }
+
+      if (window.uetq) {
+        window.uetq.push('event', 'page_view', pageData);
+      }
+
+      if (window.rdt) {
+        window.rdt('track', 'PageVisit');
+      }
+
+      if (window.qp) {
+        window.qp('track', 'ViewContent');
+      }
+
       console.info('📄 Page view tracked:', location.pathname);
-    }, 500);
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [location]);
-  
+
   return null;
 };
 

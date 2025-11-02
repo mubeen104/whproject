@@ -41,11 +41,11 @@ export const UnifiedPixelTracker = () => {
     if (isLoading || initRef.current) return;
 
     console.info('🚀 Initializing Unified Pixel Tracker...');
-    
+
     // Initialize global objects
     window._pixel_loaded = window._pixel_loaded || {};
     window.dataLayer = window.dataLayer || [];
-    
+
     // Load all enabled pixels
     pixels.forEach(pixel => {
       if (pixel.is_enabled && !window._pixel_loaded?.[pixel.platform]) {
@@ -55,11 +55,6 @@ export const UnifiedPixelTracker = () => {
     });
 
     initRef.current = true;
-
-    // Send initial page view after pixels load
-    setTimeout(() => {
-      sendPageView();
-    }, 1500);
   }, [pixels, isLoading]);
 
   // Sync catalog data with pixels
@@ -137,6 +132,17 @@ function loadGoogleAds(pixelId: string) {
 }
 
 function loadMetaPixel(pixelId: string) {
+  if (window.fbq) {
+    console.warn('⚠️ Meta Pixel already loaded, reinitializing with new ID');
+    window.fbq('init', pixelId, {
+      external_id: 'auto',
+      fbp: 'auto',
+      fbc: 'auto'
+    });
+    console.info('✅ Meta Pixel reinitialized:', pixelId);
+    return;
+  }
+
   const script = document.createElement('script');
   script.innerHTML = `
     !function(f,b,e,v,n,t,s)
@@ -154,6 +160,11 @@ function loadMetaPixel(pixelId: string) {
     });
   `;
   document.head.appendChild(script);
+
+  const noscript = document.createElement('noscript');
+  noscript.innerHTML = `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1"/>`;
+  document.body.appendChild(noscript);
+
   console.info('✅ Meta Pixel loaded:', pixelId);
 }
 
