@@ -217,30 +217,43 @@ export const useCatalogExport = (selectedCategoryIds?: string[]) => {
 
 // Platform-specific formatters
 function formatForMeta(data: CatalogProduct[]) {
-  return data.map(product => ({
-    id: product.sku || product.id, // Use SKU if available, fallback to ID
-    title: product.title.substring(0, 150), // Max 150 characters
-    description: product.description.substring(0, 5000), // Max 5000 characters
-    availability: product.availability === 'in stock' ? 'in stock' : 'out of stock',
-    condition: 'new',
-    price: `${product.price} ${product.currency}`,
-    link: product.product_url,
-    image_link: product.image_url,
-    additional_image_link: product.additional_images.slice(0, 10).join(','),
-    brand: product.brand,
-    // Meta requires at least one of: brand, mpn, or gtin
-    mpn: product.sku || '',
-    google_product_category: product.category,
-    product_type: product.category,
-    // Add inventory count for Facebook Shops
-    inventory: product.inventory || 0,
-    // Custom labels for campaign organization
-    custom_label_0: product.tags?.[0] || '',
-    custom_label_1: product.tags?.[1] || '',
-    custom_label_2: product.tags?.[2] || '',
-    custom_label_3: product.tags?.[3] || '',
-    custom_label_4: product.tags?.[4] || ''
-  }));
+  return data.map(product => {
+    const formattedProduct: any = {
+      // Required fields per Meta template
+      id: product.sku || product.id,
+      title: product.title.substring(0, 200), // Max 200 characters
+      description: product.description.substring(0, 9999), // Max 9999 characters
+      availability: product.availability === 'in stock' ? 'in stock' : 'out of stock',
+      condition: 'new',
+      price: `${product.price.toFixed(2)} ${product.currency}`,
+      link: product.product_url,
+      image_link: product.image_url,
+      brand: product.brand.substring(0, 100), // Max 100 characters
+
+      // Optional but recommended fields
+      google_product_category: product.category || '',
+      fb_product_category: product.category || '',
+      quantity_to_sell_on_facebook: product.inventory || 0,
+    };
+
+    // Add additional images if available
+    if (product.additional_images.length > 0) {
+      formattedProduct.additional_image_link = product.additional_images.slice(0, 10).join(',');
+    }
+
+    // Add product tags (max 110 chars per tag, 5000 labels per product)
+    if (product.tags && product.tags.length > 0) {
+      formattedProduct['product_tags[0]'] = product.tags[0]?.substring(0, 110) || '';
+      if (product.tags[1]) {
+        formattedProduct['product_tags[1]'] = product.tags[1].substring(0, 110);
+      }
+    }
+
+    // Remove undefined/null/empty values
+    return Object.fromEntries(
+      Object.entries(formattedProduct).filter(([_, v]) => v !== undefined && v !== null && v !== '')
+    );
+  });
 }
 
 function formatForGoogle(data: CatalogProduct[]) {
