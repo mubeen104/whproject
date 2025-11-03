@@ -89,8 +89,8 @@ Deno.serve(async (req: Request) => {
       .eq("is_active", true);
 
     // Apply category filter if specified
-    if (feed.category_ids && feed.category_ids.length > 0) {
-      query = query.in("product_categories.category_id", feed.category_ids);
+    if (feed.category_filter && Array.isArray(feed.category_filter) && feed.category_filter.length > 0) {
+      query = query.in("product_categories.category_id", feed.category_filter);
     }
 
     const { data: products, error: productsError } = await query;
