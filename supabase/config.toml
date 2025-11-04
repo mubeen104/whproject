@@ -75,3 +75,6 @@ verify_jwt = false
 
 [functions.contact-form]
 verify_jwt = false
+
+[functions.catalog-feed]
+verify_jwt = false

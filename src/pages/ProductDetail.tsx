@@ -111,9 +111,7 @@ const ProductDetail = () => {
         price: selectedVariant?.price || product.price,
         currency: currency === 'Rs' ? 'PKR' : 'USD',
         category: categoryName,
-        brand: 'New Era Herbals',
-        availability: (selectedVariant?.inventory_quantity || product.inventory_quantity || 0) > 0 ? 'in stock' : 'out of stock',
-        imageUrl: mainImage
+        brand: 'New Era Herbals'
       });
     }
   }, [product, selectedVariant, currency, trackViewContent]);

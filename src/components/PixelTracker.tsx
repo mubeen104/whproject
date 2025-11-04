@@ -52,7 +52,7 @@ export const PixelTracker = () => {
     window.catalogData = catalogData;
 
     const validProducts = catalogData
-      .filter(p => (p.sku || p.id) && !isNaN(parseFloat(p.price)))
+      .filter(p => (p.sku || p.id) && typeof p.price === 'number' && !isNaN(p.price))
       .slice(0, 50);
 
     if (validProducts.length === 0) return;
