@@ -165,8 +165,9 @@ const FeaturedProducts = () => {
                         transition: `opacity 600ms cubic-bezier(0.4, 0, 0.2, 1)`
                       }} />
                     
-                    <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none">
-                      <CardContent className="p-0">
+                   <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none select-none">
+                      <CardContent className="p-0 pointer-events-none">
+                        <div className="pointer-events-auto">
                         {/* Product Image Container */}
                          <div className="relative overflow-hidden rounded-t-3xl aspect-square">
                            <img src={getMainImage(product)} alt={product.name} className="w-full h-full object-contain group-hover:scale-105"
@@ -298,6 +299,7 @@ const FeaturedProducts = () => {
                               View Details
                             </Button>
                           </div>
+                        </div>
                         </div>
                       </CardContent>
                     </Card>

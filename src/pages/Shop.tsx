@@ -411,8 +411,9 @@ export default function Shop() {
                     {/* Gradient Border Effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
                     
-                    <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none">
-                      <CardContent className="p-0">
+                    <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none select-none">
+                      <CardContent className="p-0 pointer-events-none">
+                        <div className="pointer-events-auto">
                         {/* Product Image Container */}
                          <div className="relative overflow-hidden rounded-t-3xl aspect-square">
                            <img src={getMainImage(product)} alt={product.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" />
@@ -535,6 +536,7 @@ export default function Shop() {
                               View Details
                             </Button>
                           </div>
+                        </div>
                         </div>
                       </CardContent>
                     </Card>
