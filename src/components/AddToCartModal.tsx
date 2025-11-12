@@ -25,7 +25,7 @@ interface Product {
 }
 
 interface AddToCartModalProps {
-  product: Product;
+  product: Product | null;
   isOpen: boolean;
   onClose: () => void;
   onAddToCart: (productId: string, quantity: number, variantId?: string) => Promise<void>;
@@ -41,10 +41,15 @@ export const AddToCartModal: React.FC<AddToCartModalProps> = ({
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
-  const { data: variants } = useProductVariants(product.id);
+  const { data: variants } = useProductVariants(product?.id || '');
   const { currency } = useStoreSettings();
   const { toast } = useToast();
   const { trackAddToCart } = usePixelTracking();
+
+  // Early return if product is null
+  if (!product) {
+    return null;
+  }
 
   // Reset state when modal opens
   useEffect(() => {
