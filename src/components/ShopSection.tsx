@@ -241,8 +241,9 @@ const ShopSection = () => {
             {sortedProducts?.slice(0, 12).map((product, index) => (
               <div
                 key={product.id}
-                className="group relative animate-fade-in hover-scale"
+                className="group relative animate-fade-in hover-scale cursor-pointer"
                 style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => navigate(`/product/${product.id}`)}
               >
                 {/* Floating Card Container */}
                 <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-3xl p-1 shadow-lg group-hover:shadow-2xl transition-all duration-700 group-hover:border-primary/30">
@@ -285,7 +286,7 @@ const ShopSection = () => {
                                 <Button
                                   size="sm"
                                   className="bg-white/95 text-foreground hover:bg-white rounded-full px-4 py-2 shadow-lg border-0"
-                                  onClick={() => setSelectedProduct(product)}
+                                  onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}
                                 >
                                   <Eye className="h-4 w-4 mr-2" />
                                   Quick View
@@ -417,7 +418,7 @@ const ShopSection = () => {
                         {/* Action Buttons */}
                         <div className="flex gap-3">
                            <Button
-                             onClick={() => handleAddToCartRequest(product)}
+                             onClick={(e) => { e.stopPropagation(); handleAddToCartRequest(product); }}
                              disabled={cartLoading || product.inventory_quantity === 0}
                              className="flex-1 rounded-full font-medium"
                              variant="outline"
@@ -425,9 +426,9 @@ const ShopSection = () => {
                              <ShoppingCart className="h-4 w-4 mr-2" />
                              {product.inventory_quantity === 0 ? 'Out of Stock' : 'Add'}
                            </Button>
-                          
+
                           <Button
-                            onClick={() => navigate(`/product/${product.id}`)}
+                            onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }}
                             className="flex-1 rounded-full font-medium"
                           >
                             View Details

@@ -150,10 +150,14 @@ const FeaturedProducts = () => {
           >
           <CarouselContent className="-ml-2 md:-ml-4">
             {products.map((product, index) => <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-1/2 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                <div className="group relative animate-fade-in hover-scale" style={{
-              animationDelay: `${index * 0.1}s`,
-              transition: `transform ${animationDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
-            }}>
+                <div
+                  className="group relative animate-fade-in hover-scale cursor-pointer"
+                  style={{
+                    animationDelay: `${index * 0.1}s`,
+                    transition: `transform ${animationDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
+                  }}
+                  onClick={() => navigate(`/product/${product.id}`)}
+                >
                    {/* Floating Card Container */}
                   <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-3xl p-1 shadow-lg group-hover:shadow-2xl group-hover:border-primary/30"
                      style={{
@@ -164,7 +168,7 @@ const FeaturedProducts = () => {
                        style={{
                         transition: `opacity 600ms cubic-bezier(0.4, 0, 0.2, 1)`
                       }} />
-                    
+
                     <Card className="relative bg-card/80 backdrop-blur-sm border-0 rounded-3xl overflow-hidden shadow-none">
                       <CardContent className="p-0">
                         {/* Product Image Container */}
@@ -195,7 +199,7 @@ const FeaturedProducts = () => {
                             <div className="flex gap-3">
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <Button size="sm" className="bg-white/95 text-foreground hover:bg-white rounded-full px-4 py-2 shadow-lg border-0" onClick={() => setSelectedProduct(product)}>
+                                  <Button size="sm" className="bg-white/95 text-foreground hover:bg-white rounded-full px-4 py-2 shadow-lg border-0" onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}>
                                     <Eye className="h-4 w-4 mr-2" />
                                     Quick View
                                   </Button>
@@ -289,13 +293,13 @@ const FeaturedProducts = () => {
 
                           {/* Action Buttons */}
                           <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 lg:gap-3">
-                           <Button onClick={() => handleAddToCartRequest(product)} disabled={cartLoading || product.inventory_quantity === 0} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3" variant="outline">
+                           <Button onClick={(e) => { e.stopPropagation(); handleAddToCartRequest(product); }} disabled={cartLoading || product.inventory_quantity === 0} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3" variant="outline">
                              <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                              <span className="hidden sm:inline">{product.inventory_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}</span>
                              <span className="sm:hidden">Add</span>
                            </Button>
-                            
-                            <Button onClick={() => navigate(`/product/${product.id}`)} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
+
+                            <Button onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
                               View Details
                             </Button>
                           </div>

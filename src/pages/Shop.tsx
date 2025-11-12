@@ -362,9 +362,12 @@ export default function Shop() {
                 </p>
               </CardContent>
             </Card> : <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
-              {sortedProducts?.map((product, index) => <div key={product.id} className="group relative animate-fade-in hover-scale" style={{
-            animationDelay: `${index * 0.1}s`
-          }}>
+              {sortedProducts?.map((product, index) => <div
+                key={product.id}
+                className="group relative animate-fade-in hover-scale cursor-pointer"
+                style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => navigate(`/product/${product.id}`)}
+              >
                   {/* Schema.org microdata for Meta Pixel catalog detection */}
                   {/* If product has variants, include microdata for each variant */}
                   {productVariants[product.id]?.length > 0 ? (
@@ -436,7 +439,7 @@ export default function Shop() {
                             <div className="flex gap-3">
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <Button size="sm" className="bg-white/95 text-foreground hover:bg-white rounded-full px-4 py-2 shadow-lg border-0" onClick={() => setSelectedProduct(product)}>
+                                  <Button size="sm" className="bg-white/95 text-foreground hover:bg-white rounded-full px-4 py-2 shadow-lg border-0" onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}>
                                     <Eye className="h-4 w-4 mr-2" />
                                     Quick View
                                   </Button>
@@ -526,12 +529,12 @@ export default function Shop() {
 
                           {/* Action Buttons */}
                           <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
-                            <Button onClick={() => handleAddToCartRequest(product)} disabled={cartLoading || product.inventory_quantity === 0} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3" variant="outline">
+                            <Button onClick={(e) => { e.stopPropagation(); handleAddToCartRequest(product); }} disabled={cartLoading || product.inventory_quantity === 0} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3" variant="outline">
                               <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                               {product.inventory_quantity === 0 ? 'Out of Stock' : 'Add'}
                             </Button>
                             
-                            <Button onClick={() => navigate(`/product/${product.id}`)} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-2 sm:py-2.5">
+                            <Button onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-2 sm:py-2.5">
                               View Details
                             </Button>
                           </div>
