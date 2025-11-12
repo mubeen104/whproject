@@ -2,7 +2,9 @@ import { Helmet } from 'react-helmet-async';
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import FeaturedProducts from "@/components/FeaturedProducts";
+import BestSellingProducts from "@/components/BestSellingProducts";
 import KitsDeals from "@/components/KitsDeals";
+import NewArrivals from "@/components/NewArrivals";
 import Categories from "@/components/Categories";
 import FeaturedBlogPosts from "@/components/blog/FeaturedBlogPosts";
 import HomepageTestimonials from "@/components/HomepageTestimonials";
@@ -84,15 +86,21 @@ const Index = () => {
             <FeaturedProducts />
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <KitsDeals />
+            <BestSellingProducts />
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <Categories />
+            <KitsDeals />
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <FeaturedBlogPosts />
+            <NewArrivals />
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.8s' }}>
+            <Categories />
+          </div>
+          <div className="animate-fade-in" style={{ animationDelay: '1s' }}>
+            <FeaturedBlogPosts />
+          </div>
+          <div className="animate-fade-in" style={{ animationDelay: '1.2s' }}>
             <HomepageTestimonials />
           </div>
         </main>

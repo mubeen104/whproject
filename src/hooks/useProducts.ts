@@ -13,6 +13,8 @@ export interface Product {
   inventory_quantity: number;
   is_featured: boolean;
   is_kits_deals?: boolean;
+  is_best_seller?: boolean;
+  is_new_arrival?: boolean;
   tags: string[];
   keywords: string[];
   features: string;
@@ -132,6 +134,80 @@ export const useKitsDealsProducts = () => {
         `)
         .eq('is_active', true)
         .eq('is_kits_deals', true)
+        .order('created_at', { ascending: false })
+        .limit(12);
+
+      if (error) {
+        throw error;
+      }
+
+      return data || [];
+    },
+  });
+};
+
+export const useBestSellingProducts = () => {
+  return useQuery({
+    queryKey: ['best-selling-products'],
+    queryFn: async (): Promise<Product[]> => {
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          product_images (
+            id,
+            image_url,
+            alt_text,
+            sort_order
+          ),
+          product_categories (
+            category_id,
+            categories (
+              id,
+              name,
+              slug
+            )
+          )
+        `)
+        .eq('is_active', true)
+        .eq('is_best_seller', true)
+        .order('created_at', { ascending: false })
+        .limit(12);
+
+      if (error) {
+        throw error;
+      }
+
+      return data || [];
+    },
+  });
+};
+
+export const useNewArrivals = () => {
+  return useQuery({
+    queryKey: ['new-arrivals'],
+    queryFn: async (): Promise<Product[]> => {
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          product_images (
+            id,
+            image_url,
+            alt_text,
+            sort_order
+          ),
+          product_categories (
+            category_id,
+            categories (
+              id,
+              name,
+              slug
+            )
+          )
+        `)
+        .eq('is_active', true)
+        .eq('is_new_arrival', true)
         .order('created_at', { ascending: false })
         .limit(12);
 

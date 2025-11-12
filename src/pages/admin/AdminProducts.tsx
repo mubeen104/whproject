@@ -30,6 +30,8 @@ interface Product {
   is_active: boolean;
   is_featured: boolean;
   is_kits_deals?: boolean;
+  is_best_seller?: boolean;
+  is_new_arrival?: boolean;
   sku: string;
   keywords: string[];
   features: string;
@@ -85,7 +87,9 @@ export default function AdminProducts() {
     keywords: '',
     is_active: true,
     is_featured: false,
-    is_kits_deals: false
+    is_kits_deals: false,
+    is_best_seller: false,
+    is_new_arrival: false
   });
 
   const { toast } = useToast();
@@ -296,7 +300,9 @@ export default function AdminProducts() {
       keywords: '',
       is_active: true,
       is_featured: false,
-      is_kits_deals: false
+      is_kits_deals: false,
+      is_best_seller: false,
+      is_new_arrival: false
     });
     setSelectedCategories([]);
     setProductImages([]);
@@ -500,7 +506,9 @@ export default function AdminProducts() {
       keywords: product.keywords?.join(', ') || '',
       is_active: product.is_active,
       is_featured: product.is_featured,
-      is_kits_deals: Boolean(product.is_kits_deals)
+      is_kits_deals: Boolean(product.is_kits_deals),
+      is_best_seller: Boolean(product.is_best_seller),
+      is_new_arrival: Boolean(product.is_new_arrival)
     });
     
     // Load existing data
@@ -1051,11 +1059,54 @@ export default function AdminProducts() {
                         }
                       />
                       <div className="space-y-1">
-                        <Label htmlFor="is_featured" className="text-sm font-medium cursor-pointer">
+                        <Label htmlFor="is_featured" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                          <Star className="h-4 w-4 text-yellow-500" />
                           Featured Product
                         </Label>
                         <p className="text-xs text-muted-foreground">
-                          Show this product in the featured section
+                          Show this product in the Featured Products section
+                        </p>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        id="is_best_seller"
+                        checked={formData.is_best_seller}
+                        onCheckedChange={(checked) => 
+                          setFormData({ ...formData, is_best_seller: !!checked })
+                        }
+                      />
+                      <div className="space-y-1">
+                        <Label htmlFor="is_best_seller" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4 text-primary" />
+                          Best Seller
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Show this product in the Best Selling section
+                        </p>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        id="is_new_arrival"
+                        checked={formData.is_new_arrival}
+                        onCheckedChange={(checked) => 
+                          setFormData({ ...formData, is_new_arrival: !!checked })
+                        }
+                      />
+                      <div className="space-y-1">
+                        <Label htmlFor="is_new_arrival" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                          <Star className="h-4 w-4 text-accent" />
+                          New Arrival
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Show this product in the New Arrivals section
                         </p>
                       </div>
                     </div>
@@ -1071,7 +1122,8 @@ export default function AdminProducts() {
                         }
                       />
                       <div className="space-y-1">
-                        <Label htmlFor="is_kits_deals" className="text-sm font-medium cursor-pointer">
+                        <Label htmlFor="is_kits_deals" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                          <ShoppingCart className="h-4 w-4 text-green-500" />
                           Kits & Deals Product
                         </Label>
                         <p className="text-xs text-muted-foreground">
