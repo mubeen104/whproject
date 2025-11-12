@@ -467,8 +467,7 @@ function generateCSV(data: any[]): string {
 function generateXML(data: any[], platform: string): string {
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
 
-  // Meta and Google both use RSS 2.0 format
-  if (platform === "google" || platform === "meta") {
+  if (platform === "google") {
     xml += '<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n';
     xml += "  <channel>\n";
     xml += "    <title>Product Feed</title>\n";

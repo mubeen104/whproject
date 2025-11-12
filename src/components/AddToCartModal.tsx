@@ -77,7 +77,7 @@ export const AddToCartModal: React.FC<AddToCartModalProps> = ({
       // Track add to cart event with SKU for catalog matching (required for Meta Pixel)
       trackAddToCart({
         product_id: selectedVariant?.sku || product.sku || product.id, // Priority: variant SKU → parent SKU → UUID
-        name: product.name,
+        product_name: product.name,
         price: getCurrentPrice(),
         currency: currency === 'Rs' ? 'PKR' : 'USD',
         quantity: quantity,

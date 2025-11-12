@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { Search, ShoppingBag, User, Menu, X, ChevronDown, LogOut, Settings } from "lucide-react";
+import { Search, ShoppingBag, User, Menu, X, Leaf, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGuestCart } from "@/hooks/useGuestCart";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
-import { MegaMenu } from "@/components/MegaMenu";
+import { AuthModal } from "@/components/auth/AuthModal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useNavigate, Link } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { user, signOut, isAdmin } = useAuth();
   const { cartCount } = useGuestCart();
@@ -20,10 +19,8 @@ const Header = () => {
 
   const navigation = [
     { name: "Home", href: "/" },
-    { name: "Shop Now", href: "/shop", hasMegaMenu: true },
-    { name: "About", href: "/about" },
-    { name: "Blog", href: "/blog" },
-    { name: "Contact", href: "/contact" },
+    { name: "Shop", href: "/shop" },
+    { name: "Contact Us", href: "/contact" },
   ];
 
   const handleSearch = (e: React.FormEvent) => {
@@ -42,80 +39,69 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white/95 shadow-sm border-b border-border/30 sticky top-0 z-50 backdrop-blur-xl transition-all duration-300">
+    <header className="bg-white shadow-lg border-b border-border sticky top-0 z-50 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top bar */}
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="relative transform transition-all duration-300">
-              <img
-                src="/logo.png"
-                alt={`${storeName} Logo`}
-                className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
-              />
+          <Link to="/" className="flex items-center space-x-4 group">
+            <div className="relative transform transition-all duration-300 hover:scale-105">
+              <div className="bg-primary/5 rounded-xl p-3 shadow-md transition-all duration-300 group-hover:shadow-xl group-hover:bg-primary/10">
+                <img 
+                  src="/logo.png" 
+                  alt={`${storeName} Logo`} 
+                  className="h-10 w-auto transition-transform duration-300 group-hover:rotate-12"
+                />
+              </div>
             </div>
-            <div className="hidden md:block">
-              <span className="text-xl font-bold text-foreground tracking-tight transition-colors duration-300">
+            <div className="hidden sm:block">
+              <span className="text-2xl font-bold text-foreground tracking-tight transition-colors duration-300 group-hover:text-primary">
                 {storeName}
               </span>
+              <div className="h-0.5 bg-primary w-0 group-hover:w-full transition-all duration-500"></div>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          <nav className="hidden md:flex space-x-1">
             {navigation.map((item) => (
-              item.hasMegaMenu ? (
-                <div
-                  key={item.name}
-                  className="relative"
-                  onMouseEnter={() => setIsMegaMenuOpen(true)}
-                  onMouseLeave={() => setIsMegaMenuOpen(false)}
-                >
-                  <button
-                    className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    {item.name}
-                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isMegaMenuOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                </div>
-              ) : (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className="px-4 py-2 text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
-                >
-                  {item.name}
-                </Link>
-              )
+              <Link
+                key={item.name}
+                to={item.href}
+                className="relative px-6 py-3 text-foreground hover:text-primary transition-all duration-300 font-semibold group"
+              >
+                <span className="relative z-10">{item.name}</span>
+                <div className="absolute inset-0 bg-primary/5 rounded-xl scale-0 group-hover:scale-100 transition-all duration-300 origin-center"></div>
+                <div className="absolute bottom-1 left-1/2 w-0 h-1 bg-primary rounded-full group-hover:w-8 transition-all duration-300 transform -translate-x-1/2"></div>
+              </Link>
             ))}
           </nav>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden lg:flex items-center flex-1 max-w-lg mx-8">
+          <div className="hidden lg:flex items-center space-x-4 flex-1 max-w-md mx-8">
             <form onSubmit={handleSearch} className="relative w-full group">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 transition-all duration-200 group-focus-within:text-primary" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 transition-all duration-300 group-focus-within:text-primary group-focus-within:scale-110" />
               <Input
                 type="text"
-                placeholder="Search natural products..."
+                placeholder="Search herbs, supplements..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
-                className="pl-10 pr-4 py-2 bg-muted/30 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:bg-background rounded-full transition-all duration-200"
+                className="pl-12 pr-4 py-3 bg-muted/20 border-2 border-muted text-foreground placeholder:text-muted-foreground focus:border-primary focus:bg-background focus:shadow-lg rounded-full transition-all duration-300"
               />
             </form>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-10 w-10 text-foreground hover:text-primary hover:bg-primary/5 rounded-full transition-all duration-200">
+                  <Button variant="ghost" size="icon" className="h-12 w-12 text-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg">
                     <User className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                 <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-xl border-border/50">
+                 <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-md border-border/50">
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="flex items-center w-full">
                       <User className="h-4 w-4 mr-2" />
@@ -145,18 +131,18 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="ghost" size="icon" className="h-10 w-10 text-foreground hover:text-primary hover:bg-primary/5 rounded-full transition-all duration-200" asChild>
+              <Button variant="ghost" size="icon" className="h-12 w-12 text-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg" asChild>
                 <Link to="/auth">
                   <User className="h-5 w-5" />
                 </Link>
               </Button>
             )}
-
-            <Button variant="ghost" size="icon" className="h-10 w-10 text-foreground hover:text-primary hover:bg-primary/5 rounded-full transition-all duration-200 relative" asChild>
+            
+            <Button variant="ghost" size="icon" className="h-12 w-12 text-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all duration-300 relative hover:scale-110 hover:shadow-lg" asChild>
               <Link to="/cart">
                 <ShoppingBag className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-6 w-6 flex items-center justify-center font-semibold animate-bounce">
                     {cartCount}
                   </span>
                 )}
@@ -165,7 +151,7 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden h-10 w-10 text-foreground hover:text-primary hover:bg-primary/5 rounded-full transition-all duration-200"
+              className="md:hidden h-12 w-12 text-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all duration-300 hover:scale-110"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -174,36 +160,37 @@ const Header = () => {
         </div>
 
         {/* Mobile Search */}
-        <div className="lg:hidden pb-3">
+        <div className="lg:hidden pb-4">
           <form onSubmit={handleSearch} className="relative group">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 transition-all duration-200 group-focus-within:text-primary" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 transition-all duration-300 group-focus-within:text-primary group-focus-within:scale-110" />
             <Input
               type="text"
-              placeholder="Search natural products..."
+              placeholder="Search herbs, supplements..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              className="pl-10 pr-4 py-2 bg-muted/30 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:bg-background rounded-full transition-all duration-200"
+              className="pl-12 pr-4 py-3 bg-muted/20 border-2 border-muted text-foreground placeholder:text-muted-foreground focus:border-primary focus:bg-background focus:shadow-lg rounded-full transition-all duration-300"
             />
           </form>
         </div>
       </div>
 
-      {/* Mega Menu */}
-      <MegaMenu isOpen={isMegaMenuOpen} onClose={() => setIsMegaMenuOpen(false)} />
-
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white/95 backdrop-blur-xl border-t border-border/50 shadow-xl animate-fade-in">
-          <div className="px-4 py-4 space-y-1 max-h-[calc(100vh-80px)] overflow-y-auto">
-            {navigation.map((item) => (
+        <div className="md:hidden bg-white border-t border-border shadow-lg animate-fade-in">
+          <div className="px-4 py-4 space-y-1">
+            {navigation.map((item, index) => (
               <Link
                 key={item.name}
                 to={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="block px-4 py-3 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
+                className="block px-4 py-4 text-foreground hover:text-primary hover:bg-primary/5 rounded-xl transition-all duration-300 group font-semibold"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                {item.name}
+                <span className="relative">
+                  {item.name}
+                  <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></div>
+                </span>
               </Link>
             ))}
           </div>

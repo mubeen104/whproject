@@ -122,7 +122,7 @@ export const useCatalogFeeds = () => {
   });
 
   const getFeedUrl = (feedSlug: string, format?: FeedFormat) => {
-    const supabaseUrl = 'https://trhbdcrkolubvgytjkhi.supabase.co';
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const baseUrl = `${supabaseUrl}/functions/v1/catalog-feed/${feedSlug}`;
     return format ? `${baseUrl}?format=${format}` : baseUrl;
   };

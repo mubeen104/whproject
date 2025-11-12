@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi
+import { 
+  Carousel, 
+  CarouselContent, 
+  CarouselItem, 
+  CarouselNext, 
+  CarouselPrevious,
+  type CarouselApi 
 } from "@/components/ui/carousel";
 import { useHeroSlides } from "@/hooks/useHeroSlides";
+
 
 const HeroSlider = () => {
   const { data: slides, isLoading } = useHeroSlides();
@@ -13,7 +16,8 @@ const HeroSlider = () => {
   const [current, setCurrent] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState<Set<number>>(new Set());
   const [isPaused, setIsPaused] = useState(false);
-
+  
+  // Preload first image immediately
   useEffect(() => {
     if (slides && slides.length > 0) {
       const img = new Image();
@@ -23,7 +27,9 @@ const HeroSlider = () => {
       };
     }
   }, [slides]);
+  
 
+  // Use slide-specific speed or default
   const autoScrollSpeed = slides?.[0]?.auto_scroll_speed || 5000;
 
   useEffect(() => {
@@ -35,6 +41,7 @@ const HeroSlider = () => {
       setCurrent(api.selectedScrollSnap() + 1);
     });
 
+    // Auto-scroll with configurable speed
     const interval = setInterval(() => {
       if (!isPaused) {
         if (api.canScrollNext()) {
@@ -48,19 +55,23 @@ const HeroSlider = () => {
     return () => clearInterval(interval);
   }, [api, autoScrollSpeed, isPaused]);
 
+  // Show instant preview while loading
   if (isLoading || !slides || slides.length === 0) {
     return (
-      <section className="relative w-full overflow-hidden bg-gradient-to-br from-background to-muted/20">
-        <div className="w-full h-[500px] sm:h-[600px] lg:h-[700px]">
+      <section className="relative w-full overflow-hidden">
+        <div className="w-full aspect-[16/9] sm:aspect-[16/10] md:aspect-[16/9] lg:aspect-[21/9] max-w-full">
           <div className="relative h-full w-full bg-gradient-to-br from-primary/10 via-background to-accent/10">
+            {/* Animated gradient background for instant visual feedback */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 animate-pulse" />
-            <div className="flex items-center h-full px-4 sm:px-8 lg:px-16">
-              <div className="max-w-7xl mx-auto w-full">
-                <div className="max-w-2xl space-y-6 animate-fade-in">
-                  <div className="h-16 sm:h-20 lg:h-24 bg-gradient-to-r from-muted/60 via-muted/40 to-muted/60 rounded-lg animate-pulse" />
-                  <div className="h-8 bg-gradient-to-r from-muted/50 via-muted/30 to-muted/50 rounded-lg w-3/4 animate-pulse" />
-                  <div className="h-14 bg-gradient-to-r from-primary/30 via-accent/30 to-primary/30 rounded-full w-48 animate-pulse" />
+            
+            {/* Skeleton content that appears instantly */}
+            <div className="flex items-center justify-center h-full px-4">
+              <div className="text-center space-y-6 max-w-4xl animate-fade-in">
+                <div className="space-y-4">
+                  <div className="h-12 sm:h-16 md:h-20 bg-gradient-to-r from-muted/60 via-muted/40 to-muted/60 rounded-lg w-full max-w-2xl mx-auto animate-pulse" />
+                  <div className="h-6 sm:h-8 bg-gradient-to-r from-muted/50 via-muted/30 to-muted/50 rounded-lg w-3/4 mx-auto animate-pulse" style={{ animationDelay: '0.1s' }} />
                 </div>
+                <div className="h-12 sm:h-14 bg-gradient-to-r from-primary/30 via-accent/30 to-primary/30 rounded-full w-48 mx-auto animate-pulse" style={{ animationDelay: '0.2s' }} />
               </div>
             </div>
           </div>
@@ -70,14 +81,14 @@ const HeroSlider = () => {
   }
 
   return (
-    <section className="relative w-full overflow-hidden bg-gradient-to-br from-background to-muted/20">
-      <div
-        className="w-full h-[500px] sm:h-[600px] lg:h-[700px]"
+    <section className="relative w-full overflow-hidden">
+      <div 
+        className="w-full aspect-[16/9] sm:aspect-[16/10] md:aspect-[16/9] lg:aspect-[21/9] max-w-full"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
         <Carousel
-          setApi={setApi}
+          setApi={setApi} 
           className="w-full h-full"
           opts={{
             align: "start",
@@ -90,21 +101,23 @@ const HeroSlider = () => {
             {slides.map((slide, index) => {
               const isFirstSlide = index === 0;
               const isLoaded = imagesLoaded.has(index);
-
+              
               return (
                 <CarouselItem key={slide.id} className="h-full">
-                  <div className="relative h-full w-full group">
+                  <div className="relative h-full w-full group animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                    {/* Show instant gradient background while image loads */}
                     {!isLoaded && (
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/20 animate-pulse" />
                     )}
-
-                    <img
-                      src={slide.image_url}
+                    
+                    {/* Optimized image with instant loading for first slide */}
+                    <img 
+                      src={slide.image_url} 
                       alt={slide.title}
                       loading={isFirstSlide ? "eager" : "lazy"}
                       fetchPriority={isFirstSlide ? "high" : "auto"}
                       decoding="async"
-                      className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ${
+                      className={`w-full h-full object-cover sm:object-contain md:object-cover bg-gradient-to-br from-muted/20 to-background group-hover:scale-[1.02] transition-all duration-500 ${
                         isLoaded ? 'opacity-100' : 'opacity-0'
                       }`}
                       onLoad={(e) => {
@@ -115,68 +128,76 @@ const HeroSlider = () => {
                         e.currentTarget.style.background = 'linear-gradient(135deg, hsl(var(--muted)), hsl(var(--background)))';
                       }}
                     />
-
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
-
-                    <div className="absolute inset-0 flex items-center p-4 sm:p-8 lg:p-16">
-                      <div className="max-w-7xl mx-auto w-full">
-                        <div className="max-w-2xl text-white space-y-4 sm:space-y-6 animate-fade-in">
-                          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-shadow-lg">
-                            {slide.title}
-                          </h1>
-                          {slide.subtitle && (
-                            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed text-shadow max-w-xl">
-                              {slide.subtitle}
-                            </p>
-                          )}
-                          {slide.link_url && (
-                            <div className="pt-2 sm:pt-4">
-                              <a
-                                href={slide.link_url}
-                                className="inline-flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 bg-white text-foreground rounded-full font-semibold text-sm sm:text-base hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-2xl group/button"
-                              >
-                                <span>{slide.link_text || 'Shop Now'}</span>
-                                <svg
-                                  className="w-5 h-5 transform group-hover/button:translate-x-1 transition-transform duration-300"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                                  />
-                                </svg>
-                              </a>
-                            </div>
-                          )}
-                        </div>
+                
+                {/* Subtle gradient overlay for better contrast on indicators */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                
+                {/* Professional overlay with gradient backdrop */}
+                {slide.link_url && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 ease-out flex items-center justify-center p-4 sm:p-6 md:p-8">
+                    <div className="text-center text-white transform translate-y-4 group-hover:translate-y-0 transition-all duration-700 ease-out max-w-full">
+                      <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 text-shadow-lg px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">
+                        {slide.title}
+                      </h2>
+                      {slide.subtitle && (
+                        <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-4 sm:mb-5 md:mb-6 max-w-xs sm:max-w-lg md:max-w-2xl mx-auto text-shadow px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-300">
+                          {slide.subtitle}
+                        </p>
+                      )}
+                      <div className="opacity-0 group-hover:opacity-100 transition-all duration-500 delay-400 transform scale-95 group-hover:scale-100">
+                        <a
+                          href={slide.link_url}
+                          className="relative inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground rounded-full font-semibold transition-all duration-500 hover:scale-110 hover:shadow-2xl shadow-lg text-sm sm:text-base overflow-hidden group/button"
+                        >
+                          {/* Animated background shine effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/button:translate-x-full transition-transform duration-1000 ease-out" />
+                          
+                          {/* Button glow effect */}
+                          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-primary/90 opacity-0 group-hover/button:opacity-100 transition-opacity duration-300 blur-sm" />
+                          
+                          <span className="relative z-10 truncate max-w-[120px] sm:max-w-none">
+                            {slide.link_text || 'Shop Now'}
+                          </span>
+                          <svg className="relative z-10 ml-1 sm:ml-2 w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 transform group-hover/button:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+                        </a>
                       </div>
                     </div>
+                  </div>
+                )}
                   </div>
                 </CarouselItem>
               );
             })}
-          </CarouselContent>
+        </CarouselContent>
 
-          <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => api?.scrollTo(index)}
-                className={`transition-all duration-300 rounded-full ${
-                  current === index + 1
-                    ? 'w-8 h-2 bg-white'
-                    : 'w-2 h-2 bg-white/50 hover:bg-white/80'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
-        </Carousel>
+
+        {/* Modern slide indicators */}
+        <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-3">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => api?.scrollTo(index)}
+              className={`${
+                current === index + 1 
+                  ? 'w-6 sm:w-8 h-1.5 sm:h-2 bg-white rounded-full' 
+                  : 'w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white/50 hover:bg-white/80 rounded-full hover:scale-125'
+              }`}
+              style={{
+                transition: `all 500ms cubic-bezier(0.4, 0, 0.2, 1)`
+              }}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </Carousel>
       </div>
+
+      {/* Floating animated elements - responsive positioning */}
+      <div className="absolute top-1/4 right-4 sm:right-8 md:right-12 lg:right-20 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 bg-white/20 rounded-full animate-ping" />
+      <div className="absolute top-3/4 left-4 sm:left-8 md:left-12 lg:left-20 w-3 h-3 sm:w-4 sm:h-4 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/2 right-8 sm:right-16 md:right-24 lg:right-32 w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 bg-accent/30 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
     </section>
   );
 };
