@@ -19,14 +19,12 @@ import { ReviewForm } from '@/components/reviews/ReviewForm';
 import { ProductImageZoom } from '@/components/ProductImageZoom';
 import { usePixelTracking } from '@/hooks/usePixelTracking';
 import { Minus, Plus, Star, Truck, Shield, RotateCcw } from 'lucide-react';
-const useProduct = (productId: string) => {
+const useProduct = (slugOrId: string) => {
   return useQuery({
-    queryKey: ['product', productId],
+    queryKey: ['product', slugOrId],
     queryFn: async (): Promise<Product> => {
-      const {
-        data,
-        error
-      } = await supabase.from('products').select(`
+      // Try to fetch by slug first, fall back to ID for backward compatibility
+      let query = supabase.from('products').select(`
           *,
           product_images (
             id,
@@ -42,7 +40,19 @@ const useProduct = (productId: string) => {
               slug
             )
           )
-        `).eq('id', productId).eq('is_active', true).single();
+        `).eq('is_active', true);
+
+      // Check if slugOrId looks like a UUID (contains hyphens and is 36 chars)
+      const isUUID = slugOrId.length === 36 && slugOrId.includes('-');
+
+      if (isUUID) {
+        query = query.eq('id', slugOrId);
+      } else {
+        query = query.eq('slug', slugOrId);
+      }
+
+      const { data, error } = await query.single();
+
       if (error) {
         throw error;
       }
@@ -75,9 +85,9 @@ const useProductReviews = (productId: string) => {
 };
 const ProductDetail = () => {
   const {
-    id
+    slug
   } = useParams<{
-    id: string;
+    slug: string;
   }>();
   const navigate = useNavigate();
   const {
@@ -98,13 +108,13 @@ const ProductDetail = () => {
     data: product,
     isLoading,
     error
-  } = useProduct(id!);
+  } = useProduct(slug!);
   const {
     data: reviews
-  } = useProductReviews(id!);
+  } = useProductReviews(product?.id!);
   const {
     data: variants
-  } = useProductVariants(id!);
+  } = useProductVariants(product?.id!);
 
   // Track product view when product loads
   useEffect(() => {

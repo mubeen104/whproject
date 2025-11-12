@@ -366,7 +366,7 @@ export default function Shop() {
                 key={product.id}
                 className="group relative animate-fade-in hover-scale cursor-pointer"
                 style={{ animationDelay: `${index * 0.1}s` }}
-                onClick={() => navigate(`/product/${product.id}`)}
+                onClick={() => navigate(`/product/${product.slug}`)}
               >
                   {/* Schema.org microdata for Meta Pixel catalog detection */}
                   {/* If product has variants, include microdata for each variant */}
@@ -534,7 +534,7 @@ export default function Shop() {
                               {product.inventory_quantity === 0 ? 'Out of Stock' : 'Add'}
                             </Button>
                             
-                            <Button onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-2 sm:py-2.5">
+                            <Button onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.slug}`); }} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-2 sm:py-2.5">
                               View Details
                             </Button>
                           </div>

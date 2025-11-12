@@ -156,7 +156,7 @@ const FeaturedProducts = () => {
                     animationDelay: `${index * 0.1}s`,
                     transition: `transform ${animationDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
                   }}
-                  onClick={() => navigate(`/product/${product.id}`)}
+                  onClick={() => navigate(`/product/${product.slug}`)}
                 >
                    {/* Floating Card Container */}
                   <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-3xl p-1 shadow-lg group-hover:shadow-2xl group-hover:border-primary/30"
@@ -299,7 +299,7 @@ const FeaturedProducts = () => {
                              <span className="sm:hidden">Add</span>
                            </Button>
 
-                            <Button onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
+                            <Button onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.slug}`); }} className="flex-1 rounded-full font-medium text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
                               View Details
                             </Button>
                           </div>

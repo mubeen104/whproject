@@ -243,7 +243,7 @@ const ShopSection = () => {
                 key={product.id}
                 className="group relative animate-fade-in hover-scale cursor-pointer"
                 style={{ animationDelay: `${index * 0.1}s` }}
-                onClick={() => navigate(`/product/${product.id}`)}
+                onClick={() => navigate(`/product/${product.slug}`)}
               >
                 {/* Floating Card Container */}
                 <div className="relative bg-card/40 backdrop-blur-xl border border-border/20 rounded-3xl p-1 shadow-lg group-hover:shadow-2xl transition-all duration-700 group-hover:border-primary/30">
@@ -428,7 +428,7 @@ const ShopSection = () => {
                            </Button>
 
                           <Button
-                            onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }}
+                            onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.slug}`); }}
                             className="flex-1 rounded-full font-medium"
                           >
                             View Details
