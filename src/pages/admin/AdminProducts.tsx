@@ -571,7 +571,9 @@ export default function AdminProducts() {
       keywords: keywordsArray,
       is_active: formData.is_active,
       is_featured: formData.is_featured,
-      is_kits_deals: formData.is_kits_deals
+      is_kits_deals: formData.is_kits_deals,
+      is_best_seller: formData.is_best_seller,
+      is_new_arrival: formData.is_new_arrival
     };
 
     productMutation.mutate(productData);
