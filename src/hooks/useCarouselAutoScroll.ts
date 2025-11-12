@@ -13,11 +13,21 @@ export const useCarouselAutoScroll = (api: CarouselApi | undefined, isPaused: bo
   const { carouselScrollSpeed, enableSmoothScrolling } = useUISettings();
   const animationFrameRef = useRef<number | null>(null);
   const lastScrollTimeRef = useRef<number>(0);
+  const pauseTimeRef = useRef<number>(0);
   const isUserInteractingRef = useRef(false);
   const isPausedRef = useRef(isPaused);
 
   useEffect(() => {
+    const wasPaused = isPausedRef.current;
     isPausedRef.current = isPaused;
+
+    if (!wasPaused && isPaused) {
+      pauseTimeRef.current = performance.now();
+    } else if (wasPaused && !isPaused && pauseTimeRef.current > 0) {
+      const pauseDuration = performance.now() - pauseTimeRef.current;
+      lastScrollTimeRef.current += pauseDuration;
+      pauseTimeRef.current = 0;
+    }
   }, [isPaused]);
 
   const scrollLoop = (timestamp: number) => {
@@ -88,7 +98,6 @@ export const useCarouselAutoScroll = (api: CarouselApi | undefined, isPaused: bo
     if (isPaused || !enableSmoothScrolling) {
       stopAutoScroll();
     } else if (api && !animationFrameRef.current && !isUserInteractingRef.current) {
-      lastScrollTimeRef.current = performance.now();
       startAutoScroll();
     }
   }, [isPaused, api, enableSmoothScrolling]);
