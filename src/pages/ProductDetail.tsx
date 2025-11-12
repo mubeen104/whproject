@@ -299,14 +299,29 @@ const ProductDetail = () => {
                      {currency} {getCurrentComparePrice().toFixed(2)}
                    </span>}
               </div>
-              {averageRating > 0 && <div className="flex items-center space-x-2">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => <Star key={i} className={`w-4 h-4 ${i < Math.floor(averageRating) ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground'}`} />)}
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    ({reviews?.length || 0} reviews)
-                  </span>
-                </div>}
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, i) => (
+                    <Star 
+                      key={i} 
+                      className={`w-4 h-4 ${
+                        i < Math.floor(averageRating) 
+                          ? 'text-yellow-400 fill-yellow-400' 
+                          : 'text-muted-foreground'
+                      }`} 
+                    />
+                  ))}
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  {averageRating > 0 ? (
+                    <>
+                      {averageRating.toFixed(1)} ({reviews?.length || 0} {reviews?.length === 1 ? 'review' : 'reviews'})
+                    </>
+                  ) : (
+                    'No reviews yet'
+                  )}
+                </span>
+              </div>
             </div>
 
             {/* Variant Selector */}
