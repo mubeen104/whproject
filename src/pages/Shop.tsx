@@ -20,6 +20,8 @@ import { useToast } from '@/hooks/use-toast';
 import { AddToCartModal } from '@/components/AddToCartModal';
 import { useShopTracking } from '@/hooks/useShopTracking';
 import { supabase } from '@/integrations/supabase/client';
+import { useProductRatings } from '@/hooks/useProductRatings';
+import { ProductRating } from '@/components/ProductRating';
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
@@ -48,6 +50,9 @@ export default function Shop() {
     data: products,
     isLoading: productsLoading
   } = useProducts();
+
+  const productIds = products?.map(p => p.id) || [];
+  const { data: ratings = [] } = useProductRatings(productIds);
   const {
     data: categories,
     isLoading: categoriesLoading
@@ -504,6 +509,16 @@ export default function Shop() {
                                   {currency} {product.compare_price.toFixed(2)}
                                 </span>}
                             </div>
+                          </div>
+
+                          {/* Rating */}
+                          <div className="mb-2 sm:mb-4">
+                            <ProductRating
+                              averageRating={ratings.find(r => r.productId === product.id)?.averageRating || 0}
+                              reviewCount={ratings.find(r => r.productId === product.id)?.reviewCount || 0}
+                              showCount={true}
+                              size="sm"
+                            />
                           </div>
 
                           {/* Action Buttons */}

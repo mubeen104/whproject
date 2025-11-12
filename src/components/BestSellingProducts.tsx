@@ -12,12 +12,17 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AddToCartModal } from "@/components/AddToCartModal";
 import { useCarouselAutoScroll } from "@/hooks/useCarouselAutoScroll";
+import { useProductRatings } from "@/hooks/useProductRatings";
+import { ProductRating } from "@/components/ProductRating";
 
 const BestSellingProducts = () => {
   const { data: bestSellingProducts = [], isLoading } = useBestSellingProducts();
   
   // Filter out kits & deals products
   const products = bestSellingProducts.filter(product => !product.is_kits_deals);
+
+  const productIds = products.map(p => p.id);
+  const { data: ratings = [] } = useProductRatings(productIds);
   
   const { addToCart, isLoading: cartLoading } = useGuestCart();
   const { currency } = useStoreSettings();
@@ -242,6 +247,16 @@ const BestSellingProducts = () => {
                                   </span>
                                 )}
                               </div>
+                            </div>
+
+                            {/* Rating */}
+                            <div className="mb-2 sm:mb-4 lg:mb-6">
+                              <ProductRating
+                                averageRating={ratings.find(r => r.productId === product.id)?.averageRating || 0}
+                                reviewCount={ratings.find(r => r.productId === product.id)?.reviewCount || 0}
+                                showCount={true}
+                                size="sm"
+                              />
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 lg:gap-3">

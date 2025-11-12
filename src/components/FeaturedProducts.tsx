@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { AddToCartModal } from "@/components/AddToCartModal";
 import { useCarouselAutoScroll } from "@/hooks/useCarouselAutoScroll";
+import { useProductRatings } from "@/hooks/useProductRatings";
+import { ProductRating } from "@/components/ProductRating";
 const FeaturedProducts = () => {
   const {
     data: featuredProducts = [],
@@ -23,6 +25,9 @@ const FeaturedProducts = () => {
 
   // Filter out kits & deals products to show only in dedicated section
   const products = featuredProducts.filter(product => !product.is_kits_deals);
+
+  const productIds = products.map(p => p.id);
+  const { data: ratings = [] } = useProductRatings(productIds);
   const {
     addToCart,
     isLoading: cartLoading
@@ -281,9 +286,6 @@ const FeaturedProducts = () => {
                               </p>}
                           </div>
 
-                          {/* Rating */}
-                          
-
                           {/* Price */}
                           <div className="flex items-center justify-between mb-2 sm:mb-4 lg:mb-6">
                             <div className="flex flex-col gap-0.5">
@@ -294,6 +296,16 @@ const FeaturedProducts = () => {
                                   {currency} {product.compare_price.toFixed(2)}
                                 </span>}
                             </div>
+                          </div>
+
+                          {/* Rating */}
+                          <div className="mb-2 sm:mb-4 lg:mb-6">
+                            <ProductRating
+                              averageRating={ratings.find(r => r.productId === product.id)?.averageRating || 0}
+                              reviewCount={ratings.find(r => r.productId === product.id)?.reviewCount || 0}
+                              showCount={true}
+                              size="sm"
+                            />
                           </div>
 
                           {/* Action Buttons */}

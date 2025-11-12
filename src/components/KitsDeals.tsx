@@ -12,6 +12,8 @@ import { useGuestCart } from "@/hooks/useGuestCart";
 import { useToast } from "@/hooks/use-toast";
 import { AddToCartModal } from "@/components/AddToCartModal";
 import { useCarouselAutoScroll } from "@/hooks/useCarouselAutoScroll";
+import { useProductRatings } from "@/hooks/useProductRatings";
+import { ProductRating } from "@/components/ProductRating";
 import {
   Carousel,
   CarouselContent,
@@ -20,9 +22,12 @@ import {
 
 const KitsDeals = () => {
   const {
-    data: kitsDealsProducts,
+    data: kitsDealsProducts = [],
     isLoading
   } = useKitsDealsProducts();
+
+  const productIds = kitsDealsProducts.map(p => p.id);
+  const { data: ratings = [] } = useProductRatings(productIds);
   const {
     currency
   } = useStoreSettings();
@@ -333,6 +338,16 @@ const KitsDeals = () => {
                                 </span>
                               )}
                             </div>
+                          </div>
+
+                          {/* Rating */}
+                          <div className="mb-2 sm:mb-4 lg:mb-6">
+                            <ProductRating
+                              averageRating={ratings.find(r => r.productId === product.id)?.averageRating || 0}
+                              reviewCount={ratings.find(r => r.productId === product.id)?.reviewCount || 0}
+                              showCount={true}
+                              size="sm"
+                            />
                           </div>
 
                           {/* Action Buttons */}
