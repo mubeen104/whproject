@@ -162,9 +162,8 @@ const AdminReviews = () => {
   );
 
   const getUserName = (review: Review) => {
-    const profiles = review.profiles as any;
-    if (profiles?.first_name && profiles?.last_name) {
-      return `${profiles.first_name} ${profiles.last_name}`;
+    if (review.profiles?.first_name && review.profiles?.last_name) {
+      return `${review.profiles.first_name} ${review.profiles.last_name}`;
     }
     return 'Anonymous User';
   };
@@ -229,7 +228,7 @@ const AdminReviews = () => {
                         </Badge>
                       </div>
                       <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <span>By: {getUserName(review as any)}</span>
+                        <span>By: {getUserName(review)}</span>
                         <span>{new Date(review.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>

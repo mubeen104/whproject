@@ -477,8 +477,8 @@ const ProductDetail = () => {
                   {reviews.map(review => <div key={review.id} className="border-b border-border pb-6 last:border-0">
                       <div className="flex items-center space-x-2 mb-2">
                         <span className="font-medium text-foreground">
-                          {(review.profiles as any)?.first_name && (review.profiles as any)?.last_name
-                            ? `${(review.profiles as any).first_name} ${(review.profiles as any).last_name}`
+                          {review.profiles?.first_name && review.profiles?.last_name
+                            ? `${review.profiles.first_name} ${review.profiles.last_name}`
                             : 'Anonymous User'}
                         </span>
                         <div className="flex items-center">
