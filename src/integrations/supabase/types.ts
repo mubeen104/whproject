@@ -292,11 +292,15 @@ export type Database = {
       }
       categories: {
         Row: {
+          banner_image_url: string | null
+          color_scheme: string | null
           created_at: string
           description: string | null
+          icon_name: string | null
           id: string
           image_url: string | null
           is_active: boolean | null
+          is_featured: boolean | null
           name: string
           parent_id: string | null
           slug: string
@@ -304,11 +308,15 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          banner_image_url?: string | null
+          color_scheme?: string | null
           created_at?: string
           description?: string | null
+          icon_name?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_featured?: boolean | null
           name: string
           parent_id?: string | null
           slug: string
@@ -316,11 +324,15 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          banner_image_url?: string | null
+          color_scheme?: string | null
           created_at?: string
           description?: string | null
+          icon_name?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_featured?: boolean | null
           name?: string
           parent_id?: string | null
           slug?: string
