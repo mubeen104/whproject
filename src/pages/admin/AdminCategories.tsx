@@ -21,6 +21,10 @@ interface Category {
   is_active: boolean;
   sort_order: number;
   created_at: string;
+  is_featured?: boolean;
+  banner_image_url?: string;
+  color_scheme?: string;
+  icon_name?: string;
 }
 
 export default function AdminCategories() {
@@ -31,7 +35,11 @@ export default function AdminCategories() {
     name: '',
     description: '',
     image_url: '',
+    banner_image_url: '',
+    color_scheme: 'from-green-400 to-green-600',
+    icon_name: '',
     is_active: true,
+    is_featured: false,
     sort_order: ''
   });
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -128,7 +136,11 @@ export default function AdminCategories() {
       name: '',
       description: '',
       image_url: '',
+      banner_image_url: '',
+      color_scheme: 'from-green-400 to-green-600',
+      icon_name: '',
       is_active: true,
+      is_featured: false,
       sort_order: ''
     });
     setImagePreview(null);
@@ -140,7 +152,11 @@ export default function AdminCategories() {
       name: category.name,
       description: category.description || '',
       image_url: category.image_url || '',
+      banner_image_url: category.banner_image_url || '',
+      color_scheme: category.color_scheme || 'from-green-400 to-green-600',
+      icon_name: category.icon_name || '',
       is_active: category.is_active,
+      is_featured: category.is_featured || false,
       sort_order: category.sort_order.toString()
     });
     setImagePreview(category.image_url || null);
@@ -154,7 +170,11 @@ export default function AdminCategories() {
       name: formData.name,
       description: formData.description,
       image_url: formData.image_url,
+      banner_image_url: formData.banner_image_url,
+      color_scheme: formData.color_scheme,
+      icon_name: formData.icon_name,
       is_active: formData.is_active,
+      is_featured: formData.is_featured,
       sort_order: parseInt(formData.sort_order) || 0
     };
 
@@ -356,6 +376,36 @@ export default function AdminCategories() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="banner_image_url">Banner Image URL (for category page)</Label>
+                  <Input
+                    id="banner_image_url"
+                    value={formData.banner_image_url}
+                    onChange={(e) => setFormData({ ...formData, banner_image_url: e.target.value })}
+                    placeholder="https://example.com/banner.jpg"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="color_scheme">Color Scheme (Tailwind gradient classes)</Label>
+                  <Input
+                    id="color_scheme"
+                    value={formData.color_scheme}
+                    onChange={(e) => setFormData({ ...formData, color_scheme: e.target.value })}
+                    placeholder="from-green-400 to-green-600"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="icon_name">Icon Name (optional)</Label>
+                  <Input
+                    id="icon_name"
+                    value={formData.icon_name}
+                    onChange={(e) => setFormData({ ...formData, icon_name: e.target.value })}
+                    placeholder="leaf, coffee, sparkles, etc."
+                  />
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="sort_order">Sort Order</Label>
                   <Input
                     id="sort_order"
@@ -373,6 +423,15 @@ export default function AdminCategories() {
                     onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
                   />
                   <Label htmlFor="is_active" className="text-sm font-medium">Active Category</Label>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <Switch
+                    id="is_featured"
+                    checked={formData.is_featured}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
+                  />
+                  <Label htmlFor="is_featured" className="text-sm font-medium">Featured on Homepage</Label>
                 </div>
 
                 <div className="flex justify-end space-x-3 pt-4">

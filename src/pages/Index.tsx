@@ -6,6 +6,7 @@ import BestSellingProducts from "@/components/BestSellingProducts";
 import KitsDeals from "@/components/KitsDeals";
 import NewArrivals from "@/components/NewArrivals";
 import Categories from "@/components/Categories";
+import FeaturedCategories from "@/components/FeaturedCategories";
 import FeaturedBlogPosts from "@/components/blog/FeaturedBlogPosts";
 import HomepageTestimonials from "@/components/HomepageTestimonials";
 import Footer from "@/components/Footer";
@@ -83,6 +84,9 @@ const Index = () => {
           <h1 className="sr-only">Premium Organic Herbal Products & Natural Wellness Solutions - New Era Herbals</h1>
           <Hero />
           <div className="animate-fade-in">
+            <FeaturedCategories />
+          </div>
+          <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
             <FeaturedProducts />
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
