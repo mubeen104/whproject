@@ -177,7 +177,7 @@ const Categories = () => {
                       </p>
 
                       <Button variant="outline" className="w-full group border-2 border-primary/20 text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary hover:scale-105 transition-all duration-300 font-semibold text-xs sm:text-sm py-2 sm:py-2.5" onClick={() => {
-                        navigate(`/shop?category=${category.slug}`);
+                        navigate(`/category/${category.slug}`);
                         window.scrollTo({
                           top: 0,
                           behavior: 'smooth'
