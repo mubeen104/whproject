@@ -1,12 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import FeaturedProducts from "@/components/FeaturedProducts";
 import BestSellingProducts from "@/components/BestSellingProducts";
 import KitsDeals from "@/components/KitsDeals";
 import NewArrivals from "@/components/NewArrivals";
 import Categories from "@/components/Categories";
-import FeaturedCategories from "@/components/FeaturedCategories";
 import FeaturedBlogPosts from "@/components/blog/FeaturedBlogPosts";
 import HomepageTestimonials from "@/components/HomepageTestimonials";
 import Footer from "@/components/Footer";
@@ -82,29 +80,29 @@ const Index = () => {
         <Header />
         <main className="space-y-16">
           <h1 className="sr-only">Premium Organic Herbal Products & Natural Wellness Solutions - New Era Herbals</h1>
+          {/* 1. Hero Slides */}
           <Hero />
-          <div className="animate-fade-in">
-            <FeaturedCategories />
-          </div>
+          {/* 2. Best Selling Products */}
           <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <FeaturedProducts />
-          </div>
-          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <BestSellingProducts />
           </div>
-          <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <KitsDeals />
-          </div>
-          <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <NewArrivals />
-          </div>
-          <div className="animate-fade-in" style={{ animationDelay: '0.8s' }}>
+          {/* 3. Categories (merged - slider design with all categories) */}
+          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <Categories />
           </div>
-          <div className="animate-fade-in" style={{ animationDelay: '1s' }}>
+          {/* 4. Featured Kits */}
+          <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <KitsDeals />
+          </div>
+          {/* 5. New Arrivals */}
+          <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <NewArrivals />
+          </div>
+          {/* Additional Content */}
+          <div className="animate-fade-in" style={{ animationDelay: '0.5s' }}>
             <FeaturedBlogPosts />
           </div>
-          <div className="animate-fade-in" style={{ animationDelay: '1.2s' }}>
+          <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
             <HomepageTestimonials />
           </div>
         </main>
