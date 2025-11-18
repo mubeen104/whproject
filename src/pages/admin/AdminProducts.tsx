@@ -422,6 +422,34 @@ export default function AdminProducts() {
     setProductVariants(updatedVariants);
   };
 
+  // Check for duplicate variant names in real-time
+  const getDuplicateVariantIndices = () => {
+    const nameCount = new Map<string, number[]>();
+
+    productVariants.forEach((variant, index) => {
+      const normalizedName = (variant.name || '').toLowerCase().trim();
+      if (normalizedName) {
+        const indices = nameCount.get(normalizedName) || [];
+        indices.push(index);
+        nameCount.set(normalizedName, indices);
+      }
+    });
+
+    // Return indices of all duplicates (names that appear more than once)
+    const duplicateIndices = new Set<number>();
+    nameCount.forEach((indices) => {
+      if (indices.length > 1) {
+        indices.forEach(idx => duplicateIndices.add(idx));
+      }
+    });
+
+    return duplicateIndices;
+  };
+
+  const isDuplicateVariant = (index: number) => {
+    return getDuplicateVariantIndices().has(index);
+  };
+
   const uploadVariantFile = async (file: File, index: number) => {
     try {
       const updatedVariants = [...productVariants];
@@ -727,11 +755,21 @@ export default function AdminProducts() {
                         </div>
                     ) : (
                       <div className="space-y-4">
-                        {productVariants.map((variant, index) => (
-                          <Card key={index} className="border-l-4 border-l-primary">
+                        {productVariants.map((variant, index) => {
+                          const isDuplicate = isDuplicateVariant(index);
+                          return (
+                          <Card key={index} className={`border-l-4 ${isDuplicate ? 'border-l-red-500 bg-red-50 dark:bg-red-950' : 'border-l-primary'}`}>
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between mb-4">
-                                <h4 className="font-medium">Variant {index + 1}</h4>
+                                <div className="flex items-center space-x-2">
+                                  <h4 className="font-medium">Variant {index + 1}</h4>
+                                  {isDuplicate && (
+                                    <Badge variant="destructive" className="text-xs">
+                                      <AlertTriangle className="h-3 w-3 mr-1" />
+                                      Duplicate Name
+                                    </Badge>
+                                  )}
+                                </div>
                                 <Button
                                   type="button"
                                   variant="outline"
@@ -821,7 +859,27 @@ export default function AdminProducts() {
                               </div>
                             </CardContent>
                           </Card>
-                        ))}
+                        );
+                        })}
+
+                        {getDuplicateVariantIndices().size > 0 && (
+                          <Card className="border-red-200 bg-red-50 dark:bg-red-950 dark:border-red-800">
+                            <CardContent className="p-4">
+                              <div className="flex items-start space-x-3">
+                                <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
+                                <div>
+                                  <h4 className="font-medium text-red-800 dark:text-red-200 mb-1">
+                                    Duplicate Variant Names Detected
+                                  </h4>
+                                  <p className="text-sm text-red-700 dark:text-red-300">
+                                    Multiple variants have the same name. Each variant must have a unique name.
+                                    Please rename or remove duplicate variants before saving.
+                                  </p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
                       </div>
                       )}
                     </CardContent>

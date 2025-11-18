@@ -18,17 +18,42 @@ export const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
   selectedVariant
 }) => {
   const { currency } = useStoreSettings();
-  
+
+  // Client-side deduplication - remove duplicates by name (case-insensitive)
+  const deduplicateVariants = (variantList: ProductVariant[]): ProductVariant[] => {
+    const seen = new Map<string, ProductVariant>();
+    const deduplicated: ProductVariant[] = [];
+
+    for (const variant of variantList) {
+      const normalizedName = variant.name.toLowerCase().trim();
+
+      if (!seen.has(normalizedName)) {
+        seen.set(normalizedName, variant);
+        deduplicated.push(variant);
+      }
+    }
+
+    return deduplicated;
+  };
+
+  const uniqueVariants = React.useMemo(() => {
+    return deduplicateVariants(variants || []);
+  }, [variants]);
+
   // For simple variant selection, we'll just show a list of variant buttons
   useEffect(() => {
     // Auto-select first variant if none selected and variants exist
-    if (!selectedVariant && variants && variants.length > 0) {
-      onVariantChange(variants[0]);
+    if (!selectedVariant && uniqueVariants && uniqueVariants.length > 0) {
+      onVariantChange(uniqueVariants[0]);
     }
-  }, [variants, selectedVariant, onVariantChange]);
+  }, [uniqueVariants, selectedVariant, onVariantChange]);
 
-  if (!variants || variants.length <= 1) {
-    return null; // Don't show selector if only one or no variants
+  if (!uniqueVariants || uniqueVariants.length === 0) {
+    return null; // Don't show selector if no variants
+  }
+
+  if (uniqueVariants.length === 1) {
+    return null; // Don't show selector if only one variant
   }
 
   return (
@@ -36,9 +61,9 @@ export const ProductVariantSelector: React.FC<ProductVariantSelectorProps> = ({
       <Label className="text-sm font-medium">
         Choose Variant
       </Label>
-      
+
       <div className="grid grid-cols-2 gap-2">
-        {variants.map((variant) => {
+        {uniqueVariants.map((variant) => {
           const isSelected = selectedVariant?.id === variant.id;
           const isAvailable = (variant.inventory_quantity || 0) > 0;
 

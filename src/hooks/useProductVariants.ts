@@ -47,7 +47,22 @@ export const useProductVariants = (productId: string) => {
         throw error;
       }
 
-      return (data || []) as ProductVariant[];
+      // Client-side deduplication as extra safety layer
+      // Remove duplicates by name (case-insensitive) - keep the first occurrence
+      const variants = (data || []) as ProductVariant[];
+      const seen = new Map<string, ProductVariant>();
+      const deduplicatedVariants: ProductVariant[] = [];
+
+      for (const variant of variants) {
+        const normalizedName = variant.name.toLowerCase().trim();
+
+        if (!seen.has(normalizedName)) {
+          seen.set(normalizedName, variant);
+          deduplicatedVariants.push(variant);
+        }
+      }
+
+      return deduplicatedVariants;
     },
     enabled: !!productId,
   });
@@ -58,11 +73,22 @@ export const useCreateProductVariant = () => {
 
   return useMutation({
     mutationFn: async (variant: Omit<ProductVariant, 'id' | 'created_at' | 'updated_at' | 'product_variant_images'>) => {
+      // Normalize variant name before checking/inserting
+      const normalizedVariant = {
+        ...variant,
+        name: variant.name.trim()
+      };
+
+      // Validate variant name is not empty
+      if (!normalizedVariant.name || normalizedVariant.name.length < 2) {
+        throw new Error('Variant name must be at least 2 characters long.');
+      }
+
       // Prevent duplicate variants by name, price and options for the same product
       const { data: existing, error: checkError } = await supabase
         .from('product_variants')
-        .select('id, name, price, variant_options')
-        .eq('product_id', variant.product_id);
+        .select('id, name, price, variant_options, sku')
+        .eq('product_id', normalizedVariant.product_id);
 
       if (checkError) {
         throw checkError;
@@ -70,20 +96,20 @@ export const useCreateProductVariant = () => {
 
       if (existing && existing.length > 0) {
         // Check for exact match by name (case-insensitive)
-        const nameMatch = existing.find(v => 
-          v.name.toLowerCase().trim() === variant.name.toLowerCase().trim()
+        const nameMatch = existing.find(v =>
+          v.name.toLowerCase().trim() === normalizedVariant.name.toLowerCase()
         );
-        
+
         if (nameMatch) {
-          throw new Error('A variant with this name already exists for this product.');
+          throw new Error(`A variant with the name "${normalizedVariant.name}" already exists for this product.`);
         }
 
         // Check for near-duplicate (same price and similar options)
-        const priceMatch = existing.find(v => 
-          Math.abs(v.price - variant.price) < 0.01 && 
-          JSON.stringify(v.variant_options || {}) === JSON.stringify(variant.variant_options || {})
+        const priceMatch = existing.find(v =>
+          Math.abs(v.price - normalizedVariant.price) < 0.01 &&
+          JSON.stringify(v.variant_options || {}) === JSON.stringify(normalizedVariant.variant_options || {})
         );
-        
+
         if (priceMatch) {
           throw new Error('A variant with the same price and options already exists for this product.');
         }
@@ -91,11 +117,20 @@ export const useCreateProductVariant = () => {
 
       const { data, error } = await supabase
         .from('product_variants')
-        .insert(variant)
+        .insert(normalizedVariant)
         .select()
         .single();
 
       if (error) {
+        // Handle unique constraint violations with user-friendly messages
+        if (error.code === '23505') {
+          if (error.message.includes('idx_product_variants_unique_name_per_product')) {
+            throw new Error(`A variant with this name already exists for this product.`);
+          }
+          if (error.message.includes('idx_product_variants_unique_sku')) {
+            throw new Error(`A variant with this SKU already exists.`);
+          }
+        }
         throw error;
       }
 
@@ -103,6 +138,7 @@ export const useCreateProductVariant = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['product-variants', variables.product_id] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
     },
   });
 };
