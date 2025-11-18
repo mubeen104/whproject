@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePixelTracking } from "@/hooks/usePixelTracking";
 import Header from "@/components/Header";
+import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import Footer from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -368,6 +369,7 @@ const Checkout = () => {
     return (
       <>
         <Header />
+        <Breadcrumbs />
         <div className="min-h-screen bg-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="text-center py-16">
@@ -389,6 +391,7 @@ const Checkout = () => {
   return (
     <>
       <Header />
+      <Breadcrumbs />
       <div className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}

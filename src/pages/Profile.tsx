@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save, User, ArrowLeft, MapPin } from "lucide-react";
 import Header from "@/components/Header";
 import AddressManager from "@/components/AddressManager";
+import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 
 interface UserProfile {
   id: string;
@@ -143,6 +144,7 @@ const Profile = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
+        <Breadcrumbs />
         <div className="max-w-2xl mx-auto px-4 py-16">
           <Card>
             <CardContent className="pt-6">
@@ -159,6 +161,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <Breadcrumbs />
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="mb-6">
           <Button

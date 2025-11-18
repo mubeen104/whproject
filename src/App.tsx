@@ -58,7 +58,6 @@ const App = () => (
           <BrowserRouter>
             <ScrollToTop />
             <PixelTracker />
-            <Breadcrumbs />
             <WhatsAppButton />
             <MobileBottomNav />
           <Routes>

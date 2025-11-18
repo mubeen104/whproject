@@ -21,6 +21,7 @@ import { useProductRatings } from '@/hooks/useProductRatings';
 import { ProductRating } from '@/components/ProductRating';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 const PRODUCTS_PER_PAGE = 12;
 
@@ -337,6 +338,7 @@ const Category = () => {
 
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
+        <Breadcrumbs />
 
         {/* Hero Section */}
         <div className="relative h-96 overflow-hidden">

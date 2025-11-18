@@ -7,6 +7,7 @@ import { ProductVariantSelector } from '@/components/ProductVariantSelector';
 import { ProductSchema } from '@/components/ProductSchema';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -233,10 +234,11 @@ const ProductDetail = () => {
   return (
     <>
       <ProductSchema product={product} reviews={reviews} selectedVariant={selectedVariant} />
-      
+
       <div className="min-h-screen bg-background" itemScope itemType="https://schema.org/Product">
         <Header />
-      
+        <Breadcrumbs />
+
       <main className="container mx-auto px-4 py-8">
         {/* Enhanced microdata for Meta Pixel auto-catalog sync */}
         <meta itemProp="sku" content={product.sku || product.id} />

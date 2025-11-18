@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag, ArrowLeft, Package } from "lucide-react";
 import Header from "@/components/Header";
+import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 interface Order {
   id: string;
   order_number: string;
@@ -113,6 +114,7 @@ const Orders = () => {
   if (!user) {
     return <div className="min-h-screen bg-background">
         <Header />
+        <Breadcrumbs />
         <div className="max-w-4xl mx-auto px-4 py-16">
           <Card>
             <CardContent className="pt-6">
@@ -126,6 +128,7 @@ const Orders = () => {
   }
   return <div className="min-h-screen bg-background">
       <Header />
+      <Breadcrumbs />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-6">
           <Button variant="ghost" onClick={() => window.history.back()} className="mb-4">
