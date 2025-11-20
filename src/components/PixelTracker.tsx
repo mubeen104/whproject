@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useEnabledPixels } from '@/hooks/useAdvertisingPixels';
 import { useCatalogExport } from '@/hooks/useCatalogExport';
+import { pixelManager } from '@/utils/pixelManager';
+import { eventDeduplication } from '@/utils/eventDeduplication';
 
 declare global {
   interface Window {
@@ -33,17 +35,19 @@ export const PixelTracker = () => {
   const lastPageView = useRef<string>('');
 
   useEffect(() => {
-    if (isLoading || initRef.current) return;
+    if (isLoading) return;
 
     window.dataLayer = window.dataLayer || [];
 
     pixels.forEach(pixel => {
-      if (pixel.is_enabled) {
+      if (pixel.is_enabled && !pixelManager.isLoaded(pixel.platform, pixel.pixel_id)) {
         loadPixel(pixel.platform, pixel.pixel_id);
       }
     });
 
-    initRef.current = true;
+    if (!initRef.current && pixels.length > 0) {
+      initRef.current = true;
+    }
   }, [pixels, isLoading]);
 
   useEffect(() => {
@@ -51,19 +55,27 @@ export const PixelTracker = () => {
 
     window.catalogData = catalogData;
 
-    const validProducts = catalogData
-      .filter(p => (p.sku || p.id) && !isNaN(parseFloat(String(p.price))))
-      .slice(0, 50);
+    // Wait for all pixels to be ready before syncing catalog
+    const syncWhenReady = async () => {
+      const validProducts = catalogData
+        .filter(p => (p.sku || p.id) && !isNaN(parseFloat(String(p.price))))
+        .slice(0, 50);
 
-    if (validProducts.length === 0) return;
+      if (validProducts.length === 0) return;
 
-    setTimeout(() => {
-      pixels.forEach(pixel => {
+      for (const pixel of pixels) {
         if (pixel.is_enabled) {
-          syncCatalog(pixel.platform, validProducts);
+          try {
+            await pixelManager.waitForReady(pixel.platform, pixel.pixel_id, 5000);
+            syncCatalog(pixel.platform, validProducts);
+          } catch (error) {
+            console.warn(`Failed to sync catalog for ${pixel.platform}:`, error);
+          }
         }
-      });
-    }, 1000);
+      }
+    };
+
+    syncWhenReady();
   }, [catalogData, catalogLoading, pixels]);
 
   useEffect(() => {
@@ -74,9 +86,8 @@ export const PixelTracker = () => {
 
     lastPageView.current = currentPath;
 
-    setTimeout(() => {
-      trackPageView();
-    }, 500);
+    // Track PageView immediately (no delay)
+    trackPageView();
   }, [location]);
 
   return null;
@@ -84,17 +95,26 @@ export const PixelTracker = () => {
 
 function loadPixel(platform: string, pixelId: string) {
   try {
+    pixelManager.markAsLoaded(platform as any, pixelId);
+
     switch (platform) {
       case 'google_ads':
         if (!window.gtag) {
           const script = document.createElement('script');
           script.async = true;
           script.src = `https://www.googletagmanager.com/gtag/js?id=${pixelId}`;
+          script.onload = () => {
+            window.gtag = function() { window.dataLayer!.push(arguments); };
+            window.gtag('js', new Date());
+            window.gtag('config', pixelId);
+            pixelManager.markAsReady(platform as any, pixelId);
+          };
+          script.onerror = () => {
+            pixelManager.markAsError(platform as any, pixelId, 'Failed to load script');
+          };
           document.head.appendChild(script);
-
-          window.gtag = function() { window.dataLayer!.push(arguments); };
-          window.gtag('js', new Date());
-          window.gtag('config', pixelId);
+        } else {
+          pixelManager.markAsReady(platform as any, pixelId);
         }
         break;
 
@@ -113,12 +133,25 @@ function loadPixel(platform: string, pixelId: string) {
           `;
           document.head.appendChild(script);
 
-          setTimeout(() => {
+          // Wait for fbq to be available
+          const checkFbq = setInterval(() => {
             if (window.fbq) {
+              clearInterval(checkFbq);
               window.fbq('init', pixelId);
-              window.fbq('track', 'PageView');
+              // Don't track PageView here - let route change handler do it
+              pixelManager.markAsReady(platform as any, pixelId);
             }
-          }, 100);
+          }, 50);
+
+          // Timeout after 5 seconds
+          setTimeout(() => {
+            clearInterval(checkFbq);
+            if (!window.fbq) {
+              pixelManager.markAsError(platform as any, pixelId, 'Initialization timeout');
+            }
+          }, 5000);
+        } else {
+          pixelManager.markAsReady(platform as any, pixelId);
         }
         break;
 
@@ -129,10 +162,18 @@ function loadPixel(platform: string, pixelId: string) {
             !function (w, d, t) {
               w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
               ttq.load('${pixelId}');
-              ttq.page();
             }(window, document, 'ttq');
           `;
           document.head.appendChild(script);
+
+          // Wait for ttq to be available
+          setTimeout(() => {
+            if (window.ttq) {
+              pixelManager.markAsReady(platform as any, pixelId);
+            }
+          }, 1000);
+        } else {
+          pixelManager.markAsReady(platform as any, pixelId);
         }
         break;
 
@@ -152,6 +193,9 @@ function loadPixel(platform: string, pixelId: string) {
             })(window.lintrk);
           `;
           document.head.appendChild(script);
+          setTimeout(() => pixelManager.markAsReady(platform as any, pixelId), 1000);
+        } else {
+          pixelManager.markAsReady(platform as any, pixelId);
         }
         break;
 
@@ -165,6 +209,9 @@ function loadPixel(platform: string, pixelId: string) {
             twq('config','${pixelId}');
           `;
           document.head.appendChild(script);
+          setTimeout(() => pixelManager.markAsReady(platform as any, pixelId), 1000);
+        } else {
+          pixelManager.markAsReady(platform as any, pixelId);
         }
         break;
 
@@ -181,6 +228,9 @@ function loadPixel(platform: string, pixelId: string) {
             pintrk('load', '${pixelId}');
           `;
           document.head.appendChild(script);
+          setTimeout(() => pixelManager.markAsReady(platform as any, pixelId), 1000);
+        } else {
+          pixelManager.markAsReady(platform as any, pixelId);
         }
         break;
 
@@ -197,6 +247,9 @@ function loadPixel(platform: string, pixelId: string) {
             snaptr('init', '${pixelId}');
           `;
           document.head.appendChild(script);
+          setTimeout(() => pixelManager.markAsReady(platform as any, pixelId), 1000);
+        } else {
+          pixelManager.markAsReady(platform as any, pixelId);
         }
         break;
 
@@ -206,8 +259,13 @@ function loadPixel(platform: string, pixelId: string) {
           const script = document.createElement('script');
           script.src = '//bat.bing.com/bat.js';
           script.async = true;
+          script.onload = () => {
+            window.uetq.push('create', { tid: pixelId });
+            pixelManager.markAsReady(platform as any, pixelId);
+          };
           document.head.appendChild(script);
-          window.uetq.push('create', { tid: pixelId });
+        } else {
+          pixelManager.markAsReady(platform as any, pixelId);
         }
         break;
 
@@ -219,6 +277,9 @@ function loadPixel(platform: string, pixelId: string) {
             rdt('init','${pixelId}');
           `;
           document.head.appendChild(script);
+          setTimeout(() => pixelManager.markAsReady(platform as any, pixelId), 1000);
+        } else {
+          pixelManager.markAsReady(platform as any, pixelId);
         }
         break;
 
@@ -230,6 +291,9 @@ function loadPixel(platform: string, pixelId: string) {
             qp('init', '${pixelId}');
           `;
           document.head.appendChild(script);
+          setTimeout(() => pixelManager.markAsReady(platform as any, pixelId), 1000);
+        } else {
+          pixelManager.markAsReady(platform as any, pixelId);
         }
         break;
     }
@@ -240,19 +304,16 @@ function loadPixel(platform: string, pixelId: string) {
 
 function syncCatalog(platform: string, products: any[]) {
   try {
+    // Use view_item_list event instead of ViewContent to avoid conflicts
     switch (platform) {
       case 'meta_pixel':
         if (window.fbq) {
-          window.fbq('track', 'ViewContent', {
+          // Send catalog data as custom event to avoid conflicts
+          window.fbq('trackCustom', 'CatalogSync', {
             content_type: 'product_group',
             content_ids: products.map(p => String(p.sku || p.id)),
-            contents: products.map(p => ({
-              id: String(p.sku || p.id),
-              quantity: 1,
-              item_price: parseFloat(p.price)
-            })),
-            currency: products[0]?.currency || 'PKR',
-            value: products.reduce((sum, p) => sum + parseFloat(p.price), 0)
+            num_items: products.length,
+            currency: products[0]?.currency || 'PKR'
           });
         }
         break;
@@ -290,23 +351,34 @@ function syncCatalog(platform: string, products: any[]) {
 }
 
 function trackPageView() {
-  if (window.gtag) {
-    window.gtag('event', 'page_view', {
-      page_title: document.title,
-      page_location: window.location.href,
-      page_path: window.location.pathname
-    });
+  const pageData = {
+    page_title: document.title,
+    page_location: window.location.href,
+    page_path: window.location.pathname
+  };
+
+  // Check deduplication
+  if (!eventDeduplication.shouldTrack('page_view', pageData)) {
+    return;
   }
 
-  if (window.fbq) window.fbq('track', 'PageView');
-  if (window.ttq) window.ttq.page();
-  if (window.twq) window.twq('track', 'PageView');
-  if (window.pintrk) window.pintrk('page');
-  if (window.snaptr) window.snaptr('track', 'PAGE_VIEW');
-  if (window.lintrk) window.lintrk('track', { conversion_id: 'pageview' });
-  if (window.uetq) window.uetq.push('event', 'page_view', {});
-  if (window.rdt) window.rdt('track', 'PageVisit');
-  if (window.qp) window.qp('track', 'ViewContent');
+  try {
+    if (window.gtag) {
+      window.gtag('event', 'page_view', pageData);
+    }
+
+    if (window.fbq) window.fbq('track', 'PageView');
+    if (window.ttq) window.ttq.page();
+    if (window.twq) window.twq('track', 'PageView');
+    if (window.pintrk) window.pintrk('page');
+    if (window.snaptr) window.snaptr('track', 'PAGE_VIEW');
+    if (window.lintrk) window.lintrk('track', { conversion_id: 'page_view' });
+    if (window.uetq) window.uetq.push('event', 'page_view', {});
+    if (window.rdt) window.rdt('track', 'PageVisit');
+    if (window.qp) window.qp('track', 'ViewContent');
+  } catch (error) {
+    console.warn('Error tracking PageView:', error);
+  }
 }
 
 export default PixelTracker;

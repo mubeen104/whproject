@@ -1,9 +1,13 @@
 import { useCallback } from 'react';
 import { useEnabledPixels } from './useAdvertisingPixels';
 import { trackPixelEvent } from './usePixelPerformance';
+import { eventDeduplication } from '@/utils/eventDeduplication';
+import { standardizeProductData } from '@/utils/productIdResolver';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const usePixelTracking = () => {
   const { data: enabledPixels } = useEnabledPixels();
+  const { user } = useAuth();
 
   const getSessionId = () => {
     let sessionId = sessionStorage.getItem('pixel_session_id');
@@ -25,6 +29,11 @@ export const usePixelTracking = () => {
     // Validate input data
     if (!productData.product_id || !productData.name || typeof productData.price !== 'number' || isNaN(productData.price)) {
       console.warn('Invalid product data for ViewContent event:', productData);
+      return;
+    }
+
+    // Check deduplication
+    if (!eventDeduplication.shouldTrack('view_content', productData)) {
       return;
     }
 
@@ -92,6 +101,7 @@ export const usePixelTracking = () => {
           eventValue: productData.price,
           currency: productData.currency,
           productId: productData.product_id,
+          userId: user?.id,
           sessionId: getSessionId(),
           metadata: { product_name: productData.name, category: productData.category, brand: productData.brand }
         }).catch(() => {});
@@ -122,6 +132,16 @@ export const usePixelTracking = () => {
     }
 
     const totalValue = productData.price * productData.quantity;
+
+    // Check deduplication with a shorter TTL (3 seconds) since users might add same item multiple times
+    const originalTTL = 5000;
+    eventDeduplication.setTTL(3000);
+    const shouldTrack = eventDeduplication.shouldTrack('add_to_cart', productData);
+    eventDeduplication.setTTL(originalTTL);
+
+    if (!shouldTrack) {
+      return;
+    }
 
     try {
       if (window.gtag) {
@@ -179,6 +199,7 @@ export const usePixelTracking = () => {
           eventValue: totalValue,
           currency: productData.currency,
           productId: productData.product_id,
+          userId: user?.id,
           sessionId: getSessionId(),
           metadata: { product_name: productData.name, quantity: productData.quantity }
         }).catch(() => {});
@@ -282,6 +303,7 @@ export const usePixelTracking = () => {
           eventType: 'initiate_checkout',
           eventValue: checkoutData.value,
           currency: checkoutData.currency,
+          userId: user?.id,
           sessionId: getSessionId(),
           metadata: { num_items: validItems.length }
         }).catch(() => {});
@@ -337,6 +359,12 @@ export const usePixelTracking = () => {
       return;
     }
 
+    // Check transaction deduplication - this is critical for purchases
+    if (!eventDeduplication.trackPurchase(orderData.order_id, orderData)) {
+      console.log(`Purchase event for order ${orderData.order_id} already tracked`);
+      return;
+    }
+
     try {
       if (window.gtag) {
         window.gtag('event', 'purchase', {
@@ -372,20 +400,26 @@ export const usePixelTracking = () => {
       }
 
       if (window.ttq) {
-        window.ttq.track('PlaceAnOrder', {
+        window.ttq.track('CompletePayment', {
           contents: validItems.map(i => ({
             content_id: i.product_id,
             content_name: i.name,
             price: i.price,
             quantity: i.quantity
           })),
+          content_type: 'product',
           currency: orderData.currency,
           value: orderData.value
         });
       }
 
       if (window.twq) window.twq('track', 'Purchase', { value: orderData.value, currency: orderData.currency });
-      if (window.pintrk) window.pintrk('track', 'checkout', { value: orderData.value, currency: orderData.currency });
+      if (window.pintrk) window.pintrk('track', 'checkout', {
+        order_id: orderData.order_id,
+        value: orderData.value,
+        order_quantity: validItems.reduce((sum, i) => sum + i.quantity, 0),
+        currency: orderData.currency
+      });
       if (window.snaptr) window.snaptr('track', 'PURCHASE', { transaction_id: orderData.order_id, price: orderData.value, currency: orderData.currency });
       if (window.uetq) window.uetq.push('event', 'purchase', { revenue_value: orderData.value, currency: orderData.currency });
       if (window.rdt) window.rdt('track', 'Purchase', { transactionId: orderData.order_id, value: orderData.value, currency: orderData.currency });
@@ -398,6 +432,7 @@ export const usePixelTracking = () => {
           eventValue: orderData.value,
           currency: orderData.currency,
           orderId: orderData.order_id,
+          userId: user?.id,
           sessionId: getSessionId(),
           metadata: { num_items: validItems.length, shipping: orderData.shipping, tax: orderData.tax }
         }).catch(() => {});
@@ -425,6 +460,7 @@ export const usePixelTracking = () => {
         trackPixelEvent({
           pixelId: pixel.id,
           eventType: 'search',
+          userId: user?.id,
           sessionId: getSessionId(),
           metadata: { search_term: searchTerm }
         }).catch(() => {});
@@ -432,7 +468,7 @@ export const usePixelTracking = () => {
     } catch (error) {
       console.warn('Error tracking Search event:', error);
     }
-  }, [enabledPixels]);
+  }, [enabledPixels, user]);
 
   return {
     trackViewContent,

@@ -20,26 +20,21 @@ export const useShopTracking = (
     if (category && category !== 'all') {
       const validProducts = productData.filter(p => p.id && !isNaN(p.price));
 
+      // Use custom event for catalog browsing to avoid conflicts with product ViewContent
       if (window.fbq) {
-        window.fbq('track', 'ViewContent', {
+        window.fbq('trackCustom', 'ViewCategoryProducts', {
           content_type: 'product_group',
-          content_ids: validProducts.map(p => String(p.id)),
-          contents: validProducts.map(p => ({
-            id: String(p.id),
-            quantity: 1,
-            item_price: p.price
-          })),
+          content_category: category,
           num_items: validProducts.length,
-          currency: 'PKR',
-          value: validProducts.reduce((sum, p) => sum + p.price, 0)
+          currency: 'PKR'
         });
       }
 
       if (window.gtag) {
         window.gtag('event', 'view_item_list', {
+          item_list_id: category,
           item_list_name: category,
           currency: 'PKR',
-          value: productData.reduce((sum, p) => sum + p.price, 0),
           items: productData.map((p, i) => ({
             item_id: p.id,
             item_name: p.name,
@@ -58,15 +53,8 @@ export const useShopTracking = (
         window.fbq('track', 'Search', {
           search_string: searchTerm,
           content_type: 'product',
-          content_ids: validProducts.map(p => String(p.id)),
-          contents: validProducts.map(p => ({
-            id: String(p.id),
-            quantity: 1,
-            item_price: p.price
-          })),
           num_items: validProducts.length,
-          currency: 'PKR',
-          value: validProducts.reduce((sum, p) => sum + p.price, 0)
+          currency: 'PKR'
         });
       }
 
@@ -74,6 +62,20 @@ export const useShopTracking = (
         window.gtag('event', 'search', {
           search_term: searchTerm,
           search_results: products.length
+        });
+      }
+
+      // Track view_item_list for search results
+      if (window.gtag && validProducts.length > 0) {
+        window.gtag('event', 'view_search_results', {
+          search_term: searchTerm,
+          items: productData.slice(0, 20).map((p, i) => ({
+            item_id: p.id,
+            item_name: p.name,
+            item_category: p.category,
+            price: p.price,
+            index: i
+          }))
         });
       }
     }
