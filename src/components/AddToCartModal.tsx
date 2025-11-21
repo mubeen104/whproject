@@ -7,7 +7,7 @@ import { ProductVariantSelector } from '@/components/ProductVariantSelector';
 import { useProductVariants, ProductVariant } from '@/hooks/useProductVariants';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useToast } from '@/hooks/use-toast';
-import { usePixelTracking } from '@/hooks/usePixelTracking';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface Product {
   id: string;
@@ -44,7 +44,7 @@ export const AddToCartModal: React.FC<AddToCartModalProps> = ({
   const { data: variants } = useProductVariants(product?.id || '');
   const { currency } = useStoreSettings();
   const { toast } = useToast();
-  const { trackAddToCart } = usePixelTracking();
+  const { trackAddToCart } = useAnalytics();
 
   // Early return if product is null
   if (!product) {
@@ -94,12 +94,12 @@ export const AddToCartModal: React.FC<AddToCartModalProps> = ({
 
       // Track add to cart event with validated data
       trackAddToCart({
-        product_id: currentId,
+        id: currentId,
         name: product.name,
         price: currentPrice,
-        currency: currency === 'Rs' ? 'PKR' : 'USD',
         quantity: quantity,
-        category: 'Herbal Products'
+        category: 'Herbal Products',
+        currency: currency
       });
 
       const displayName = selectedVariant ?

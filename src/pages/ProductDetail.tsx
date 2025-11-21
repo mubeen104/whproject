@@ -18,9 +18,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Product } from '@/hooks/useProducts';
 import { ReviewForm } from '@/components/reviews/ReviewForm';
 import { ProductImageZoom } from '@/components/ProductImageZoom';
-import { usePixelTracking } from '@/hooks/usePixelTracking';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import RelatedProducts from '@/components/RelatedProducts';
-import { getCurrencyCode, getProductId, getProductSKU, getBrandName } from '@/utils/trackingUtils';
 import { Minus, Plus, Star, Truck, Shield, RotateCcw } from 'lucide-react';
 const useProduct = (slugOrId: string) => {
   return useQuery({
@@ -103,7 +102,7 @@ const ProductDetail = () => {
     currency,
     freeShippingThreshold
   } = useStoreSettings();
-  const { trackViewContent, trackAddToCart } = usePixelTracking();
+  const { trackViewContent, trackAddToCart } = useAnalytics();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
@@ -125,21 +124,15 @@ const ProductDetail = () => {
       const categoryName = product.product_categories?.[0]?.categories?.name || '';
       const currentPrice = selectedVariant?.price || product.price;
 
-      // Use standardized product ID (always UUID)
-      const productId = getProductId(product, selectedVariant);
-      const productSKU = getProductSKU(product, selectedVariant);
-      const currencyCode = getCurrencyCode(currency);
-      const brandName = getBrandName(product);
-
       // Only track if we have valid data
-      if (productId && product.name && typeof currentPrice === 'number' && !isNaN(currentPrice)) {
+      if (product.id && product.name && typeof currentPrice === 'number' && !isNaN(currentPrice)) {
         trackViewContent({
-          product_id: productId,
+          id: product.id,
           name: product.name,
           price: currentPrice,
-          currency: currencyCode,
           category: categoryName,
-          brand: brandName
+          brand: 'New Era Herbals',
+          currency: currency
         });
       }
     }
@@ -199,13 +192,13 @@ const ProductDetail = () => {
 
       // Track add to cart event with validated data
       trackAddToCart({
-        product_id: currentId,
+        id: currentId,
         name: product.name,
         price: currentPrice,
-        currency: currency === 'Rs' ? 'PKR' : 'USD',
         quantity,
         category: categoryName,
-        brand: 'New Era Herbals'
+        brand: 'New Era Herbals',
+        currency: currency
       });
 
       toast({

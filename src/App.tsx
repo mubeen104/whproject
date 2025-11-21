@@ -8,7 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollToTop from "@/components/ScrollToTop";
-import { PixelTracker } from "@/components/PixelTracker";
+import { Analytics } from "@/components/Analytics";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { MobileBottomNav } from "@/components/navigation/MobileBottomNav";
 import { queryClient } from "@/lib/reactQueryClient";
@@ -57,7 +57,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
-            <PixelTracker />
+            <Analytics />
             <WhatsAppButton />
             <MobileBottomNav />
           <Routes>

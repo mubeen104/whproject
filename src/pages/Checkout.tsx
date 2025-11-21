@@ -16,7 +16,7 @@ import CouponInput from "@/components/CouponInput";
 import AddressSelector from "@/components/AddressSelector";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { usePixelTracking } from "@/hooks/usePixelTracking";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import Header from "@/components/Header";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import Footer from "@/components/Footer";
@@ -51,7 +51,7 @@ const Checkout = () => {
   const { taxRate, shippingRate, freeShippingThreshold, currency } = useStoreSettings();
   const { toast } = useToast();
   const { user } = useAuth();
-  const { trackPurchase, trackInitiateCheckout } = usePixelTracking();
+  const { trackPurchase, trackBeginCheckout } = useAnalytics();
   
   // Check for direct product checkout
   const isDirectCheckout = searchParams.get('directProduct') === 'true';
@@ -124,7 +124,7 @@ const Checkout = () => {
   const effectiveCartTotal = isDirectCheckout ? effectiveDirectPrice * directQuantity : cartTotal;
   const effectiveCartCount = isDirectCheckout ? directQuantity : cartCount;
 
-  // Track InitiateCheckout when user lands on checkout page
+  // Track BeginCheckout when user lands on checkout page
   useEffect(() => {
     if (effectiveCartItems.length > 0 && effectiveCartTotal > 0) {
       const discount = appliedCoupon ?
@@ -146,18 +146,14 @@ const Checkout = () => {
           return productId && productName && typeof price === 'number' && !isNaN(price) && item.quantity > 0;
         })
         .map(item => ({
-          product_id: item.product_variants?.sku || item.products?.sku || item.product?.sku || item.product_id,
+          id: item.product_variants?.sku || item.products?.sku || item.product?.sku || item.product_id,
           name: item.products?.name || item.product?.name || 'Unknown Product',
           quantity: item.quantity,
           price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || item.product?.price || 0)
         }));
 
       if (validItems.length > 0 && total > 0) {
-        trackInitiateCheckout({
-          value: total,
-          currency: currency === 'Rs' ? 'PKR' : 'USD',
-          items: validItems
-        });
+        trackBeginCheckout(validItems, total, currency, tax, shipping);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -337,17 +333,19 @@ const Checkout = () => {
       const order = await createOrder.mutateAsync(orderData);
       
       // Track conversion event for advertising pixels with SKU for catalog matching
-      trackPurchase({
-        order_id: order.order_number,
-        value: totalAmount,
-        currency: currency === 'Rs' ? 'PKR' : 'USD',
-        items: effectiveCartItems.map(item => ({
-          product_id: item.product_variants?.sku || item.products?.sku || item.product?.sku || item.product_id, // Priority: variant SKU → parent SKU → UUID
+      trackPurchase(
+        order.order_number,
+        effectiveCartItems.map(item => ({
+          id: item.product_variants?.sku || item.products?.sku || item.product?.sku || item.product_id, // Priority: variant SKU → parent SKU → UUID
           name: item.products?.name || item.product?.name || 'Unknown Product',
           quantity: item.quantity,
           price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || item.product?.price || 0)
-        }))
-      });
+        })),
+        totalAmount,
+        currency,
+        tax,
+        shippingCost
+      );
       
       // Clear cart after successful order (only if not direct checkout)
       if (!isDirectCheckout) {

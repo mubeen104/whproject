@@ -13,8 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { AddToCartModal } from '@/components/AddToCartModal';
 import { useProductRatings } from '@/hooks/useProductRatings';
 import { ProductRating } from '@/components/ProductRating';
-import { usePixelTracking } from '@/hooks/usePixelTracking';
-import { getCurrencyCode } from '@/utils/trackingUtils';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import { RecommendationError } from '@/components/RecommendationError';
 
 interface RelatedProductsProps {
@@ -30,7 +29,7 @@ const RelatedProducts = ({ productId, limit = 6, excludeIds = [] }: RelatedProdu
   const { currency } = useStoreSettings();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { trackViewRecommendation, trackAddRecommendedToCart } = usePixelTracking();
+  const { trackViewContent, trackAddToCart } = useAnalytics();
 
   const [addToCartProduct, setAddToCartProduct] = useState<any>(null);
   const [sessionId] = useState(() => {
@@ -46,24 +45,20 @@ const RelatedProducts = ({ productId, limit = 6, excludeIds = [] }: RelatedProdu
 
   useEffect(() => {
     if (relatedProducts.length > 0) {
-      const currencyCode = getCurrencyCode(currency);
-
       relatedProducts.forEach(product => {
         // Track in database for analytics
         trackRelatedProductView(productId, product.id, sessionId, user?.id);
 
         // Track to advertising pixels
-        trackViewRecommendation({
-          product_id: product.id,
+        trackViewContent({
+          id: product.id,
           name: product.name,
           price: product.price,
-          currency: currencyCode,
-          source: 'product_page',
-          recommendation_score: product.recommendation_score
+          currency: currency
         });
       });
     }
-  }, [relatedProducts, productId, sessionId, user?.id, currency, trackViewRecommendation]);
+  }, [relatedProducts, productId, sessionId, user?.id, currency, trackViewContent]);
 
   const handleAddToCartRequest = (product: any) => {
     setAddToCartProduct(product);
@@ -78,14 +73,12 @@ const RelatedProducts = ({ productId, limit = 6, excludeIds = [] }: RelatedProdu
     // Track to advertising pixels
     const product = relatedProducts.find(p => p.id === relatedProductId);
     if (product) {
-      const currencyCode = getCurrencyCode(currency);
-      trackAddRecommendedToCart({
-        product_id: product.id,
+      trackAddToCart({
+        id: product.id,
         name: product.name,
         price: product.price,
         quantity: quantity,
-        currency: currencyCode,
-        source: 'product_page'
+        currency: currency
       });
     }
   };

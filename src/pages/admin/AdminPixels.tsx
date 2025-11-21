@@ -1,346 +1,207 @@
-import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Trash2, Eye, EyeOff, Settings, BarChart3, Loader2 } from 'lucide-react';
-import { useAdvertisingPixels, PLATFORM_OPTIONS } from '@/hooks/useAdvertisingPixels';
-import { usePixelPerformance } from '@/hooks/usePixelPerformance';
-import { PixelForm } from '@/components/admin/PixelForm';
-import { PixelPerformanceCard } from '@/components/admin/PixelPerformanceCard';
-
-const PLATFORM_ICONS = {
-  google_ads: '🔍',
-  meta_pixel: '📘',
-  tiktok_pixel: '🎵',
-  linkedin_insight: '💼',
-  twitter_pixel: '🐦',
-  pinterest_tag: '📌',
-  snapchat_pixel: '👻',
-  microsoft_advertising: '🅱️',
-  reddit_pixel: '🤖',
-  quora_pixel: '❓'
-};
-
-const PLATFORM_COLORS = {
-  google_ads: 'bg-blue-500',
-  meta_pixel: 'bg-blue-600',
-  tiktok_pixel: 'bg-black',
-  linkedin_insight: 'bg-blue-700',
-  twitter_pixel: 'bg-sky-500',
-  pinterest_tag: 'bg-red-600',
-  snapchat_pixel: 'bg-yellow-400',
-  microsoft_advertising: 'bg-green-600',
-  reddit_pixel: 'bg-orange-500',
-  quora_pixel: 'bg-red-700'
-};
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ExternalLink, TrendingUp, CheckCircle2, ArrowRight } from 'lucide-react';
 
 export default function AdminPixels() {
-  const { pixels, isLoading, updatePixel, deletePixel } = useAdvertisingPixels();
-  const { data: performance, isLoading: isLoadingPerformance } = usePixelPerformance();
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const handleToggleEnabled = async (id: string, currentState: boolean) => {
-    try {
-      await updatePixel.mutateAsync({
-        id,
-        is_enabled: !currentState
-      });
-    } catch (error) {
-      // Error handled in hook
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    setDeletingId(id);
-    try {
-      await deletePixel.mutateAsync(id);
-    } catch (error) {
-      // Error handled in hook
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  const getPlatformLabel = (platform: string) => {
-    return PLATFORM_OPTIONS.find(p => p.value === platform)?.label || platform;
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Loading pixels...</p>
-        </div>
-      </div>
-    );
-  }
+  const gtmId = import.meta.env.VITE_GTM_ID;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Advertising Pixels</h1>
-          <p className="text-muted-foreground">
-            Manage and track performance of your advertising pixels
-          </p>
-        </div>
-        <PixelForm />
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Analytics & Tracking</h1>
+        <p className="text-muted-foreground">
+          Manage advertising pixels and analytics through Google Tag Manager
+        </p>
       </div>
 
-      <Tabs defaultValue="management" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="management" className="gap-2">
-            <Settings className="h-4 w-4" />
-            Pixel Management
-          </TabsTrigger>
-          <TabsTrigger value="performance" className="gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Performance
-          </TabsTrigger>
-        </TabsList>
+      {!gtmId && (
+        <Alert>
+          <TrendingUp className="h-4 w-4" />
+          <AlertTitle>GTM Not Configured</AlertTitle>
+          <AlertDescription>
+            Set the <code>VITE_GTM_ID</code> environment variable to enable Google Tag Manager.
+            See the setup guide below for instructions.
+          </AlertDescription>
+        </Alert>
+      )}
 
-        <TabsContent value="performance" className="space-y-6">
-          {isLoadingPerformance ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      {gtmId && (
+        <Alert>
+          <CheckCircle2 className="h-4 w-4 text-green-600" />
+          <AlertTitle>GTM Active</AlertTitle>
+          <AlertDescription>
+            Google Tag Manager is configured with ID: <code className="font-mono">{gtmId}</code>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Google Tag Manager Setup</CardTitle>
+          <CardDescription>
+            This application uses Google Tag Manager for all analytics and advertising pixel tracking
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Why Google Tag Manager?</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <span>Manage all advertising pixels from one dashboard - no code changes needed</span>
+                </li>
+                <li className="flex gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <span>Add/remove Meta, Google Ads, TikTok, and other pixels without deploying</span>
+                </li>
+                <li className="flex gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <span>Built-in preview mode for debugging</span>
+                </li>
+                <li className="flex gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <span>Better performance and reliability</span>
+                </li>
+              </ul>
             </div>
-          ) : !performance || performance.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Performance Data Yet</h3>
-                <p className="text-muted-foreground">
-                  Pixel tracking data will appear here once events are tracked
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-6">
-              {performance.map((perf) => {
-                const platformIcon = PLATFORM_ICONS[perf.platform as keyof typeof PLATFORM_ICONS] || '📊';
-                const platformColor = PLATFORM_COLORS[perf.platform as keyof typeof PLATFORM_COLORS] || 'bg-gray-600';
 
-                return (
-                  <PixelPerformanceCard
-                    key={perf.pixel_id}
-                    performance={perf}
-                    platformIcon={platformIcon}
-                    platformColor={platformColor}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="management" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Active Pixels</CardTitle>
-              <CardDescription>
-                Configure tracking pixels for major advertising platforms
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {pixels.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground mb-4">No advertising pixels configured</p>
-                  <PixelForm trigger={
-                    <Button>Add Your First Pixel</Button>
-                  } />
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {pixels.map((pixel) => (
-                    <div
-                      key={pixel.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-full ${PLATFORM_COLORS[pixel.platform]} flex items-center justify-center text-white text-lg`}>
-                          {PLATFORM_ICONS[pixel.platform]}
-                        </div>
-
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium">{getPlatformLabel(pixel.platform)}</h3>
-                            <Badge variant={pixel.is_enabled ? "default" : "secondary"}>
-                              {pixel.is_enabled ? 'Active' : 'Inactive'}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            ID: {pixel.pixel_id}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-2">
-                          {pixel.is_enabled ? (
-                            <Eye className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <EyeOff className="h-4 w-4 text-gray-400" />
-                          )}
-                          <Switch
-                            checked={pixel.is_enabled}
-                            onCheckedChange={() => handleToggleEnabled(pixel.id, pixel.is_enabled)}
-                            disabled={updatePixel.isPending}
-                          />
-                        </div>
-
-                        <PixelForm pixel={pixel} />
-
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              disabled={deletingId === pixel.id}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Pixel</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete the {getPlatformLabel(pixel.platform)} pixel?
-                                This action cannot be undone and will stop all tracking for this platform.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDelete(pixel.id)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Platform Guidelines</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">🔍</span>
-                    <h4 className="font-medium">Google Ads</h4>
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-3">Quick Setup Guide</h3>
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
+                    1
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Find your conversion ID in Google Ads → Tools & Settings → Conversions
-                  </p>
+                  <div>
+                    <h4 className="font-medium mb-1">Create GTM Account</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Go to Google Tag Manager and create a new account and container for your website
+                    </p>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href="https://tagmanager.google.com/" target="_blank" rel="noopener noreferrer">
+                        Open GTM <ExternalLink className="ml-2 h-3 w-3" />
+                      </a>
+                    </Button>
+                  </div>
                 </div>
 
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">📘</span>
-                    <h4 className="font-medium">Meta Pixel</h4>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
+                    2
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Find your pixel ID in Meta Business Manager → Events Manager
-                  </p>
+                  <div>
+                    <h4 className="font-medium mb-1">Configure Environment Variable</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Copy your GTM ID (format: GTM-XXXXXXX) and add it to your environment variables
+                    </p>
+                    <pre className="bg-muted p-3 rounded-md text-sm overflow-x-auto">
+                      <code>VITE_GTM_ID=GTM-XXXXXXX</code>
+                    </pre>
+                  </div>
                 </div>
 
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">🎵</span>
-                    <h4 className="font-medium">TikTok Pixel</h4>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
+                    3
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Find your pixel code in TikTok Ads Manager → Assets → Events
-                  </p>
+                  <div>
+                    <h4 className="font-medium mb-1">Add Advertising Pixels in GTM</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      In GTM dashboard, add tags for your advertising platforms (Meta, Google Ads, TikTok, etc.)
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      The application automatically sends standard e-commerce events that GTM will forward to your pixels.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">💼</span>
-                    <h4 className="font-medium">LinkedIn Insight</h4>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
+                    4
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Find your partner ID in LinkedIn Campaign Manager
-                  </p>
-                </div>
-
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">🐦</span>
-                    <h4 className="font-medium">Twitter/X Pixel</h4>
+                  <div>
+                    <h4 className="font-medium mb-1">Test with GTM Preview Mode</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Use GTM's Preview mode to verify all events are firing correctly before publishing
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Find your pixel ID in Twitter Ads Manager
-                  </p>
-                </div>
-
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">📌</span>
-                    <h4 className="font-medium">Pinterest Tag</h4>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Find your tag ID in Pinterest Business → Conversions
-                  </p>
-                </div>
-
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">👻</span>
-                    <h4 className="font-medium">Snapchat Pixel</h4>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Find your pixel ID in Snapchat Ads Manager
-                  </p>
-                </div>
-
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">🅱️</span>
-                    <h4 className="font-medium">Microsoft Advertising</h4>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Find your UET tag ID in Microsoft Advertising
-                  </p>
-                </div>
-
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">🤖</span>
-                    <h4 className="font-medium">Reddit Pixel</h4>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Find your pixel ID in Reddit Ads Manager
-                  </p>
-                </div>
-
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">❓</span>
-                    <h4 className="font-medium">Quora Pixel</h4>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Find your pixel ID in Quora Ads Manager
-                  </p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            </div>
+
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-3">Events Tracked</h3>
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <ArrowRight className="h-4 w-4 text-primary" />
+                    <span className="font-medium text-sm">page_view</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Fired on every page navigation</p>
+                </div>
+
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <ArrowRight className="h-4 w-4 text-primary" />
+                    <span className="font-medium text-sm">view_item</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Product page views</p>
+                </div>
+
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <ArrowRight className="h-4 w-4 text-primary" />
+                    <span className="font-medium text-sm">add_to_cart</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Adding items to cart</p>
+                </div>
+
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <ArrowRight className="h-4 w-4 text-primary" />
+                    <span className="font-medium text-sm">begin_checkout</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Starting checkout process</p>
+                </div>
+
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <ArrowRight className="h-4 w-4 text-primary" />
+                    <span className="font-medium text-sm">purchase</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Completed orders</p>
+                </div>
+
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <ArrowRight className="h-4 w-4 text-primary" />
+                    <span className="font-medium text-sm">search</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Product searches</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-3">Documentation</h3>
+              <div className="flex flex-col gap-2">
+                <Button variant="outline" size="sm" asChild className="justify-start">
+                  <a href="/ANALYTICS_SETUP.md" target="_blank">
+                    Complete Setup Guide <ExternalLink className="ml-2 h-3 w-3" />
+                  </a>
+                </Button>
+                <Button variant="outline" size="sm" asChild className="justify-start">
+                  <a href="https://support.google.com/tagmanager" target="_blank" rel="noopener noreferrer">
+                    GTM Documentation <ExternalLink className="ml-2 h-3 w-3" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

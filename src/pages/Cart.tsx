@@ -14,7 +14,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import CheckoutOptionsModal from "@/components/CheckoutOptionsModal";
-import { usePixelTracking } from "@/hooks/usePixelTracking";
 import CartSuggestions from "@/components/CartSuggestions";
 const Cart = () => {
   const navigate = useNavigate();
