@@ -24,7 +24,65 @@ export interface UseRelatedProductsResult {
   refetch: () => void;
 }
 
-export const useRelatedProducts = (productId: string, limit: number = 6, excludeIds: string[] = []): UseRelatedProductsResult => {
+interface ProductWithRecommendations {
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  compare_price: number | null;
+  inventory_quantity: number;
+  is_best_seller: boolean;
+  is_featured: boolean;
+  image_url: string;
+  image_alt: string;
+  tags: string[] | null;
+  category_ids: string[];
+}
+
+function calculateRecommendationScore(
+  currentProduct: ProductWithRecommendations,
+  candidateProduct: ProductWithRecommendations
+): number {
+  let score = 0;
+
+  // Category match: 10 points per shared category
+  const sharedCategories = currentProduct.category_ids.filter(
+    catId => candidateProduct.category_ids.includes(catId)
+  );
+  score += sharedCategories.length * 10;
+
+  // Price similarity: 8 points if within ±30%
+  const priceRatio = candidateProduct.price / currentProduct.price;
+  if (priceRatio >= 0.7 && priceRatio <= 1.3) {
+    score += 8;
+  }
+
+  // Tag overlap: 6 points per shared tag
+  if (currentProduct.tags && candidateProduct.tags) {
+    const sharedTags = currentProduct.tags.filter(
+      tag => candidateProduct.tags?.includes(tag)
+    );
+    score += sharedTags.length * 6;
+  }
+
+  // Best seller bonus: 5 points
+  if (candidateProduct.is_best_seller) {
+    score += 5;
+  }
+
+  // Featured bonus: 3 points
+  if (candidateProduct.is_featured) {
+    score += 3;
+  }
+
+  return score;
+}
+
+export const useRelatedProducts = (
+  productId: string,
+  limit: number = 6,
+  excludeIds: string[] = []
+): UseRelatedProductsResult => {
   const result = useQuery({
     queryKey: ['related-products', productId, limit, excludeIds],
     queryFn: async (): Promise<RelatedProduct[]> => {
@@ -33,43 +91,87 @@ export const useRelatedProducts = (productId: string, limit: number = 6, exclude
       }
 
       try {
-        // Call with parameters in alphabetical order as separate arguments
-        const { data, error } = await supabase
-          .rpc('get_related_products', {
-            p_exclude_ids: excludeIds,
-            p_limit: limit,
-            p_product_id: productId
-          });
+        // Get current product details
+        const { data: currentProductData, error: currentProductError } = await supabase
+          .from('products_with_recommendations')
+          .select('*')
+          .eq('id', productId)
+          .single();
 
-        if (error) {
-          console.error('Error fetching related products:', error);
-          throw error;
+        if (currentProductError) {
+          console.error('Error fetching current product:', currentProductError);
+          throw currentProductError;
         }
 
-        return data || [];
+        if (!currentProductData) {
+          return [];
+        }
+
+        // Get all other active products
+        let query = supabase
+          .from('products_with_recommendations')
+          .select('*')
+          .neq('id', productId);
+
+        // Exclude specified IDs
+        if (excludeIds.length > 0) {
+          query = query.not('id', 'in', `(${excludeIds.join(',')})`);
+        }
+
+        const { data: candidateProducts, error: candidatesError } = await query;
+
+        if (candidatesError) {
+          console.error('Error fetching candidate products:', candidatesError);
+          throw candidatesError;
+        }
+
+        if (!candidateProducts || candidateProducts.length === 0) {
+          return [];
+        }
+
+        // Calculate scores for all candidates
+        const scoredProducts = candidateProducts.map(candidate => ({
+          id: candidate.id,
+          name: candidate.name,
+          slug: candidate.slug,
+          price: candidate.price,
+          compare_price: candidate.compare_price,
+          inventory_quantity: candidate.inventory_quantity,
+          is_best_seller: candidate.is_best_seller,
+          is_featured: candidate.is_featured,
+          image_url: candidate.image_url,
+          image_alt: candidate.image_alt,
+          recommendation_score: calculateRecommendationScore(
+            currentProductData as ProductWithRecommendations,
+            candidate as ProductWithRecommendations
+          ),
+        }));
+
+        // Filter products with score > 0, sort by score, and limit
+        const topRecommendations = scoredProducts
+          .filter(p => p.recommendation_score > 0)
+          .sort((a, b) => b.recommendation_score - a.recommendation_score)
+          .slice(0, limit);
+
+        return topRecommendations;
       } catch (error) {
         console.error('Unexpected error in useRelatedProducts:', error);
         throw error;
       }
     },
     enabled: !!productId,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     retry: (failureCount, error) => {
-      // Don't retry on validation errors or function not found
       if (error instanceof Error) {
-        if (error.message?.includes('p_product_id is required')) return false;
-        if (error.message?.includes('function not found')) return false;
         if (error.message?.includes('permission denied')) return false;
-        if (error.message?.includes('42703')) return false; // Column does not exist
+        if (error.message?.includes('does not exist')) return false;
       }
-      // Retry on network/database errors up to 3 times
       return failureCount < 3;
     },
-    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff, max 30s
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
     onError: (error) => {
       console.error('Related products query failed:', error);
-      // Global error logging could go here
     }
   });
 
