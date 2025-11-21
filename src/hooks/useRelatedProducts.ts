@@ -34,7 +34,7 @@ export const useRelatedProducts = (productId: string, limit: number = 6, exclude
 
       try {
         const { data, error } = await supabase
-          .rpc('get_related_products', {
+          .rpc('get_related_products_json', {
             p_product_id: productId,
             p_limit: limit,
             p_exclude_ids: excludeIds
