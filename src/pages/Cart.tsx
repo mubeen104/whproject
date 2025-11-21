@@ -15,6 +15,7 @@ import Footer from "@/components/Footer";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import CheckoutOptionsModal from "@/components/CheckoutOptionsModal";
 import { usePixelTracking } from "@/hooks/usePixelTracking";
+import CartSuggestions from "@/components/CartSuggestions";
 const Cart = () => {
   const navigate = useNavigate();
   const {
@@ -179,7 +180,13 @@ const Cart = () => {
               <Button asChild className="h-11 px-8 text-base">
                 <a href="/shop">Continue Shopping</a>
               </Button>
-            </div>) : <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            </div>) : <>
+            {/* Cart Suggestions */}
+            <div className="lg:col-span-3">
+              <CartSuggestions cartItems={cartItems} limit={4} />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {/* Cart Items */}
               <div className="lg:col-span-2 space-y-3 sm:space-y-4">
                 {cartItems?.map(item => <Card key={item.id}>
@@ -282,7 +289,8 @@ const Cart = () => {
                   </CardContent>
                 </Card>
               </div>
-            </div>}
+            </div>
+          </>}
         </div>
       </div>
       <Footer />

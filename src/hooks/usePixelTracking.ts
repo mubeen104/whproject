@@ -470,12 +470,112 @@ export const usePixelTracking = () => {
     }
   }, [enabledPixels, user]);
 
+  const trackViewRecommendation = useCallback((productData: {
+    product_id: string;
+    name: string;
+    price: number;
+    currency: string;
+    source: 'product_page' | 'cart_page';
+    recommendation_score?: number;
+  }) => {
+    if (!productData.product_id || !productData.name) {
+      console.warn('Invalid recommendation data for ViewRecommendation event:', productData);
+      return;
+    }
+
+    const data = {
+      content_id: productData.product_id,
+      content_name: productData.name,
+      currency: productData.currency,
+      value: productData.price,
+      source: productData.source,
+      recommendation_score: productData.recommendation_score
+    };
+
+    try {
+      if (window.gtag) {
+        window.gtag('event', 'view_recommendation', data);
+      }
+
+      if (window.fbq) {
+        window.fbq('trackCustom', 'ViewRecommendation', data);
+      }
+
+      if (window.ttq) {
+        window.ttq.track('ViewRecommendation', data);
+      }
+
+      enabledPixels?.forEach(pixel => {
+        trackPixelEvent({
+          pixelId: pixel.id,
+          eventType: 'view_recommendation',
+          userId: user?.id,
+          sessionId: getSessionId(),
+          metadata: data
+        }).catch(() => {});
+      });
+    } catch (error) {
+      console.warn('Error tracking ViewRecommendation event:', error);
+    }
+  }, [enabledPixels, user]);
+
+  const trackAddRecommendedToCart = useCallback((productData: {
+    product_id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    currency: string;
+    source: 'product_page' | 'cart_page';
+  }) => {
+    if (!productData.product_id || !productData.name) {
+      console.warn('Invalid recommendation data for AddRecommendedToCart event:', productData);
+      return;
+    }
+
+    const data = {
+      content_id: productData.product_id,
+      content_name: productData.name,
+      currency: productData.currency,
+      value: productData.price * productData.quantity,
+      quantity: productData.quantity,
+      source: productData.source
+    };
+
+    try {
+      if (window.gtag) {
+        window.gtag('event', 'add_recommended_to_cart', data);
+      }
+
+      if (window.fbq) {
+        window.fbq('trackCustom', 'AddRecommendedToCart', data);
+      }
+
+      if (window.ttq) {
+        window.ttq.track('AddRecommendedToCart', data);
+      }
+
+      enabledPixels?.forEach(pixel => {
+        trackPixelEvent({
+          pixelId: pixel.id,
+          eventType: 'add_recommended_to_cart',
+          userId: user?.id,
+          sessionId: getSessionId(),
+          metadata: data
+        }).catch(() => {});
+      });
+    } catch (error) {
+      console.warn('Error tracking AddRecommendedToCart event:', error);
+    }
+  }, [enabledPixels, user]);
+
   return {
     trackViewContent,
     trackAddToCart,
     trackInitiateCheckout,
     trackPurchase,
-    trackSearch
+    trackSearch,
+    trackViewRecommendation,
+    trackAddRecommendedToCart
   };
 };
 

@@ -19,6 +19,7 @@ import { Product } from '@/hooks/useProducts';
 import { ReviewForm } from '@/components/reviews/ReviewForm';
 import { ProductImageZoom } from '@/components/ProductImageZoom';
 import { usePixelTracking } from '@/hooks/usePixelTracking';
+import RelatedProducts from '@/components/RelatedProducts';
 import { Minus, Plus, Star, Truck, Shield, RotateCcw } from 'lucide-react';
 const useProduct = (slugOrId: string) => {
   return useQuery({
@@ -515,6 +516,9 @@ const ProductDetail = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Related Products Section */}
+        <RelatedProducts productId={product.id} limit={6} />
       </main>
 
         <Footer />
