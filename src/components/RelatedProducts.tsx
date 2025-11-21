@@ -15,6 +15,7 @@ import { useProductRatings } from '@/hooks/useProductRatings';
 import { ProductRating } from '@/components/ProductRating';
 import { usePixelTracking } from '@/hooks/usePixelTracking';
 import { getCurrencyCode } from '@/utils/trackingUtils';
+import { RecommendationError } from '@/components/RecommendationError';
 
 interface RelatedProductsProps {
   productId: string;
