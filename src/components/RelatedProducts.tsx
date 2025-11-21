@@ -24,7 +24,7 @@ interface RelatedProductsProps {
 }
 
 const RelatedProducts = ({ productId, limit = 6, excludeIds = [] }: RelatedProductsProps) => {
-  const { data: relatedProducts = [], isLoading } = useRelatedProducts(productId, limit, excludeIds);
+  const { data: relatedProducts = [], isLoading, isError, error, refetch } = useRelatedProducts(productId, limit, excludeIds);
   const { addToCart } = useGuestCart();
   const { user } = useAuth();
   const { currency } = useStoreSettings();
