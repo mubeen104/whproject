@@ -47,7 +47,6 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Category from "./pages/Category";
 
-const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
