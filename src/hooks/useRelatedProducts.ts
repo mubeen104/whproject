@@ -33,13 +33,12 @@ export const useRelatedProducts = (productId: string, limit: number = 6, exclude
       }
 
       try {
+        // Call with parameters in alphabetical order as separate arguments
         const { data, error } = await supabase
-          .rpc('get_related_products_json', {
-            params: {
-              p_product_id: productId,
-              p_limit: limit,
-              p_exclude_ids: excludeIds
-            }
+          .rpc('get_related_products', {
+            p_exclude_ids: excludeIds,
+            p_limit: limit,
+            p_product_id: productId
           });
 
         if (error) {
