@@ -22,7 +22,7 @@ interface CartSuggestionsProps {
 }
 
 const CartSuggestions = ({ cartItems, limit = 4 }: CartSuggestionsProps) => {
-  const { data: suggestedProducts = [], isLoading } = useSuggestedCartProducts(cartItems, limit);
+  const { data: suggestedProducts = [], isLoading, isError, error, refetch } = useSuggestedCartProducts(cartItems, limit);
   const { addToCart } = useGuestCart();
   const { user } = useAuth();
   const { currency } = useStoreSettings();
