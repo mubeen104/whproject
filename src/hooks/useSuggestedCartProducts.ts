@@ -45,8 +45,10 @@ export const useSuggestedCartProducts = (cartItems: CartItem[], limit: number = 
       try {
         const { data, error } = await supabase
           .rpc('get_cart_suggestions_json', {
-            p_cart_product_ids: cartProductIds,
-            p_limit: limit
+            params: {
+              p_cart_product_ids: cartProductIds,
+              p_limit: limit
+            }
           });
 
         if (error) {
