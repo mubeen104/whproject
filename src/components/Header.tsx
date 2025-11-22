@@ -43,60 +43,58 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-lg border-b border-border sticky top-0 z-50 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-border/30 shadow-md hover:shadow-lg transition-all duration-300">
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 pointer-events-none"></div>
+      <div className="relative max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Top bar */}
-        <div className="flex items-center justify-between h-16 sm:h-20">
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-4 group">
-            <div className="relative transform transition-all duration-300 hover:scale-105">
-              <div className="bg-primary/5 rounded-xl p-3 shadow-md transition-all duration-300 group-hover:shadow-xl group-hover:bg-primary/10">
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group flex-shrink-0">
+            <div className="relative transform transition-all duration-300 group-hover:scale-110">
+              <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-2.5 shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:from-primary/15 group-hover:to-primary/10 border border-primary/10">
                 <img 
                   src="/logo.png" 
                   alt={`${storeName} Logo`} 
-                  className="h-10 w-auto transition-transform duration-300 group-hover:rotate-12"
+                  className="h-8 sm:h-10 w-auto transition-transform duration-300 group-hover:rotate-6"
                 />
               </div>
             </div>
-            <div className="hidden sm:block">
-              <span className="text-lg sm:text-2xl font-bold text-foreground tracking-tight transition-colors duration-300 group-hover:text-primary">
+            <div className="hidden sm:flex flex-col">
+              <span className="text-base sm:text-xl md:text-2xl font-bold text-foreground tracking-tight transition-colors duration-300 group-hover:text-primary leading-none">
                 {storeName}
               </span>
-              <div className="h-0.5 bg-primary w-0 group-hover:w-full transition-all duration-500"></div>
+              <span className="text-xs md:text-sm text-muted-foreground font-medium">Premium Herbs</span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-1 relative">
+          <nav className="hidden md:flex items-center space-x-1 flex-grow">
             {navigation.map((item) => (
               <div
                 key={item.name}
-                className="relative"
+                className="relative group"
               >
                 {item.hasMegaMenu ? (
                   <div
                     onMouseEnter={() => setIsMegaMenuOpen(true)}
                     onMouseLeave={() => setIsMegaMenuOpen(false)}
+                    className="relative"
                   >
                     <Link
                       to={item.href}
-                      className="relative px-6 py-3 text-foreground hover:text-primary transition-all duration-300 font-semibold group flex items-center space-x-1"
+                      className="relative px-4 lg:px-5 py-2.5 text-sm lg:text-base text-foreground hover:text-primary transition-all duration-300 font-semibold group/nav flex items-center space-x-1.5 rounded-lg hover:bg-primary/5"
                     >
                       <span className="relative z-10">{item.name}</span>
-                      <ChevronDown className="h-4 w-4" />
-                      <div className="absolute inset-0 bg-primary/5 rounded-xl scale-0 group-hover:scale-100 transition-all duration-300 origin-center"></div>
-                      <div className="absolute bottom-1 left-1/2 w-0 h-1 bg-primary rounded-full group-hover:w-8 transition-all duration-300 transform -translate-x-1/2"></div>
+                      <ChevronDown className="h-4 w-4 transition-transform duration-300 group-hover/nav:rotate-180" />
                     </Link>
                     <MegaMenu isOpen={isMegaMenuOpen} onClose={() => setIsMegaMenuOpen(false)} />
                   </div>
                 ) : (
                   <Link
                     to={item.href}
-                    className="relative px-6 py-3 text-foreground hover:text-primary transition-all duration-300 font-semibold group flex items-center space-x-1"
+                    className="relative px-4 lg:px-5 py-2.5 text-sm lg:text-base text-foreground hover:text-primary transition-all duration-300 font-semibold rounded-lg hover:bg-primary/5 group/nav"
                   >
                     <span className="relative z-10">{item.name}</span>
-                    <div className="absolute inset-0 bg-primary/5 rounded-xl scale-0 group-hover:scale-100 transition-all duration-300 origin-center"></div>
-                    <div className="absolute bottom-1 left-1/2 w-0 h-1 bg-primary rounded-full group-hover:w-8 transition-all duration-300 transform -translate-x-1/2"></div>
                   </Link>
                 )}
               </div>
@@ -104,30 +102,30 @@ const Header = () => {
           </nav>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden lg:flex items-center space-x-4 flex-1 max-w-md mx-8">
+          <div className="hidden lg:flex items-center flex-1 max-w-xs xl:max-w-md mx-4">
             <form onSubmit={handleSearch} className="relative w-full group">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 transition-all duration-300 group-focus-within:text-primary group-focus-within:scale-110" />
+              <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 transition-all duration-300 group-focus-within:text-primary group-focus-within:scale-110" />
               <Input
                 type="text"
-                placeholder="Search herbs, supplements..."
+                placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
-                className="pl-12 pr-4 py-3 bg-muted/20 border-2 border-muted text-foreground placeholder:text-muted-foreground focus:border-primary focus:bg-background focus:shadow-lg rounded-full transition-all duration-300"
+                className="w-full pl-11 pr-4 py-2.5 bg-muted/30 border border-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:bg-background focus:shadow-lg rounded-lg transition-all duration-300"
               />
             </form>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-1 sm:space-x-2 ml-auto">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-10 sm:h-12 w-10 sm:w-12 text-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg" data-testid="button-user-profile">
+                  <Button variant="ghost" size="icon" className="h-10 sm:h-11 w-10 sm:w-11 text-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all duration-300 hover:scale-105" data-testid="button-user-profile">
                     <User className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                 <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-md border-border/50">
+                 <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-xl border-border/50">
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="flex items-center w-full">
                       <User className="h-4 w-4 mr-2" />
@@ -157,18 +155,18 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="ghost" size="icon" className="h-10 sm:h-12 w-10 sm:w-12 text-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg" asChild data-testid="button-auth-login">
+              <Button variant="ghost" size="icon" className="h-10 sm:h-11 w-10 sm:w-11 text-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all duration-300 hover:scale-105" asChild data-testid="button-auth-login">
                 <Link to="/auth">
                   <User className="h-5 w-5" />
                 </Link>
               </Button>
             )}
             
-            <Button variant="ghost" size="icon" className="h-10 sm:h-12 w-10 sm:w-12 text-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all duration-300 relative hover:scale-110 hover:shadow-lg" asChild data-testid="button-cart">
+            <Button variant="ghost" size="icon" className="h-10 sm:h-11 w-10 sm:w-11 text-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all duration-300 relative hover:scale-105" asChild data-testid="button-cart">
               <Link to="/cart">
                 <ShoppingBag className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-6 w-6 flex items-center justify-center font-semibold animate-bounce">
+                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-primary to-accent text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">
                     {cartCount}
                   </span>
                 )}
@@ -177,7 +175,7 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden h-10 w-10 text-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all duration-300 hover:scale-110"
+              className="md:hidden h-10 w-10 text-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all duration-300 hover:scale-105"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               data-testid="button-mobile-menu"
             >
@@ -187,16 +185,16 @@ const Header = () => {
         </div>
 
         {/* Mobile Search */}
-        <div className="lg:hidden pb-3 sm:pb-4">
+        <div className="lg:hidden pb-2 sm:pb-3 border-t border-border/20 mt-2">
           <form onSubmit={handleSearch} className="relative group">
-            <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 transition-all duration-300 group-focus-within:text-primary group-focus-within:scale-110" />
+            <Search className="absolute left-3.5 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 transition-all duration-300 group-focus-within:text-primary group-focus-within:scale-110" />
             <Input
               type="text"
-              placeholder="Search herbs..."
+              placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              className="pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-muted/20 border-2 border-muted text-sm sm:text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:bg-background focus:shadow-lg rounded-full transition-all duration-300"
+              className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-2.5 bg-muted/20 border border-muted/50 text-sm sm:text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:bg-background focus:shadow-md rounded-lg transition-all duration-300"
               data-testid="input-mobile-search"
             />
           </form>
@@ -205,14 +203,14 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-border shadow-lg animate-fade-in max-h-[calc(100vh-110px)] sm:max-h-[calc(100vh-140px)] overflow-y-auto">
-          <div className="px-3 sm:px-4 py-3 sm:py-4 space-y-1">
+        <div className="md:hidden bg-white/95 backdrop-blur-xl border-t border-border/20 animate-fade-in max-h-[calc(100vh-110px)] sm:max-h-[calc(100vh-140px)] overflow-y-auto">
+          <div className="px-3 sm:px-4 py-2 sm:py-3 space-y-0.5">
             {navigation.map((item, index) => (
               <Link
                 key={item.name}
                 to={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="block px-3 sm:px-4 py-3 sm:py-4 text-foreground hover:text-primary hover:bg-primary/5 rounded-xl transition-all duration-300 group font-semibold min-h-[44px] flex items-center"
+                className="block px-3 sm:px-4 py-2.5 sm:py-3 text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-300 group font-medium min-h-[44px] flex items-center"
                 style={{ animationDelay: `${index * 100}ms` }}
                 data-testid={`link-nav-${item.name.toLowerCase()}`}
               >
