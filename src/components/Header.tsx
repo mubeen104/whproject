@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Search, ShoppingBag, User, Menu, X, Leaf, LogOut, Settings, ChevronDown } from "lucide-react";
+import { ShoppingBag, User, Menu, X, LogOut, Settings, ChevronDown } from "lucide-react";
 import { MegaMenu } from "@/components/navigation/MegaMenu";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGuestCart } from "@/hooks/useGuestCart";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useNavigate, Link } from "react-router-dom";
+import { SearchSuggestions } from "@/components/SearchSuggestions";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,18 +27,11 @@ const Header = () => {
     { name: "Contact", href: "/contact", hasMegaMenu: false },
   ];
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+  const handleSearch = (query: string) => {
+    if (query.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(query.trim())}`);
     } else {
       navigate('/shop');
-    }
-  };
-
-  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch(e);
     }
   };
 
@@ -102,18 +95,14 @@ const Header = () => {
           </nav>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden lg:flex items-center flex-1 max-w-xs xl:max-w-md mx-4">
-            <form onSubmit={handleSearch} className="relative w-full group">
-              <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 transition-all duration-300 group-focus-within:text-primary group-focus-within:scale-110" />
-              <Input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearchKeyDown}
-                className="w-full pl-11 pr-4 py-2.5 bg-muted/30 border border-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:bg-background focus:shadow-lg rounded-lg transition-all duration-300"
-              />
-            </form>
+          <div className="hidden lg:flex items-center flex-1 max-w-xs xl:max-w-md mx-4 group">
+            <SearchSuggestions
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSearch={handleSearch}
+              placeholder="Search products..."
+              className="w-full"
+            />
           </div>
 
           {/* Actions */}
@@ -186,18 +175,13 @@ const Header = () => {
 
         {/* Mobile Search */}
         <div className="lg:hidden pb-2 sm:pb-3 border-t border-border/20 mt-2">
-          <form onSubmit={handleSearch} className="relative group">
-            <Search className="absolute left-3.5 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 transition-all duration-300 group-focus-within:text-primary group-focus-within:scale-110" />
-            <Input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-2.5 bg-muted/20 border border-muted/50 text-sm sm:text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:bg-background focus:shadow-md rounded-lg transition-all duration-300"
-              data-testid="input-mobile-search"
-            />
-          </form>
+          <SearchSuggestions
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onSearch={handleSearch}
+            placeholder="Search products..."
+            className="w-full"
+          />
         </div>
       </div>
 
