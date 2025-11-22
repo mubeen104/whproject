@@ -289,12 +289,15 @@ const BestSellingProducts = () => {
         </div>
       </div>
 
-      <AddToCartModal
-        product={addToCartProduct}
-        isOpen={!!addToCartProduct}
-        onClose={() => setAddToCartProduct(null)}
-        onAddToCart={handleAddToCart}
-      />
+      {addToCartProduct && (
+        <AddToCartModal
+          product={addToCartProduct}
+          isOpen={!!addToCartProduct}
+          onClose={() => setAddToCartProduct(null)}
+          onAddToCart={handleAddToCart}
+          isLoading={cartLoading}
+        />
+      )}
     </section>
   );
 };
