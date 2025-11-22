@@ -285,132 +285,163 @@ const ProductDetail = () => {
           <link itemProp="availability" href={(getCurrentInventory() || 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"} />
           <link itemProp="url" href={`https://www.neweraherbals.com/product/${product.slug || product.id}`} />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          {/* Product Images */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 mb-12">
+          {/* Product Images - Modern Card Design */}
           <div className="space-y-4">
-            <ProductImageZoom src={getMainImage()} alt={product.name} className="aspect-square rounded-lg bg-muted" />
-            {getCurrentImages().length > 1 && <div className="flex space-x-2 overflow-x-auto">
-                {getCurrentImages().map((image, index) => <button key={image.id} onClick={() => setSelectedImage(index)} className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${selectedImage === index ? 'border-primary' : 'border-border'}`}>
-                       <img src={image.image_url} alt={image.alt_text || product.name} className="w-full h-full object-contain" />
+            {/* Main Image with Modern Card */}
+            <Card className="border border-border/40 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:border-primary/50 transition-all duration-300 bg-card">
+              <CardContent className="p-0">
+                <div className="bg-muted/30 aspect-square overflow-hidden rounded-2xl">
+                  <ProductImageZoom src={getMainImage()} alt={product.name} className="w-full h-full object-contain hover:scale-105 transition-transform duration-500" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Thumbnail Gallery */}
+            {getCurrentImages().length > 1 && <div className="flex gap-3 overflow-x-auto pb-2">
+                {getCurrentImages().map((image, index) => <button key={image.id} onClick={() => setSelectedImage(index)} className={`flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === index ? 'border-primary shadow-md' : 'border-border/40 hover:border-primary/50'}`}>
+                       <img src={image.image_url} alt={image.alt_text || product.name} className="w-full h-full object-contain bg-muted/30" />
                     </button>)}
               </div>}
           </div>
 
-          {/* Product Info */}
-          <div className="space-y-6">
-            {/* Title */}
+          {/* Product Info - Modern Layout */}
+          <div className="flex flex-col space-y-6">
+            {/* Title & Variant */}
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">{product.name} - Premium Organic Herbal Product</h1>
-              {selectedVariant && <p className="text-lg text-muted-foreground">
-                  Variant: {selectedVariant.name}
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">{product.name}</h1>
+                {product.compare_price && product.compare_price > product.price && <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg px-3 py-1.5 text-xs font-semibold flex-shrink-0">Sale</Badge>}
+              </div>
+              {selectedVariant && <p className="text-sm md:text-base text-muted-foreground font-medium">
+                  {selectedVariant.name}
                 </p>}
             </div>
 
-            {/* Price */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-4">
-                 <span className="text-3xl font-bold text-primary">{currency} {getCurrentPrice().toFixed(2)}</span>
-                 {getCurrentComparePrice() && getCurrentComparePrice() > getCurrentPrice() && <span className="text-xl text-muted-foreground line-through">
-                     {currency} {getCurrentComparePrice().toFixed(2)}
-                   </span>}
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className={`w-4 h-4 ${
-                        i < Math.floor(averageRating) 
-                          ? 'text-yellow-400 fill-yellow-400' 
-                          : 'text-muted-foreground'
-                      }`} 
-                    />
-                  ))}
+            {/* Price & Rating Card */}
+            <Card className="border border-border/40 rounded-2xl bg-card shadow-sm">
+              <CardContent className="p-4 md:p-6">
+                <div className="space-y-4">
+                  {/* Price */}
+                  <div className="space-y-1">
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-3xl md:text-4xl font-bold text-foreground">{currency} {getCurrentPrice().toFixed(2)}</span>
+                      {getCurrentComparePrice() && getCurrentComparePrice() > getCurrentPrice() && <span className="text-lg text-muted-foreground line-through">
+                          {currency} {getCurrentComparePrice().toFixed(2)}
+                        </span>}
+                    </div>
+                  </div>
+
+                  {/* Rating */}
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star 
+                          key={i} 
+                          className={`w-4 h-4 ${
+                            i < Math.floor(averageRating) 
+                              ? 'text-yellow-400 fill-yellow-400' 
+                              : 'text-muted-foreground'
+                          }`} 
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm font-medium text-foreground">
+                      {averageRating > 0 ? (
+                        <>
+                          {averageRating.toFixed(1)} ({reviews?.length || 0} {reviews?.length === 1 ? 'review' : 'reviews'})
+                        </>
+                      ) : (
+                        'No reviews yet'
+                      )}
+                    </span>
+                  </div>
+
+                  {/* Stock Status */}
+                  <div className="flex items-center gap-2 pt-2">
+                    <div className={`w-2 h-2 rounded-full ${(getCurrentInventory() || 0) > 0 ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <span className={`text-sm font-medium ${(getCurrentInventory() || 0) > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      {(getCurrentInventory() || 0) > 0 ? `${getCurrentInventory()} in stock` : 'Out of Stock'}
+                    </span>
+                  </div>
                 </div>
-                <span className="text-sm text-muted-foreground">
-                  {averageRating > 0 ? (
-                    <>
-                      {averageRating.toFixed(1)} ({reviews?.length || 0} {reviews?.length === 1 ? 'review' : 'reviews'})
-                    </>
-                  ) : (
-                    'No reviews yet'
-                  )}
-                </span>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {/* Variant Selector */}
-            {variants && variants.length > 0 && <ProductVariantSelector variants={variants} selectedVariant={selectedVariant} onVariantChange={variant => {
-            setSelectedVariant(variant);
-            setSelectedImage(0); // Reset image selection when variant changes
-          }} />}
+            {variants && variants.length > 0 && <div className="space-y-3">
+              <ProductVariantSelector variants={variants} selectedVariant={selectedVariant} onVariantChange={variant => {
+                setSelectedVariant(variant);
+                setSelectedImage(0);
+              }} />
+            </div>}
 
             {/* Description */}
-            <div>
-              <h2 className="text-lg font-semibold text-foreground mb-2">Product Description</h2>
-              <p className="text-muted-foreground leading-relaxed">
+            {(selectedVariant?.description || product.description || product.short_description) && <div className="space-y-2">
+              <h3 className="text-sm md:text-base font-semibold text-foreground">About This Product</h3>
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                 {selectedVariant?.description || product.description || product.short_description}
               </p>
-            </div>
+            </div>}
 
             {/* Quantity & Actions */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <span className="text-sm font-medium text-foreground">Quantity:</span>
-                <div className="flex items-center border border-border rounded-lg">
-                  <Button variant="ghost" size="sm" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1}>
+            <div className="space-y-3 pt-4">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-semibold text-foreground">Quantity:</span>
+                <div className="flex items-center border border-border/40 rounded-lg bg-card shadow-sm">
+                  <Button variant="ghost" size="sm" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1} data-testid="button-quantity-decrease">
                     <Minus className="w-4 h-4" />
                   </Button>
-                  <span className="px-4 py-2 text-foreground font-medium">{quantity}</span>
-                  <Button variant="ghost" size="sm" onClick={() => setQuantity(quantity + 1)} disabled={quantity >= (getCurrentInventory() || 0)}>
+                  <span className="px-4 py-2 text-foreground font-semibold min-w-[3rem] text-center" data-testid="text-quantity-value">{quantity}</span>
+                  <Button variant="ghost" size="sm" onClick={() => setQuantity(quantity + 1)} disabled={quantity >= (getCurrentInventory() || 0)} data-testid="button-quantity-increase">
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
 
-              <div className="flex space-x-4">
-                <Button onClick={handleAddToCart} disabled={(getCurrentInventory() || 0) <= 0} className="flex-1" variant="outline">
+              <div className="flex flex-col md:flex-row gap-3">
+                <Button onClick={handleAddToCart} disabled={(getCurrentInventory() || 0) <= 0} className="flex-1 rounded-lg font-semibold py-2.5 md:py-3 bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity text-white border-0" data-testid="button-add-to-cart">
                   {(getCurrentInventory() || 0) > 0 ? 'Add to Cart' : 'Out of Stock'}
                 </Button>
-                <Button onClick={handleBuyNow} disabled={(getCurrentInventory() || 0) <= 0} className="flex-1">
+                <Button onClick={handleBuyNow} disabled={(getCurrentInventory() || 0) <= 0} className="flex-1 rounded-lg font-semibold py-2.5 md:py-3" variant="outline" data-testid="button-buy-now">
                   Buy Now
                 </Button>
               </div>
             </div>
 
-            {/* Features */}
-            <div className="space-y-3 pt-6 border-t border-border">
-              <div className="flex items-center space-x-3 text-sm text-muted-foreground">
-                <Truck className="w-5 h-5" />
-                <span>Free shipping on orders over {currency} {freeShippingThreshold.toFixed(0)}</span>
+            {/* Trust Features */}
+            <div className="space-y-3 pt-4 border-t border-border/40">
+              <div className="flex items-center gap-3 text-sm">
+                <Truck className="w-5 h-5 text-primary flex-shrink-0" />
+                <span className="text-muted-foreground">Free shipping on orders over {currency} {freeShippingThreshold.toFixed(0)}</span>
               </div>
-              <div className="flex items-center space-x-3 text-sm text-muted-foreground">
-                <Shield className="w-5 h-5" />
-                <span>Secure payment & data protection</span>
+              <div className="flex items-center gap-3 text-sm">
+                <Shield className="w-5 h-5 text-primary flex-shrink-0" />
+                <span className="text-muted-foreground">Secure payment & 100% protected</span>
               </div>
-              <div className="flex items-center space-x-3 text-sm text-muted-foreground">
-                
-                
+              <div className="flex items-center gap-3 text-sm">
+                <RotateCcw className="w-5 h-5 text-primary flex-shrink-0" />
+                <span className="text-muted-foreground">7-day easy returns</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Additional Information Tabs */}
+        {/* Additional Information Tabs - Modern Design */}
         <Tabs defaultValue="features" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-6">
             <TabsTrigger value="features">Features</TabsTrigger>
             <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
             <TabsTrigger value="usage">Usage</TabsTrigger>
             <TabsTrigger value="details">Details</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="features" className="mt-6">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-foreground mb-4">Key Features & Benefits</h3>
+          <TabsContent value="features" className="space-y-4">
+            <Card className="border border-border/40 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-4 md:p-6">
+                <h3 className="text-lg md:text-xl font-bold text-foreground mb-4">Key Features & Benefits</h3>
                 {product.features ? <div className="prose max-w-none">
-                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                    <p className="text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                       {product.features}
                     </p>
                   </div> : <p className="text-muted-foreground italic">No features information available.</p>}
@@ -418,12 +449,12 @@ const ProductDetail = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="ingredients" className="mt-6">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-foreground mb-4">Natural Ingredients</h3>
+          <TabsContent value="ingredients" className="space-y-4">
+            <Card className="border border-border/40 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-4 md:p-6">
+                <h3 className="text-lg md:text-xl font-bold text-foreground mb-4">Natural Ingredients</h3>
                 {product.ingredients ? <div className="prose max-w-none">
-                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                    <p className="text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                       {product.ingredients}
                     </p>
                   </div> : <p className="text-muted-foreground italic">No ingredients information available.</p>}
@@ -431,12 +462,12 @@ const ProductDetail = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="usage" className="mt-6">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-foreground mb-4">Usage Instructions & Dosage</h3>
+          <TabsContent value="usage" className="space-y-4">
+            <Card className="border border-border/40 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-4 md:p-6">
+                <h3 className="text-lg md:text-xl font-bold text-foreground mb-4">Usage Instructions & Dosage</h3>
                 {product.usage_instructions ? <div className="prose max-w-none">
-                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                    <p className="text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                       {product.usage_instructions}
                     </p>
                   </div> : <p className="text-muted-foreground italic">No usage instructions available.</p>}
@@ -444,38 +475,52 @@ const ProductDetail = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="details" className="mt-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-3">Product Specifications</h3>
-                    <dl className="space-y-2">
-                      {product.sku && <div className="flex justify-between">
-                          <dt className="text-sm text-muted-foreground">SKU:</dt>
-                          <dd className="text-sm text-foreground">{product.sku}</dd>
-                        </div>}
-                      <div className="flex justify-between">
-                        <dt className="text-sm text-muted-foreground">Availability:</dt>
-                        <dd className="text-sm text-foreground">
-                          {(getCurrentInventory() || 0) > 0 ? 'In Stock' : 'Out of Stock'}
-                        </dd>
-                      </div>
-                    </dl>
-                  </div>
-                  
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-3">Shipping & Return Policy</h3>
-                    <div className="text-sm text-muted-foreground space-y-2">
-                      <p>• Free standard shipping on orders over {currency} {freeShippingThreshold.toFixed(0)}</p>
-                      <p>• Express shipping available at checkout</p>
-                      <p>• 7-Day return policy</p>
-                      <p>• Returns must be in original condition</p>
+          <TabsContent value="details" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Specifications Card */}
+              <Card className="border border-border/40 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="p-4 md:p-6">
+                  <h3 className="text-base md:text-lg font-bold text-foreground mb-4">Product Specifications</h3>
+                  <dl className="space-y-3">
+                    {product.sku && <div className="flex justify-between">
+                        <dt className="text-sm text-muted-foreground font-medium">SKU:</dt>
+                        <dd className="text-sm font-semibold text-foreground">{product.sku}</dd>
+                      </div>}
+                    <div className="flex justify-between">
+                      <dt className="text-sm text-muted-foreground font-medium">Availability:</dt>
+                      <dd className="text-sm font-semibold text-foreground">
+                        {(getCurrentInventory() || 0) > 0 ? <span className="text-green-600 dark:text-green-400">In Stock</span> : <span className="text-red-600 dark:text-red-400">Out of Stock</span>}
+                      </dd>
                     </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  </dl>
+                </CardContent>
+              </Card>
+              
+              {/* Policy Card */}
+              <Card className="border border-border/40 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="p-4 md:p-6">
+                  <h3 className="text-base md:text-lg font-bold text-foreground mb-4">Shipping & Returns</h3>
+                  <ul className="text-sm text-muted-foreground space-y-2">
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary flex-shrink-0 mt-1">•</span>
+                      <span>Free standard shipping on orders over {currency} {freeShippingThreshold.toFixed(0)}</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary flex-shrink-0 mt-1">•</span>
+                      <span>Express shipping available at checkout</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary flex-shrink-0 mt-1">•</span>
+                      <span>7-day return policy</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary flex-shrink-0 mt-1">•</span>
+                      <span>Returns must be in original condition</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
 
