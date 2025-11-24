@@ -25,8 +25,7 @@ const useProduct = (slugOrId: string) => {
   return useQuery({
     queryKey: ['product', slugOrId],
     queryFn: async (): Promise<Product> => {
-      // Try to fetch by slug first, fall back to ID for backward compatibility
-      let query = supabase.from('products').select(`
+      const selectStatement = `
           *,
           product_images (
             id,
@@ -42,23 +41,39 @@ const useProduct = (slugOrId: string) => {
               slug
             )
           )
-        `).eq('is_active', true);
+        `;
 
       // Check if slugOrId looks like a UUID (contains hyphens and is 36 chars)
       const isUUID = slugOrId.length === 36 && slugOrId.includes('-');
 
       if (isUUID) {
-        query = query.eq('id', slugOrId);
+        const { data, error } = await supabase.from('products').select(selectStatement).eq('id', slugOrId).eq('is_active', true).maybeSingle();
+        if (error) throw error;
+        if (data) return data;
+        throw new Error(`Product with ID ${slugOrId} not found`);
       } else {
-        query = query.eq('slug', slugOrId);
-      }
+        // Try the slug as-is first
+        const { data: data1, error: error1 } = await supabase.from('products').select(selectStatement).eq('slug', slugOrId).eq('is_active', true).maybeSingle();
+        if (error1) throw error1;
+        if (data1) return data1;
 
-      const { data, error } = await query.single();
+        // If not found and slug has trailing dash, try without it
+        if (slugOrId.endsWith('-')) {
+          const cleanSlug = slugOrId.slice(0, -1);
+          const { data: data2, error: error2 } = await supabase.from('products').select(selectStatement).eq('slug', cleanSlug).eq('is_active', true).maybeSingle();
+          if (error2) throw error2;
+          if (data2) return data2;
+        }
+        // If not found and slug doesn't have trailing dash, try with it
+        else {
+          const dashSlug = slugOrId + '-';
+          const { data: data3, error: error3 } = await supabase.from('products').select(selectStatement).eq('slug', dashSlug).eq('is_active', true).maybeSingle();
+          if (error3) throw error3;
+          if (data3) return data3;
+        }
 
-      if (error) {
-        throw error;
+        throw new Error(`Product with slug ${slugOrId} not found`);
       }
-      return data;
     }
   });
 };

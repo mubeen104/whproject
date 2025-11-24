@@ -1,0 +1,269 @@
+console.log('=== TRACKING SYSTEM MONITOR LOADED ===');
+
+window.trackingMonitor = {
+  events: [],
+  start() {
+    const originalPush = window.dataLayer.push.bind(window.dataLayer);
+    window.dataLayer.push = (...args) => {
+      if (args[0]?.event) {
+        console.log('GTM Event: ' + args[0].event, args[0]);
+        this.events.push({ type: 'GTM', ...args[0] });
+      }
+      return originalPush(...args);
+    };
+    console.log('Monitoring active');
+  },
+  
+  showState() {
+    console.group('CURRENT STATE');
+    console.log('GTM events:', window.dataLayer.length);
+    console.log('Last GTM:', window.dataLayer[window.dataLayer.length - 1]);
+    console.log('Retry queue size:', JSON.parse(localStorage.getItem('new_era_herbals_retry_queue') || '[]').length);
+    console.groupEnd();
+  },
+  
+  checkCategories() {
+    console.group('CATEGORY CHECK');
+    const events = window.dataLayer.filter(d => d.items);
+    const categoryCount = events.reduce((sum, e) => sum + (e.items?.filter(i => i.item_category).length || 0), 0);
+    const totalItems = events.reduce((sum, e) => sum + (e.items?.length || 0), 0);
+    console.log('Total items tracked: ' + totalItems);
+    console.log('Items with category: ' + categoryCount);
+    console.log('% with category: ' + ((categoryCount / totalItems) * 100).toFixed(0) + '%');
+    
+    const categories = new Set();
+    window.dataLayer.forEach(d => {
+      if (d.items) {
+        d.items.forEach(i => {
+          if (i.item_category) categories.add(i.item_category);
+        });
+      }
+    });
+    console.log('Unique categories:', Array.from(categories));
+    console.groupEnd();
+  }
+};
+
+window.trackingMonitor.start();
+VM210:1 === TRACKING SYSTEM MONITOR LOADED ===
+VM210:14 Monitoring active
+undefined
+// Get one of the view_item events
+const viewEvent = window.dataLayer.find(d => d.event === 'view_item');
+console.log('View Item Event:', viewEvent);
+
+// Check the item details
+console.log('Item details:', viewEvent.items[0]);
+
+// Specifically check for category
+if (viewEvent.items[0].item_category) {
+  console.log('✓ Category found:', viewEvent.items[0].item_category);
+} else {
+  console.log('✗ Category missing!');
+}
+VM214:3 View Item Event: undefined
+VM214:6 Uncaught TypeError: Cannot read properties of undefined (reading 'items')
+    at <anonymous>:6:40
+(anonymous) @ VM214:6
+VM210:9 GTM Event: page_view {event: 'page_view', page_path: '/shop', page_title: 'New Era Herbals - Premium Organic Herbal Products & Natural Wellness Solutions', page_location: 'https://neweraherbals.com/shop'}
+VM210:9 GTM Event: page_view {event: 'page_view', page_path: '/product/ginsing-pills-', page_title: 'Shop Premium Natural Herbal Products & Organic Supplements | New Era Herbals', page_location: 'https://neweraherbals.com/product/ginsing-pills-'}
+index-DifQbESm.js:21  GET https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/reviews?select=*%2Cprofiles%28first_name%2Clast_name%29&product_id=eq.undefined&is_approved=eq.true&order=created_at.desc 400 (Bad Request)
+(anonymous) @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+i @ index-DifQbESm.js:21
+Promise.then
+l @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+Mo @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+then @ index-DifQbESm.js:21
+index-DifQbESm.js:21  GET https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/products?select=*%2Cproduct_images%28id%2Cimage_url%2Calt_text%2Csort_order%29%2Cproduct_categories%28category_id%2Ccategories%28id%2Cname%2Cslug%29%29&is_active=eq.true&slug=eq.ginsing-pills 406 (Not Acceptable)
+(anonymous) @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+i @ index-DifQbESm.js:21
+Promise.then
+l @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+Mo @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+then @ index-DifQbESm.js:21
+index-DifQbESm.js:21  GET https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/products?select=*%2Cproduct_images%28id%2Cimage_url%2Calt_text%2Csort_order%29%2Cproduct_categories%28category_id%2Ccategories%28id%2Cname%2Cslug%29%29&is_active=eq.true&slug=eq.ginsing-pills 406 (Not Acceptable)
+(anonymous) @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+i @ index-DifQbESm.js:21
+Promise.then
+l @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+Mo @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+then @ index-DifQbESm.js:21
+setTimeout
+(anonymous) @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+Promise.catch
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-DifQbESm.js:21  GET https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/reviews?select=*%2Cprofiles%28first_name%2Clast_name%29&product_id=eq.undefined&is_approved=eq.true&order=created_at.desc 400 (Bad Request)
+(anonymous) @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+i @ index-DifQbESm.js:21
+Promise.then
+l @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+Mo @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+then @ index-DifQbESm.js:21
+setTimeout
+(anonymous) @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+Promise.catch
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+// Get one of the view_item events
+const viewEvent = window.dataLayer.find(d => d.event === 'view_item');
+console.log('View Item Event:', viewEvent);
+
+// Check the item details
+console.log('Item details:', viewEvent.items[0]);
+
+// Specifically check for category
+if (viewEvent.items[0].item_category) {
+  console.log('✓ Category found:', viewEvent.items[0].item_category);
+} else {
+  console.log('✗ Category missing!');
+}
+VM218:3 View Item Event: undefined
+VM218:6 Uncaught TypeError: Cannot read properties of undefined (reading 'items')
+    at <anonymous>:6:40
+(anonymous) @ VM218:6
+index-DifQbESm.js:21  GET https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/products?select=*%2Cproduct_images%28id%2Cimage_url%2Calt_text%2Csort_order%29%2Cproduct_categories%28category_id%2Ccategories%28id%2Cname%2Cslug%29%29&is_active=eq.true&slug=eq.ginsing-pills 406 (Not Acceptable)
+(anonymous) @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+i @ index-DifQbESm.js:21
+Promise.then
+l @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+Mo @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+then @ index-DifQbESm.js:21
+setTimeout
+(anonymous) @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+Promise.catch
+d @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+Promise.then
+(anonymous) @ query-Kf2cvHkz.js:1
+Promise.catch
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-DifQbESm.js:21  GET https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/reviews?select=*%2Cprofiles%28first_name%2Clast_name%29&product_id=eq.undefined&is_approved=eq.true&order=created_at.desc 400 (Bad Request)
+(anonymous) @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+i @ index-DifQbESm.js:21
+Promise.then
+l @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+Mo @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+then @ index-DifQbESm.js:21
+setTimeout
+(anonymous) @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+Promise.catch
+d @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+Promise.then
+(anonymous) @ query-Kf2cvHkz.js:1
+Promise.catch
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-DifQbESm.js:21  GET https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/products?select=*%2Cproduct_images%28id%2Cimage_url%2Calt_text%2Csort_order%29%2Cproduct_categories%28category_id%2Ccategories%28id%2Cname%2Cslug%29%29&is_active=eq.true&slug=eq.ginsing-pills 406 (Not Acceptable)
+(anonymous) @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+i @ index-DifQbESm.js:21
+Promise.then
+l @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+Mo @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+then @ index-DifQbESm.js:21
+index-DifQbESm.js:21  GET https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/reviews?select=*%2Cprofiles%28first_name%2Clast_name%29&product_id=eq.undefined&is_approved=eq.true&order=created_at.desc 400 (Bad Request)
+(anonymous) @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+i @ index-DifQbESm.js:21
+Promise.then
+l @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+Mo @ index-DifQbESm.js:21
+(anonymous) @ index-DifQbESm.js:21
+then @ index-DifQbESm.js:21
+// Get all view_item events captured so far
+const allViewItems = window.dataLayer.filter(d => d.event === 'view_item');
+console.log('Total view_item events:', allViewItems.length);
+
+// Check each one for category
+allViewItems.forEach((event, idx) => {
+  console.log(`Event ${idx}:`, {
+    product: event.items[0].item_name,
+    category: event.items[0].item_category,
+    price: event.items[0].price,
+    hasCategoryField: !!event.items[0].item_category
+  });
+});
+VM223:3 Total view_item events: 0
+undefined
+VM210:9 GTM Event: page_view {event: 'page_view', page_path: '/shop', page_title: 'Shop Premium Natural Herbal Products & Organic Supplements | New Era Herbals', page_location: 'https://neweraherbals.com/shop'}
+VM210:9 GTM Event: add_to_cart {event: 'add_to_cart', currency: 'PKR', value: 1000, items: Array(1)}
