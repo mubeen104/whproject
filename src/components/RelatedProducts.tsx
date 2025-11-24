@@ -168,9 +168,9 @@ const RelatedProducts = ({ productId, limit = 6, excludeIds = [] }: RelatedProdu
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
           {relatedProducts.map((product) => {
-            const productRating = ratings.find(r => r.product_id === product.id);
-            const averageRating = productRating?.average_rating || 0;
-            const reviewCount = productRating?.review_count || 0;
+            const productRating = ratings.find(r => r.productId === product.id);
+            const averageRating = productRating?.averageRating || 0;
+            const reviewCount = productRating?.reviewCount || 0;
 
             return (
               <Card
@@ -215,7 +215,7 @@ const RelatedProducts = ({ productId, limit = 6, excludeIds = [] }: RelatedProdu
                   {reviewCount > 0 && (
                     <div className="mb-2">
                       <ProductRating
-                        rating={averageRating}
+                        averageRating={averageRating}
                         reviewCount={reviewCount}
                         size="sm"
                         showCount={false}
