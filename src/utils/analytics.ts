@@ -29,6 +29,10 @@ interface QueuedEvent {
 let metaPixelReady = false;
 let metaPixelQueue: QueuedEvent[] = [];
 let metaPixelId = '';
+let metaPixelScriptFailed = false;
+let metaPixelRetryCount = 0;
+const MAX_SCRIPT_RETRIES = 3;
+let scriptRetryTimer: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * Retry queue for failed events (due to network failures)
@@ -292,6 +296,102 @@ function flushMetaPixelQueue() {
 }
 
 /**
+ * Move queued events from temporary queue to persistent retry queue
+ * This is called when Meta Pixel script fails to load
+ * Ensures events are not lost and can be retried later
+ */
+function moveQueuedEventsToRetryQueue() {
+  if (metaPixelQueue.length === 0) {
+    return;
+  }
+
+  console.log(`📋 [Error Recovery] Moving ${metaPixelQueue.length} queued events to persistent retry queue`);
+  
+  for (const event of metaPixelQueue) {
+    addToRetryQueue(event.eventName, event.data, false);
+  }
+  
+  // Clear temporary queue since events are now in persistent retry queue
+  metaPixelQueue = [];
+  console.log(`✅ [Error Recovery] All events moved to retry queue and persisted to localStorage`);
+}
+
+/**
+ * Retry loading Meta Pixel script
+ * Called when initial script load fails
+ * Implements exponential backoff to avoid hammering CDN
+ */
+function retryMetaPixelScript(pixelId: string) {
+  if (typeof window === 'undefined' || !pixelId) return;
+  
+  // Check if we've already recovered
+  if (metaPixelReady) {
+    console.log('✅ [Error Recovery] Meta Pixel already loaded, skipping retry');
+    return;
+  }
+  
+  // Check if script already exists in DOM
+  if (document.querySelector('script[src*="fbevents.js"]')) {
+    console.log('⚠️ [Error Recovery] Meta Pixel script already in DOM, waiting for load...');
+    return;
+  }
+  
+  console.log(`🔄 [Error Recovery] Attempting to load Meta Pixel script (retry ${metaPixelRetryCount}/${MAX_SCRIPT_RETRIES})`);
+  
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = `https://connect.facebook.net/en_US/fbevents.js`;
+  
+  script.onload = () => {
+    console.log('📥 [Error Recovery] Meta Pixel script loaded on retry');
+    metaPixelScriptFailed = false;
+    
+    if (window.fbq) {
+      try {
+        window.fbq('init', pixelId);
+        console.log(`✅ [Error Recovery] Pixel initialized successfully on retry`);
+        
+        metaPixelReady = true;
+        console.log('✅ [Error Recovery] Meta Pixel ready after script retry');
+        
+        // Flush any queued events
+        flushMetaPixelQueue();
+        
+        // Process any events in the persistent retry queue
+        if (isOnline && retryQueue.length > 0) {
+          console.log(`🔄 [Error Recovery] Processing ${retryQueue.length} persisted retry queue events`);
+          processRetryQueue();
+        }
+        
+        if (scriptRetryTimer) {
+          clearTimeout(scriptRetryTimer);
+          scriptRetryTimer = null;
+        }
+      } catch (error) {
+        console.error('❌ [Error Recovery] Initialization failed on retry:', error);
+      }
+    }
+  };
+  
+  script.onerror = () => {
+    console.error(`❌ [Error Recovery] Script retry failed (attempt ${metaPixelRetryCount}/${MAX_SCRIPT_RETRIES})`);
+    
+    // Don't retry again on this error, keep events in persistent queue
+    if (metaPixelRetryCount >= MAX_SCRIPT_RETRIES) {
+      console.error(`❌ [Error Recovery] Max retries exhausted (${MAX_SCRIPT_RETRIES})`);
+      console.log(`📋 [Error Recovery] ${retryQueue.length} events persisted in localStorage. Will retry on next page load if network recovers.`);
+      
+      if (scriptRetryTimer) {
+        clearTimeout(scriptRetryTimer);
+        scriptRetryTimer = null;
+      }
+    }
+  };
+  
+  document.head.appendChild(script);
+}
+
+/**
  * Initialize Meta Pixel if ID is provided
  * Implements proper queue management to prevent event loss during initialization
  * 
@@ -375,9 +475,30 @@ export function initializeMetaPixel(pixelId: string) {
   
   script.onerror = () => {
     console.error('❌ [Meta Pixel] Failed to load script from CDN');
-    // Still setup retry queue handling even if script fails to load
-    if (retryQueue.length > 0) {
-      console.log(`⚠️ [Retry Queue] Meta Pixel script failed to load - ${retryQueue.length} events persisted for retry`);
+    metaPixelScriptFailed = true;
+    
+    // CRITICAL: Move all queued events to persistent retry queue
+    // This prevents silent data loss if script fails to load
+    moveQueuedEventsToRetryQueue();
+    
+    // Attempt to retry loading the script
+    if (metaPixelRetryCount < MAX_SCRIPT_RETRIES) {
+      const retryDelay = Math.pow(2, metaPixelRetryCount) * 5000; // 5s, 10s, 20s backoff
+      console.log(`🔄 [Error Recovery] Scheduling Meta Pixel script retry ${metaPixelRetryCount + 1}/${MAX_SCRIPT_RETRIES} in ${retryDelay}ms`);
+      
+      metaPixelRetryCount++;
+      
+      if (scriptRetryTimer) {
+        clearTimeout(scriptRetryTimer);
+      }
+      
+      scriptRetryTimer = setTimeout(() => {
+        console.log(`🔄 [Error Recovery] Retrying Meta Pixel script load (attempt ${metaPixelRetryCount}/${MAX_SCRIPT_RETRIES})`);
+        retryMetaPixelScript(pixelId);
+      }, retryDelay);
+    } else {
+      console.error(`❌ [Error Recovery] Gave up on Meta Pixel script after ${MAX_SCRIPT_RETRIES} retries`);
+      console.log(`📋 [Error Recovery] ${metaPixelQueue.length + retryQueue.length} events persisted in retry queue for manual recovery`);
     }
   };
 
