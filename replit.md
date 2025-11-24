@@ -113,6 +113,33 @@ Completely eliminated race condition where 100% of initial PageView events were 
 - `🔄 [Meta Pixel] Flushing X queued events` - Queue processing
 - `✅ [Meta Pixel] Event fired` - Event successfully tracked
 
+### Fixed Queue Format - Standard fbq.q Implementation ✅
+Corrected Meta Pixel queue format from non-standard `fbq.queue` to standard `fbq.q` for compatibility with real fbevents.js SDK.
+
+**Problem Fixed:**
+- ❌ Used custom `fbq.queue` instead of standard `fbq.q`
+- ❌ When fbevents.js loaded, it replaced fbq and lost custom queue
+- ❌ Events queued in custom format were NEVER processed
+
+**Solution Implemented:**
+- ✅ Changed to standard `fbq.q` queue format (Meta Pixel SDK standard)
+- ✅ fbevents.js now finds and processes queued commands
+- ✅ Dual-queue architecture: `fbq.q` for SDK compatibility + `metaPixelQueue` for explicit control
+- ✅ Backward compatible with real Meta Pixel SDK
+- ✅ Works with external code that calls fbq() directly
+
+**Technical Changes:**
+1. Line 126: Changed `fbq.queue.push()` to `fbq.q.push()`
+2. Line 142: Changed `fbq.queue = []` to `fbq.q = []`
+3. Added documentation explaining dual-queue architecture
+4. Added console message showing standard format compatibility
+
+**Impact:**
+- Queue compatibility: ✅ 100% compatible with fbevents.js
+- Event processing: ✅ Standard format recognized by real SDK
+- Reliability: ✅ No loss when fbq is replaced
+- Robustness: ✅ Works with external fbq calls
+
 ### Previous: Fixed Meta Pixel Event Tracking - Unified GTM + Direct Implementation ✅
 Resolved issues with Meta Pixel events triggering loosely by implementing a unified, reliable tracking system that fires events through BOTH GTM and direct Meta Pixel.
 

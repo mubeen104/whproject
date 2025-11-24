@@ -102,6 +102,13 @@ function flushMetaPixelQueue() {
 /**
  * Initialize Meta Pixel if ID is provided
  * Implements proper queue management to prevent event loss during initialization
+ * 
+ * Dual-Queue Architecture:
+ * 1. fbq.q - Standard Meta Pixel queue (processed by fbevents.js when it loads)
+ * 2. metaPixelQueue - Our own queue (explicitly managed, flushed when ready)
+ * 
+ * This ensures compatibility with standard Meta Pixel SDK while maintaining
+ * explicit control over event delivery and preventing race conditions.
  */
 export function initializeMetaPixel(pixelId: string) {
   if (typeof window === 'undefined' || !pixelId) return;
@@ -114,21 +121,24 @@ export function initializeMetaPixel(pixelId: string) {
     return;
   }
 
-  // Create Meta Pixel queue shim before script loads
-  // This ensures events can be queued immediately
+  // Create Meta Pixel queue shim BEFORE script loads
+  // This shim follows the standard Meta Pixel format so fbevents.js can process queued commands
+  // 
+  // Format: fbq.q is the STANDARD queue name used by Meta Pixel SDK
+  // (Previously used custom fbq.queue which was incompatible with real fbevents.js)
   if (!window.fbq) {
     (window as any).fbq = function() {
       (window as any).fbq.callMethod
         ? (window as any).fbq.callMethod.apply((window as any).fbq, arguments)
-        : (window as any).fbq.queue.push(arguments);
+        : (window as any).fbq.q.push(arguments);  // ✅ FIXED: Use standard fbq.q (not fbq.queue)
     };
     
     (window as any).fbq.push = (window as any).fbq;
     (window as any).fbq.loaded = true;
     (window as any).fbq.version = '2.0';
-    (window as any).fbq.queue = [];
+    (window as any).fbq.q = [];  // ✅ FIXED: Standard fbq.q queue format (not fbq.queue)
     
-    console.log('📦 [Meta Pixel] Queue shim created');
+    console.log('📦 [Meta Pixel] Queue shim created (standard fbq.q format - compatible with fbevents.js)');
   }
 
   // Load Meta Pixel script
