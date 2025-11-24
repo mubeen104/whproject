@@ -1,0 +1,143 @@
+chunk-W6L2VRDA.js?v=e005f644:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+Analytics.tsx:26 ⚠️  GTM ID not configured. Set VITE_GTM_ID environment variable.
+(anonymous) @ Analytics.tsx:26
+Analytics.tsx:81 ⚠️  Meta Pixel ID not configured. Set VITE_META_PIXEL_ID environment variable for direct pixel tracking.
+(anonymous) @ Analytics.tsx:81
+Analytics.tsx:93 📍 Page change (0 queued): /
+analytics.ts:553 ⏳ [Meta Pixel] Event queued (1): PageView
+registerServiceWorker.ts:12 ✅ Service Worker registered successfully: https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/
+registerServiceWorker.ts:43 ✅ Service Worker ready
+chunk-W6L2VRDA.js?v=e005f644:521 Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>.
+    at div
+    at div
+    at p
+    at div
+    at div
+    at div
+    at section
+    at HomepageTestimonials (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/src/components/HomepageTestimonials.tsx:40:52)
+    at div
+    at main
+    at div
+    at Index
+    at RenderedRoute (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=e005f644:4069:5)
+    at Routes (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=e005f644:4508:5)
+    at Router (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=e005f644:4451:15)
+    at BrowserRouter (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=e005f644:5196:5)
+    at Provider (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/chunk-ICA7ZJMY.js?v=e005f644:38:15)
+    at TooltipProvider (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=e005f644:143:5)
+    at AuthProvider (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/src/contexts/AuthContext.tsx:24:32)
+    at _a (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/react-helmet-async.js?v=e005f644:624:5)
+    at QueryClientProvider (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/@tanstack_react-query.js?v=e005f644:2794:3)
+    at App
+printWarning @ chunk-W6L2VRDA.js?v=e005f644:521
+chunk-W6L2VRDA.js?v=e005f644:521 Warning: React does not recognize the `fetchPriority` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `fetchpriority` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+    at img
+    at div
+    at div
+    at https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/src/components/ui/carousel.tsx:185:70
+    at div
+    at div
+    at https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/src/components/ui/carousel.tsx:140:73
+    at div
+    at https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/src/components/ui/carousel.tsx:26:65
+    at div
+    at section
+    at HeroSlider (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/src/components/HeroSlider.tsx:17:41)
+    at Hero
+    at main
+    at div
+    at Index
+    at RenderedRoute (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=e005f644:4069:5)
+    at Routes (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=e005f644:4508:5)
+    at Router (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=e005f644:4451:15)
+    at BrowserRouter (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=e005f644:5196:5)
+    at Provider (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/chunk-ICA7ZJMY.js?v=e005f644:38:15)
+    at TooltipProvider (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=e005f644:143:5)
+    at AuthProvider (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/src/contexts/AuthContext.tsx:24:32)
+    at _a (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/react-helmet-async.js?v=e005f644:624:5)
+    at QueryClientProvider (https://dbacf187-7400-4f4b-a0e0-d7d8bd1f5642-00-1m76dgp9b4gmf.janeway.replit.dev/node_modules/.vite/deps/@tanstack_react-query.js?v=e005f644:2794:3)
+    at App
+printWarning @ chunk-W6L2VRDA.js?v=e005f644:521
+// SETUP: Load monitor
+console.log('=== FINAL CATEGORY TRACKING TEST ===');
+
+// Clear old data
+window.dataLayer = [];
+window.trackingMonitor.events = [];
+
+// Navigate to a product
+window.location.href = '/shop';
+
+// Wait 2 seconds, then click a product
+setTimeout(() => {
+  console.log('Step 1: Navigated to shop');
+  
+  // Find and click first product link
+  const productLink = document.querySelector('a[href^="/product/"]');
+  if (productLink) {
+    productLink.click();
+    console.log('Step 2: Clicked product link');
+  }
+  
+  // Wait for product page to load
+  setTimeout(() => {
+    // Test 1: Check view_item event
+    const viewEvent = window.dataLayer.find(d => d.event === 'view_item');
+    
+    console.group('TEST RESULTS');
+    console.log('1. Product loaded:', !!viewEvent);
+    
+    if (viewEvent) {
+      console.log('2. Product name:', viewEvent.items[0].item_name);
+      console.log('3. Product ID:', viewEvent.items[0].item_id);
+      console.log('4. Product price:', viewEvent.items[0].price);
+      console.log('5. Item category:', viewEvent.items[0].item_category);
+      console.log('');
+      console.log('CATEGORY STATUS:', viewEvent.items[0].item_category ? '✅ PASS' : '❌ FAIL');
+    } else {
+      console.log('❌ FAIL - No view_item event fired');
+    }
+    console.groupEnd();
+  }, 3000);
+}, 2000);
+VM190:2 === FINAL CATEGORY TRACKING TEST ===
+VM190:6 Uncaught TypeError: Cannot set properties of undefined (setting 'events')
+    at <anonymous>:6:31
+(anonymous) @ VM190:6
+// Click Add to Cart
+document.querySelector('button[data-testid*="add"]')?.click();
+
+// Wait 1 second for event
+setTimeout(() => {
+  const cartEvent = window.dataLayer.find(d => d.event === 'add_to_cart');
+  if (cartEvent) {
+    console.log('Add to cart tracking:', {
+      product: cartEvent.items[0].item_name,
+      category: cartEvent.items[0].item_category,
+      quantity: cartEvent.items[0].quantity,
+      value: cartEvent.value,
+      currency: cartEvent.currency
+    });
+  }
+}, 1000);
+206
+chunk-KVV5YPQC.js?v=e005f644:419 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-KVV5YPQC.js?v=e005f644:419
+commitHookEffectListMount @ chunk-W6L2VRDA.js?v=e005f644:16915
+commitPassiveMountOnFiber @ chunk-W6L2VRDA.js?v=e005f644:18156
+commitPassiveMountEffects_complete @ chunk-W6L2VRDA.js?v=e005f644:18129
+commitPassiveMountEffects_begin @ chunk-W6L2VRDA.js?v=e005f644:18119
+commitPassiveMountEffects @ chunk-W6L2VRDA.js?v=e005f644:18109
+flushPassiveEffectsImpl @ chunk-W6L2VRDA.js?v=e005f644:19490
+flushPassiveEffects @ chunk-W6L2VRDA.js?v=e005f644:19447
+commitRootImpl @ chunk-W6L2VRDA.js?v=e005f644:19416
+commitRoot @ chunk-W6L2VRDA.js?v=e005f644:19277
+performSyncWorkOnRoot @ chunk-W6L2VRDA.js?v=e005f644:18895
+flushSyncCallbacks @ chunk-W6L2VRDA.js?v=e005f644:9119
+(anonymous) @ chunk-W6L2VRDA.js?v=e005f644:18627
+useGuestCart.ts:144 Adding to guest cart: {productId: '37094ec8-fe59-4db3-9def-a88cfc5c05c8', quantity: 1, variantId: '6cef2218-d895-4110-b8c0-b1de64d3a371', user: null}
+useGuestCart.ts:168 Product fetched successfully: {id: '37094ec8-fe59-4db3-9def-a88cfc5c05c8', name: 'Organic Weight Gainer', price: 600, product_images: Array(1)}
+useGuestCart.ts:194 Variant fetched successfully: {id: '6cef2218-d895-4110-b8c0-b1de64d3a371', name: '100g', price: 600, inventory_quantity: 50, product_variant_images: Array(1)}
+useGuestCart.ts:225 Updated guest cart items: [{…}]
+analytics.ts:553 ⏳ [Meta Pixel] Event queued (2): AddToCart
