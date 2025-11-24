@@ -102,11 +102,15 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
+  
+  // Trim trailing slashes and dashes from slug to match database values
+  const cleanSlug = slug?.replace(/[-/]+$/, '') || '';
+  
   const {
     data: product,
     isLoading,
     error
-  } = useProduct(slug!);
+  } = useProduct(cleanSlug);
   const {
     data: reviews
   } = useProductReviews(product?.id!);
