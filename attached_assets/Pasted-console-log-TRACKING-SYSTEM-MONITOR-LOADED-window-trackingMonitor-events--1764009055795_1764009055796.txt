@@ -1,0 +1,1104 @@
+console.log('=== TRACKING SYSTEM MONITOR LOADED ===');
+
+window.trackingMonitor = {
+  events: [],
+  start() {
+    const originalPush = window.dataLayer.push.bind(window.dataLayer);
+    window.dataLayer.push = (...args) => {
+      if (args[0]?.event) {
+        console.log('GTM Event: ' + args[0].event, args[0]);
+        this.events.push({ type: 'GTM', ...args[0] });
+      }
+      return originalPush(...args);
+    };
+    console.log('Monitoring active');
+  },
+  
+  showState() {
+    console.group('CURRENT STATE');
+    console.log('GTM events:', window.dataLayer.length);
+    console.log('Last GTM:', window.dataLayer[window.dataLayer.length - 1]);
+    console.log('Retry queue size:', JSON.parse(localStorage.getItem('new_era_herbals_retry_queue') || '[]').length);
+    console.groupEnd();
+  },
+  
+  checkCategories() {
+    console.group('CATEGORY CHECK');
+    const events = window.dataLayer.filter(d => d.items);
+    const categoryCount = events.reduce((sum, e) => sum + (e.items?.filter(i => i.item_category).length || 0), 0);
+    const totalItems = events.reduce((sum, e) => sum + (e.items?.length || 0), 0);
+    console.log('Total items tracked: ' + totalItems);
+    console.log('Items with category: ' + categoryCount);
+    console.log('% with category: ' + ((categoryCount / totalItems) * 100).toFixed(0) + '%');
+    
+    const categories = new Set();
+    window.dataLayer.forEach(d => {
+      if (d.items) {
+        d.items.forEach(i => {
+          if (i.item_category) categories.add(i.item_category);
+        });
+      }
+    });
+    console.log('Unique categories:', Array.from(categories));
+    console.groupEnd();
+  }
+};
+
+window.trackingMonitor.start();
+VM138:1 === TRACKING SYSTEM MONITOR LOADED ===
+VM138:14 Monitoring active
+undefined
+VM138:9 GTM Event: page_view {event: 'page_view', page_path: '/product/ashwagandha-pills-jar', page_title: 'New Era Herbals - Premium Organic Herbal Products & Natural Wellness Solutions', page_location: 'https://neweraherbals.com/product/ashwagandha-pills-jar'}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 500, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 500, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 550, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+VM138:9 GTM Event: add_to_cart {event: 'add_to_cart', currency: 'PKR', value: 600, items: Array(1)}
+VM138:9 GTM Event: add_to_cart {event: 'add_to_cart', currency: 'PKR', value: 600, items: Array(1)}
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_conversions 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+VM138:9 GTM Event: page_view {event: 'page_view', page_path: '/cart', page_title: 'Ashwagandha Pills Jar | Premium Organic Herbal Products | New Era Herbals', page_location: 'https://neweraherbals.com/cart'}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 800, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 400, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 800, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 400, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+qs @ vendor-CoTModu5.js:20
+k @ vendor-CoTModu5.js:11
+z @ vendor-CoTModu5.js:11
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+qs @ vendor-CoTModu5.js:20
+k @ vendor-CoTModu5.js:11
+z @ vendor-CoTModu5.js:11
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+qs @ vendor-CoTModu5.js:20
+k @ vendor-CoTModu5.js:11
+z @ vendor-CoTModu5.js:11
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+qs @ vendor-CoTModu5.js:20
+k @ vendor-CoTModu5.js:11
+z @ vendor-CoTModu5.js:11
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+VM138:9 GTM Event: page_view {event: 'page_view', page_path: '/auth', page_title: 'Ashwagandha Pills Jar | Premium Organic Herbal Products | New Era Herbals', page_location: 'https://neweraherbals.com/auth'}
+VM138:9 GTM Event: page_view {event: 'page_view', page_path: '/', page_title: 'Ashwagandha Pills Jar | Premium Organic Herbal Products | New Era Herbals', page_location: 'https://neweraherbals.com/'}
+VM138:9 GTM Event: gtm.load {event: 'gtm.load'}
+VM138:9 GTM Event: search {event: 'search', search_term: 'lbhj'}
+VM138:9 GTM Event: page_view {event: 'page_view', page_path: '/shop?search=lbhj', page_title: 'New Era Herbals - Premium Organic Herbal Products & Natural Wellness Solutions', page_location: 'https://neweraherbals.com/shop?search=lbhj'}
+VM138:9 GTM Event: page_view {event: 'page_view', page_path: '/shop', page_title: 'Shop Premium Natural Herbal Products & Organic Supplements | New Era Herbals', page_location: 'https://neweraherbals.com/shop'}
+VM138:9 GTM Event: page_view {event: 'page_view', page_path: '/product/ginsing-pills-', page_title: 'Shop Premium Natural Herbal Products & Organic Supplements | New Era Herbals', page_location: 'https://neweraherbals.com/product/ginsing-pills-'}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 1000, items: Array(1)}
+index-D0i58lDx.js:21  GET https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/reviews?select=id&product_id=eq.88047e8f-13d2-4a59-a19b-181c757d5d2c&user_id=eq.7db34768-a534-48f3-a50a-9fd26f2ea129 406 (Not Acceptable)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 800, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 1300, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 700, items: Array(1)}
+VM138:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 1500, items: Array(1)}
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+VM138:9 GTM Event: page_view {event: 'page_view', page_path: '/', page_title: 'Ginsing Pills | Premium Organic Herbal Products | New Era Herbals', page_location: 'https://neweraherbals.com/'}
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
+index-D0i58lDx.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/cart_items?select=* 409 (Conflict)
+(anonymous) @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+i @ index-D0i58lDx.js:21
+Promise.then
+l @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+Mo @ index-D0i58lDx.js:21
+(anonymous) @ index-D0i58lDx.js:21
+then @ index-D0i58lDx.js:21
