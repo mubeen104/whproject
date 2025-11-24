@@ -73,11 +73,14 @@ const RelatedProducts = ({ productId, limit = 6, excludeIds = [] }: RelatedProdu
     // Track to advertising pixels
     const product = relatedProducts.find(p => p.id === relatedProductId);
     if (product) {
+      const categoryName = (product as any).product_categories?.[0]?.categories?.name || 'Herbal Products';
       trackAddToCart({
         id: product.id,
         name: product.name,
         price: product.price,
         quantity: quantity,
+        category: categoryName,
+        brand: 'New Era Herbals',
         currency: currency
       });
     }

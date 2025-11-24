@@ -73,11 +73,14 @@ const CartSuggestions = ({ cartItems, limit = 4 }: CartSuggestionsProps) => {
     // Track to advertising pixels
     const product = suggestedProducts.find(p => p.id === suggestedProductId);
     if (product) {
+      const categoryName = (product as any).product_categories?.[0]?.categories?.name || 'Herbal Products';
       trackAddToCart({
         id: product.id,
         name: product.name,
         price: product.price,
         quantity: quantity,
+        category: categoryName,
+        brand: 'New Era Herbals',
         currency: currency
       });
     }
