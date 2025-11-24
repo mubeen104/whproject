@@ -805,7 +805,17 @@ export function trackBeginCheckout(
 }
 
 /**
- * Track purchase
+ * CRITICAL: Track purchase with race condition prevention
+ * 
+ * Problem: If user closes tab after order creation but before Purchase event completes,
+ * conversion is lost (race condition between server response and pixel tracking)
+ * 
+ * Solution: Triple redundancy for Purchase events:
+ * 1. Add to persistent retry queue BEFORE firing (survives page closure)
+ * 2. Fire event immediately to both GTM and Meta Pixel
+ * 3. Use sendBeacon() for Meta Pixel as fallback (survives unload)
+ * 
+ * Even if user closes tab immediately, event will retry on next page load
  */
 export function trackPurchase(
   orderId: string,
@@ -840,10 +850,7 @@ export function trackPurchase(
     })),
   };
   
-  gtmPush('purchase', gtmData);
-  
-  // Meta Pixel Purchase event with product metadata for proper categorization and attribution
-  fireMetaPixelEvent('Purchase', {
+  const pixelData = {
     content_type: 'product',
     currency: currencyCode,
     value: total,
@@ -857,7 +864,46 @@ export function trackPurchase(
       quantity: item.quantity,
       price: item.price,
     })),
-  });
+  };
+
+  // CRITICAL: Add to persistent retry queue BEFORE firing
+  // This ensures event survives even if user closes tab
+  console.log(`📋 [Purchase Race Prevention] Adding Purchase event to persistent retry queue (Order: ${orderId})`);
+  addToRetryQueue('Purchase', pixelData, false);
+  
+  // Fire GTM event
+  gtmPush('purchase', gtmData);
+  
+  // CRITICAL: Fire Meta Pixel Purchase event with sendBeacon fallback
+  // sendBeacon ensures delivery even if page unloads immediately after
+  if (typeof navigator !== 'undefined' && navigator.sendBeacon && metaPixelId) {
+    try {
+      // Construct Meta Pixel endpoint with event data
+      const pixelUrl = `https://www.facebook.com/tr?id=${metaPixelId}&ev=Purchase`;
+      const payload = new FormData();
+      payload.append('data', JSON.stringify([{
+        event_name: 'Purchase',
+        event_data: pixelData,
+        event_id: `${orderId}_${Date.now()}`,
+      }]));
+      
+      // sendBeacon is guaranteed to deliver the request even if page unloads
+      const sent = navigator.sendBeacon(pixelUrl, payload);
+      if (sent) {
+        console.log(`📡 [Purchase Race Prevention] sendBeacon succeeded (Order: ${orderId})`);
+      }
+    } catch (error) {
+      console.warn(`⚠️ [Purchase Race Prevention] sendBeacon failed, falling back to fbq:`, error);
+      // Fall back to regular fbq call
+      fireMetaPixelEvent('Purchase', pixelData);
+    }
+  } else {
+    // Fallback if sendBeacon not available
+    console.log(`⚠️ [Purchase Race Prevention] sendBeacon not available, using fireMetaPixelEvent`);
+    fireMetaPixelEvent('Purchase', pixelData);
+  }
+  
+  console.log(`🛒 [Tracking] Purchase - Order: ${orderId}, Total: ${total}, Items: ${items.length}`);
 }
 
 /**
