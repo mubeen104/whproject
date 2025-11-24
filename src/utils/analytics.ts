@@ -357,12 +357,20 @@ export function trackBeginCheckout(
   
   gtmPush('begin_checkout', gtmData);
   
-  // Meta Pixel InitiateCheckout event
+  // Meta Pixel InitiateCheckout event with product metadata
   fireMetaPixelEvent('InitiateCheckout', {
     content_type: 'product',
     currency: currencyCode,
     value: total,
     num_items: items.length,
+    contents: items.map(item => ({
+      id: item.id,
+      title: item.name,
+      category: item.category || 'Herbal Products',
+      brand: item.brand || 'New Era Herbals',
+      quantity: item.quantity,
+      price: item.price,
+    })),
   });
 }
 
@@ -404,13 +412,21 @@ export function trackPurchase(
   
   gtmPush('purchase', gtmData);
   
-  // Meta Pixel Purchase event (standard conversion event)
+  // Meta Pixel Purchase event with product metadata for proper categorization and attribution
   fireMetaPixelEvent('Purchase', {
     content_type: 'product',
     currency: currencyCode,
     value: total,
     content_id: items.map(i => i.id).join(','),
     num_items: items.length,
+    contents: items.map(item => ({
+      id: item.id,
+      title: item.name,
+      category: item.category || 'Herbal Products',
+      brand: item.brand || 'New Era Herbals',
+      quantity: item.quantity,
+      price: item.price,
+    })),
   });
 }
 
