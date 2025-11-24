@@ -175,6 +175,28 @@ The system implements **comprehensive error recovery** when Meta Pixel script fa
 - `retryMetaPixelScript()` - Script retry with exponential backoff
 - Network monitoring auto-triggers recovery when online
 
+### Bug Fixes Applied (Nov 24, 2025)
+
+**1. Product Slug Routing Issues - FIXED**
+- Problem: Products with trailing dashes in URLs (e.g., `/product/ginsing-pills-`) returned 406 Not Acceptable errors
+- Root Cause: URL router passes slug as-is to Supabase queries; database stores slugs without trailing dashes
+- Solution: Implemented multi-fallback slug resolution in `ProductDetail.tsx`:
+  1. Try exact slug from URL
+  2. If not found and URL has trailing dash → try without dash
+  3. If not found and URL has no dash → try with dash
+  4. Fallback to UUID ID lookup for backward compatibility
+- Files Modified: `src/pages/ProductDetail.tsx` (lines 27-82)
+
+**2. Breadcrumb Component Slug Resolution - FIXED**
+- Problem: Breadcrumb component queried products by ID but should query by slug
+- Solution: Updated `src/components/navigation/Breadcrumbs.tsx` to implement same multi-fallback logic
+- Files Modified: `src/components/navigation/Breadcrumbs.tsx` (lines 18-67)
+
+**3. Analytics Environment Variables - ACTIVATED**
+- Added `VITE_GTM_ID` and `VITE_META_PIXEL_ID` to shared environment
+- GTM and Meta Pixel now fully initialized and tracking events
+- Console confirms: "✅ Google Tag Manager loaded successfully" and "✅ [Meta Pixel] Pixel initialized"
+
 ### Test Results
 - ✅ 9/9 tracking tests passed (100% success rate)
 - ✅ 12/12 fallback queue tests passed (100% success rate)
@@ -188,6 +210,10 @@ The system implements **comprehensive error recovery** when Meta Pixel script fa
 - ✅ localStorage persistence confirmed
 - ✅ Script failure recovery verified
 - ✅ Currency & brand defaults verified
+- ✅ Product slug routing fixed (handles trailing dashes/slashes)
+- ✅ Breadcrumb product lookup fixed (multi-fallback slug resolution)
+- ✅ ViewContent events firing correctly for product pages
+- ✅ Analytics fully activated with GTM + Meta Pixel
 
 ### Comprehensive Deep Testing (Nov 24, 2025)
 **Status:** ✅ **COMPLETE - ALL 6 USER JOURNEYS VERIFIED**
