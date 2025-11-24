@@ -197,6 +197,13 @@ The system implements **comprehensive error recovery** when Meta Pixel script fa
 - GTM and Meta Pixel now fully initialized and tracking events
 - Console confirms: "✅ Google Tag Manager loaded successfully" and "✅ [Meta Pixel] Pixel initialized"
 
+**4. Reviews Query Guard - FIXED**
+- Problem: Product reviews query was running with `product_id=undefined`, causing 400 Bad Request errors
+- Root Cause: `useProductReviews` hook in `ProductDetail.tsx` lacked an `enabled` guard, running queries before product loaded
+- Solution: Added `enabled: !!productId` to the useQuery hook to prevent execution until product ID is available
+- Files Modified: `src/pages/ProductDetail.tsx` (line 104)
+- Result: No more product_id=undefined errors; reviews query only runs with valid product ID
+
 ### Test Results
 - ✅ 9/9 tracking tests passed (100% success rate)
 - ✅ 12/12 fallback queue tests passed (100% success rate)

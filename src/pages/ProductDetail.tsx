@@ -97,7 +97,8 @@ const useProductReviews = (productId: string) => {
         throw error;
       }
       return data;
-    }
+    },
+    enabled: !!productId
   });
 };
 const ProductDetail = () => {

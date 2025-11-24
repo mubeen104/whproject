@@ -1,0 +1,434 @@
+console.log('=== TRACKING SYSTEM MONITOR LOADED ===');
+
+window.trackingMonitor = {
+  events: [],
+  start() {
+    const originalPush = window.dataLayer.push.bind(window.dataLayer);
+    window.dataLayer.push = (...args) => {
+      if (args[0]?.event) {
+        console.log('GTM Event: ' + args[0].event, args[0]);
+        this.events.push({ type: 'GTM', ...args[0] });
+      }
+      return originalPush(...args);
+    };
+    console.log('Monitoring active');
+  },
+  
+  showState() {
+    console.group('CURRENT STATE');
+    console.log('GTM events:', window.dataLayer.length);
+    console.log('Last GTM:', window.dataLayer[window.dataLayer.length - 1]);
+    console.log('Retry queue size:', JSON.parse(localStorage.getItem('new_era_herbals_retry_queue') || '[]').length);
+    console.groupEnd();
+  },
+  
+  checkCategories() {
+    console.group('CATEGORY CHECK');
+    const events = window.dataLayer.filter(d => d.items);
+    const categoryCount = events.reduce((sum, e) => sum + (e.items?.filter(i => i.item_category).length || 0), 0);
+    const totalItems = events.reduce((sum, e) => sum + (e.items?.length || 0), 0);
+    console.log('Total items tracked: ' + totalItems);
+    console.log('Items with category: ' + categoryCount);
+    console.log('% with category: ' + ((categoryCount / totalItems) * 100).toFixed(0) + '%');
+    
+    const categories = new Set();
+    window.dataLayer.forEach(d => {
+      if (d.items) {
+        d.items.forEach(i => {
+          if (i.item_category) categories.add(i.item_category);
+        });
+      }
+    });
+    console.log('Unique categories:', Array.from(categories));
+    console.groupEnd();
+  }
+};
+
+window.trackingMonitor.start();
+VM63:1 === TRACKING SYSTEM MONITOR LOADED ===
+VM63:14 Monitoring active
+undefined
+// Get one of the view_item events
+const viewEvent = window.dataLayer.find(d => d.event === 'view_item');
+console.log('View Item Event:', viewEvent);
+
+// Check the item details
+console.log('Item details:', viewEvent.items[0]);
+
+// Specifically check for category
+if (viewEvent.items[0].item_category) {
+  console.log('✓ Category found:', viewEvent.items[0].item_category);
+} else {
+  console.log('✗ Category missing!');
+}
+VM68:3 View Item Event: undefined
+VM68:6 Uncaught TypeError: Cannot read properties of undefined (reading 'items')
+    at <anonymous>:6:40
+(anonymous) @ VM68:6
+VM63:9 GTM Event: page_view {event: 'page_view', page_path: '/product/vitamin-c-glow-cleansing-bar', page_title: 'New Era Herbals - Premium Organic Herbal Products & Natural Wellness Solutions', page_location: 'https://neweraherbals.com/product/vitamin-c-glow-cleansing-bar'}
+index-BbzrwQCj.js:21  GET https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/reviews?select=*%2Cprofiles%28first_name%2Clast_name%29&product_id=eq.undefined&is_approved=eq.true&order=created_at.desc 400 (Bad Request)
+(anonymous) @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+i @ index-BbzrwQCj.js:21
+Promise.then
+l @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+Mo @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+then @ index-BbzrwQCj.js:21
+VM63:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 500, items: Array(1)}
+VM63:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 500, items: Array(1)}
+VM63:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 550, items: Array(1)}
+VM63:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+VM63:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 500, items: Array(1)}
+VM63:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 500, items: Array(1)}
+VM63:9 GTM Event: view_item {event: 'view_item', currency: 'PKR', value: 600, items: Array(1)}
+index-BbzrwQCj.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+i @ index-BbzrwQCj.js:21
+Promise.then
+l @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+Mo @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+then @ index-BbzrwQCj.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-BbzrwQCj.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+i @ index-BbzrwQCj.js:21
+Promise.then
+l @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+Mo @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+then @ index-BbzrwQCj.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-BbzrwQCj.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+i @ index-BbzrwQCj.js:21
+Promise.then
+l @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+Mo @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+then @ index-BbzrwQCj.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-BbzrwQCj.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+i @ index-BbzrwQCj.js:21
+Promise.then
+l @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+Mo @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+then @ index-BbzrwQCj.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-BbzrwQCj.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+i @ index-BbzrwQCj.js:21
+Promise.then
+l @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+Mo @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+then @ index-BbzrwQCj.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+index-BbzrwQCj.js:21  POST https://trhbdcrkolubvgytjkhi.supabase.co/rest/v1/product_recommendation_views 404 (Not Found)
+(anonymous) @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+i @ index-BbzrwQCj.js:21
+Promise.then
+l @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+Mo @ index-BbzrwQCj.js:21
+(anonymous) @ index-BbzrwQCj.js:21
+then @ index-BbzrwQCj.js:21
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+setTimeout
+r @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+batch @ query-Kf2cvHkz.js:1
+#l @ query-Kf2cvHkz.js:1
+setData @ query-Kf2cvHkz.js:1
+onSuccess @ query-Kf2cvHkz.js:1
+h @ query-Kf2cvHkz.js:1
+Promise.then
+d @ query-Kf2cvHkz.js:1
+start @ query-Kf2cvHkz.js:1
+fetch @ query-Kf2cvHkz.js:1
+#K @ query-Kf2cvHkz.js:1
+onSubscribe @ query-Kf2cvHkz.js:1
+subscribe @ query-Kf2cvHkz.js:1
+(anonymous) @ query-Kf2cvHkz.js:1
+yi @ vendor-CoTModu5.js:20
+Ku @ vendor-CoTModu5.js:20
+dc @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+fc @ vendor-CoTModu5.js:20
+Gs @ vendor-CoTModu5.js:20
+Ol @ vendor-CoTModu5.js:20
+(anonymous) @ vendor-CoTModu5.js:20
+VM63:9 GTM Event: add_to_cart {event: 'add_to_cart', currency: 'PKR', value: 500, items: Array(1)}
