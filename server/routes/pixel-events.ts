@@ -1,8 +1,8 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { db } from '../db';
 import { pixelEvents } from '../../shared/schema';
 import { pixelEventSchema } from '../validation/pixels';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 
 const router = Router();
 
@@ -38,7 +38,7 @@ function scheduleFlush() {
   flushTimer = setTimeout(flushEventQueue, FLUSH_INTERVAL);
 }
 
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const events = Array.isArray(req.body) ? req.body : [req.body];
     
@@ -79,25 +79,19 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
-    const limit = parseInt(req.query.limit as string) || 100;
+    const limit = Math.min(parseInt(req.query.limit as string) || 100, 1000);
     const offset = parseInt(req.query.offset as string) || 0;
-    const pixelId = req.query.pixel_id as string;
-    const eventType = req.query.event_type as string;
     
-    let query = db.select().from(pixelEvents).$dynamic();
+    let query = db.select().from(pixelEvents);
     
-    const conditions = [];
-    if (pixelId) {
-      conditions.push(eq(pixelEvents.pixelId, pixelId));
+    // Apply filters if provided
+    if (req.query.pixel_id) {
+      query = query.where(eq(pixelEvents.pixelId, req.query.pixel_id as string));
     }
-    if (eventType) {
-      conditions.push(eq(pixelEvents.eventType, eventType));
-    }
-    
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+    if (req.query.event_type) {
+      query = query.where(eq(pixelEvents.eventType, req.query.event_type as string));
     }
     
     const events = await query
