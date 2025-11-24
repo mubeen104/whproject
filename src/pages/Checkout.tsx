@@ -77,6 +77,12 @@ const Checkout = () => {
             image_url,
             alt_text,
             sort_order
+          ),
+          product_categories (
+            categories (
+              id,
+              name
+            )
           )
         `)
         .eq('id', directProductId)
@@ -140,17 +146,22 @@ const Checkout = () => {
       // Only track if we have valid items with required data
       const validItems = effectiveCartItems
         .filter(item => {
-          const productId = item.product_variants?.sku || item.products?.sku || item.product?.sku || item.product_id;
-          const productName = item.products?.name || item.product?.name;
-          const price = isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || item.product?.price || 0);
+          const productId = item.product_variants?.sku || item.products?.sku || item.product_id;
+          const productName = item.products?.name;
+          const price = isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || 0);
           return productId && productName && typeof price === 'number' && !isNaN(price) && item.quantity > 0;
         })
-        .map(item => ({
-          id: item.product_variants?.sku || item.products?.sku || item.product?.sku || item.product_id,
-          name: item.products?.name || item.product?.name || 'Unknown Product',
-          quantity: item.quantity,
-          price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || item.product?.price || 0)
-        }));
+        .map(item => {
+          const product = item.products as any;
+          const categoryName = product?.product_categories?.[0]?.categories?.name || 'Herbal Products';
+          return {
+            id: item.product_variants?.sku || product?.sku || item.product_id,
+            name: product?.name || 'Unknown Product',
+            quantity: item.quantity,
+            price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || product?.price || 0),
+            category: categoryName
+          };
+        });
 
       if (validItems.length > 0 && total > 0) {
         trackBeginCheckout(validItems, total, currency, tax, shipping);
@@ -335,12 +346,17 @@ const Checkout = () => {
       // Track conversion event for advertising pixels with SKU for catalog matching
       trackPurchase(
         order.order_number,
-        effectiveCartItems.map(item => ({
-          id: item.product_variants?.sku || item.products?.sku || item.product?.sku || item.product_id, // Priority: variant SKU → parent SKU → UUID
-          name: item.products?.name || item.product?.name || 'Unknown Product',
-          quantity: item.quantity,
-          price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || item.products?.price || item.product?.price || 0)
-        })),
+        effectiveCartItems.map(item => {
+          const product = item.products as any;
+          const categoryName = product?.product_categories?.[0]?.categories?.name || 'Herbal Products';
+          return {
+            id: item.product_variants?.sku || product?.sku || item.product_id, // Priority: variant SKU → parent SKU → UUID
+            name: product?.name || 'Unknown Product',
+            quantity: item.quantity,
+            price: isDirectCheckout ? effectiveDirectPrice : (item.product_variants?.price || product?.price || 0),
+            category: categoryName
+          };
+        }),
         totalAmount,
         currency,
         tax,
