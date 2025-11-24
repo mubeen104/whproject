@@ -84,7 +84,7 @@ router.get('/', async (req: Request, res: Response) => {
     const limit = Math.min(parseInt(req.query.limit as string) || 100, 1000);
     const offset = parseInt(req.query.offset as string) || 0;
     
-    let query = db.select().from(pixelEvents);
+    let query: any = db.select().from(pixelEvents);
     
     // Apply filters if provided
     if (req.query.pixel_id) {
@@ -94,7 +94,7 @@ router.get('/', async (req: Request, res: Response) => {
       query = query.where(eq(pixelEvents.eventType, req.query.event_type as string));
     }
     
-    const events = await query
+    const events: any[] = await query
       .orderBy(desc(pixelEvents.createdAt))
       .limit(limit)
       .offset(offset);

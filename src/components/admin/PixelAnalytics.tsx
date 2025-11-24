@@ -98,10 +98,10 @@ export const PixelAnalytics = () => {
             ) : (
               Object.entries(eventStats)
                 .sort(([, a], [, b]) => (b as number) - (a as number))
-                .map(([eventType, count]) => (
+                .map(([eventType, count]: [string, unknown]) => (
                   <div key={eventType} className="flex items-center justify-between">
                     <span className="font-medium capitalize">{eventType}</span>
-                    <Badge variant="outline">{count}</Badge>
+                    <Badge variant="outline">{count as number}</Badge>
                   </div>
                 ))
             )}
