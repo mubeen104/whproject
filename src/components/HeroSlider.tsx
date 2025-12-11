@@ -110,7 +110,7 @@ const HeroSlider = () => {
                       src={slide.image_url} 
                       alt={slide.title}
                       loading={isFirstSlide ? "eager" : "lazy"}
-                      fetchpriority={isFirstSlide ? "high" : "auto"}
+                      fetchPriority={isFirstSlide ? "high" : "auto"}
                       decoding="async"
                       className={`w-full h-full object-cover sm:object-contain md:object-cover bg-gradient-to-br from-muted/20 to-background group-hover:scale-[1.02] transition-all duration-500 ${
                         isLoaded ? 'opacity-100' : 'opacity-0'

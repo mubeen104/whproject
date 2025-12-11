@@ -83,7 +83,7 @@ const useProductReviews = (productId: string) => {
     queryFn: async () => {
       // Use database function to bypass RLS and get profile data
       const { data, error } = await supabase
-        .rpc('get_reviews_with_profiles', { _product_id: productId });
+        .rpc('get_reviews_with_profiles' as any, { _product_id: productId });
       
       if (error) {
         // Fallback to direct query if function doesn't exist
@@ -94,8 +94,7 @@ const useProductReviews = (productId: string) => {
             *,
             profiles (
               first_name,
-              last_name,
-              email
+              last_name
             )
           `)
           .eq('product_id', productId)
@@ -111,12 +110,11 @@ const useProductReviews = (productId: string) => {
           ...review,
           profile_first_name: review.profiles?.first_name || null,
           profile_last_name: review.profiles?.last_name || null,
-          profile_email: review.profiles?.email || null,
         }));
       }
       
       // Transform function result to match expected format
-      return (data || []).map((review: any) => ({
+      return ((data as any[]) || []).map((review: any) => ({
         id: review.id,
         product_id: review.product_id,
         user_id: review.user_id,
@@ -130,7 +128,6 @@ const useProductReviews = (productId: string) => {
         profiles: {
           first_name: review.profile_first_name,
           last_name: review.profile_last_name,
-          email: review.profile_email,
         },
       }));
     },
