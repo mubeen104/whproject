@@ -58,10 +58,11 @@ const Category = () => {
   const subcategories = relatedCategories.filter(cat => cat.parent_id === category?.id);
 
   // Filter products
-  let filteredProducts = products.filter((p) => {
+  let filteredProducts = products.filter((p: any) => {
     const matchesPrice = p.price >= priceRange[0] && p.price <= priceRange[1];
     const matchesStock = !showInStockOnly || p.inventory_quantity > 0;
-    const matchesSubcategory = selectedSubcategories.length === 0 || selectedSubcategories.includes(p.category_id);
+    const matchesSubcategory = selectedSubcategories.length === 0 || 
+      p.product_categories?.some((pc: any) => selectedSubcategories.includes(pc.category_id));
     return matchesPrice && matchesStock && matchesSubcategory;
   });
 
@@ -163,7 +164,7 @@ const Category = () => {
   };
 
   const handleAddToCart = async (productId: string, quantity: number, variantId?: string) => {
-    await addToCart.mutateAsync({ productId, quantity, variantId });
+    await addToCart(productId, quantity, variantId);
     setAddToCartProduct(null);
     toast({ title: 'Success', description: 'Product added to cart' });
   };
@@ -460,7 +461,7 @@ const Category = () => {
                       }}
                       onClick={() => {
                         // Track ViewContent when user clicks product card
-                        const categoryName = product.product_categories?.[0]?.categories?.name || 'Herbal Products';
+                        const categoryName = (product as any).product_categories?.[0]?.categories?.name || category?.name || 'Herbal Products';
                         trackViewContent({
                           id: product.id,
                           name: product.name,
@@ -723,9 +724,10 @@ const Category = () => {
       {addToCartProduct && (
         <AddToCartModal
           product={addToCartProduct}
+          isOpen={!!addToCartProduct}
           onClose={() => setAddToCartProduct(null)}
           onAddToCart={handleAddToCart}
-          isLoading={addToCart.isPending}
+          isLoading={isLoading}
         />
       )}
     </>

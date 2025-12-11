@@ -17,6 +17,8 @@ import { AddToCartModal } from "@/components/AddToCartModal";
 import { useCarouselAutoScroll } from "@/hooks/useCarouselAutoScroll";
 import { useProductRatings } from "@/hooks/useProductRatings";
 import { ProductRating } from "@/components/ProductRating";
+import { useAnalytics } from "@/hooks/useAnalytics";
+
 const FeaturedProducts = () => {
   const {
     data: featuredProducts = [],

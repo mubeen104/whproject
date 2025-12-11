@@ -14,6 +14,7 @@ import { useGuestCart } from '@/hooks/useGuestCart';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { AddToCartModal } from '@/components/AddToCartModal';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const ShopSection = () => {
   const [searchTerm, setSearchTerm] = useState('');

@@ -5,18 +5,7 @@
  * Ensures reliable event tracking across both platforms with proper queue management.
  */
 
-declare global {
-  interface Window {
-    dataLayer: any[];
-    fbq?: (action: string, event: string, data?: Record<string, any>) => void;
-    neTrack?: {
-      viewContent: (productId: string, title: string, price: number, currency: string) => void;
-      addToCart: (productId: string, title: string, price: number, currency: string, quantity?: number) => void;
-      initiateCheckout: (orderTotal: number, currency: string) => void;
-      purchase: (orderTotal: number, currency: string, productIds: string[]) => void;
-    };
-  }
-}
+// Window interface extended in vite-env.d.ts
 
 // Initialize dataLayer
 if (typeof window !== 'undefined') {
@@ -1551,7 +1540,7 @@ export function trackCustomEvent(eventName: string, data?: Record<string, any>) 
 function initializeHelperFunctions() {
   if (typeof window === 'undefined') return;
   
-  window.neTrack = {
+  (window as any).neTrack = {
     viewContent: (productId: string, title: string, price: number, currency: string) => {
       console.log('[GTM] ViewContent', productId, title, price, currency);
       
